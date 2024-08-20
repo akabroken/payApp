@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/drawable-v24/roundedbg.xml" value="0.123" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/drawable/cborderline.xml" value="0.123" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/drawable/image_background_rounded.xml" value="0.123" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/drawable/image_circle.xml" value="0.123" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/drawable/mybutton.xml" value="0.2165" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/drawable/rounded_bg.xml" value="0.165" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/drawable/roundgb.xml" value="0.143" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/activity_main.xml" value="0.19166666666666668" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/content_main.xml" value="0.1078125" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/decline.xml" value="0.22447916666666667" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_auth_complete.xml" value="0.259375" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_complete_request.xml" value="0.19166666666666668" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_home.xml" value="0.19166666666666668" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_index_page.xml" value="0.10182370820668693" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_key_download.xml" value="0.17760416666666667" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_login.xml" value="0.18502202643171806" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_network.xml" value="0.13270142180094788" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_payment.xml" value="0.19166666666666668" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_pin_select.xml" value="0.1" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_preauth.xml" value="0.209375" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_refund.xml" value="0.259375" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_reports.xml" value="0.1" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_reversal.xml" value="0.1" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_settings.xml" value="0.18584070796460178" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_telpo_progress_dialog.xml" value="0.1" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_terminal.xml" value="0.1" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/fragment_transaction.xml" value="0.11197916666666667" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/grid_item_layout.xml" value="0.17760416666666667" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/grid_item_layout2.xml" value="0.17760416666666667" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/layout_images.xml" value="0.1" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/layout_images_horizontal.xml" value="0.1" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/layout_images_vertical.xml" value="0.209375" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/logo_head.xml" value="0.1953125" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/sucess.xml" value="0.21041666666666667" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/telpo_progress_dialog.xml" value="0.1" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/titlebar.xml" value="0.10208333333333333" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/layout/write_pad.xml" value="0.1" />
+        <entry key="..\:/PROJECTS/ISWPAYAPP/payApp/app/src/main/res/menu/menu_main.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/Login">
+
+    <fragment android:id="@+id/Login"
+        android:label="Login"
+        android:name="com.isw.payapp.fragments.Login"
+        tools:layout="@layout/fragment_login">
+        <action android:id="@+id/login_to_home" app:destination="@id/indexpage"/>
+
+    </fragment>
+
+    <fragment android:id="@+id/indexpage" android:label="Index"
+        android:name="com.isw.payapp.fragments.IndexPage"
+        tools:layout="@layout/fragment_index_page">
+        <action android:id="@+id/index_to_home" app:destination="@+id/HomeFragment"/>
+        <action android:id="@+id/index_to_transaction" app:destination="@id/transactions"/>
+        <action android:id="@+id/index_to_settings" app:destination="@+id/settings"/>
+        <action android:id="@+id/index_to_login" app:destination="@id/Login"/>
+        <action android:id="@+id/index_to_report" app:destination="@+id/Reports"/>
+        <action android:id="@+id/index_to_pinselect" app:destination="@+id/PinSelect"/>
+    </fragment>
+
+    <fragment android:id="@+id/transactions" android:label="Transaction"
+        android:name="com.isw.payapp.fragments.Transaction" tools:layout="@layout/fragment_transaction">
+        <action android:id="@+id/transaction_to_index" app:destination="@+id/indexpage"/>
+        <action android:id="@+id/transaction_to_purchase" app:destination="@+id/PaymentFragment"/>
+        <action android:id="@+id/transaction_to_reversal" app:destination="@+id/Reversal"/>
+        <action android:id="@+id/transaction_to_refund" app:destination="@+id/refund"/>
+        <action android:id="@+id/transaction_to_preauth" app:destination="@+id/Preauth"/>
+        <action android:id="@+id/transaction_to_completion" app:destination="@+id/completion"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="com.isw.payapp.fragments.HomeFragment"
+        android:label="@string/home_fragment_label"
+        tools:layout="@layout/fragment_home">
+
+        <action
+            android:id="@+id/action_HomeFragment_to_PaymentFragment"
+            app:destination="@id/PaymentFragment" />
+        <action
+            android:id="@+id/homeFragment_to_keydownloadFragement"
+            app:destination="@+id/keyDownloadFragment" />
+
+        <action
+            android:id="@+id/homeFragment_to_reversal"
+            app:destination="@+id/Reversal" />
+
+        <action
+            android:id="@+id/homeFragment_to_preauth"
+            app:destination="@+id/Preauth" />
+
+        <action
+            android:id="@+id/homeFragment_to_authcompite"
+            app:destination="@+id/completion" />
+
+        <action
+            android:id="@+id/homeFragment_to_refund"
+            app:destination="@+id/refund" />
+    </fragment>
+    <fragment
+        android:id="@+id/PaymentFragment"
+        android:name="com.isw.payapp.fragments.Purchase"
+        android:label="@string/payment_fragment_label"
+        tools:layout="@layout/fragment_payment">
+
+        <action
+            android:id="@+id/payment_to_complete"
+            app:destination="@id/completeRequestFragment" />
+        <action android:id="@+id/payment_to_transaction" app:destination="@id/transactions"/>
+
+    </fragment>
+    <fragment
+        android:id="@+id/completeRequestFragment"
+        android:name="com.isw.payapp.fragments.CompleteRequestFragment"
+        android:label="fragment_complete_request"
+        tools:layout="@layout/fragment_complete_request" >
+        <action
+            android:id="@+id/fragment_complete_to_payment"
+            app:destination="@id/PaymentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/keyDownloadFragment"
+        android:name="com.isw.payapp.fragments.KeyDownload"
+        android:label="Key Management"
+        tools:layout="@layout/fragment_key_download">
+        <action android:id="@+id/fragment_keydownload_to_homefragment"
+            app:destination="@id/HomeFragment"/>
+        <action android:id="@+id/keydownload_to_setting" app:destination="@id/settings"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/Reversal"
+        android:name="com.isw.payapp.fragments.Reversal"
+        android:label="Reversal"
+        tools:layout="@layout/fragment_reversal">
+        <action android:id="@+id/fragment_reversal_to_transaction"
+            app:destination="@id/transactions"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/Preauth"
+        android:name="com.isw.payapp.fragments.Preauth"
+        android:label="Pre Authorization"
+        tools:layout="@layout/fragment_preauth">
+        <action android:id="@+id/fragment_preauth_to_transaction"
+            app:destination="@id/transactions"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/completion"
+        android:name="com.isw.payapp.fragments.AuthComplete"
+        android:label="Auth Completion"
+        tools:layout="@layout/fragment_auth_complete">
+        <action android:id="@+id/fragment_authcomplete_to_transaction"
+            app:destination="@id/transactions"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/refund"
+        android:name="com.isw.payapp.fragments.Refund"
+        android:label="Refund"
+        tools:layout="@layout/fragment_refund">
+        <action android:id="@+id/fragment_refund_to_transaction"
+            app:destination="@id/transactions"/>
+    </fragment>
+
+    <fragment android:id="@+id/settings" android:name="com.isw.payapp.fragments.Settings" tools:layout="@layout/fragment_settings" android:label="Settings">
+        <action android:id="@+id/settings_to_index" app:destination="@+id/indexpage"/>
+        <action android:id="@+id/settings_to_keydownload" app:destination="@id/keyDownloadFragment"/>
+        <action android:id="@+id/settings_to_terminal" app:destination="@id/Terminal"/>
+        <action android:id="@+id/setting_to_network" app:destination="@+id/Network"/>
+
+    </fragment>
+
+    <fragment android:id="@+id/Terminal" android:name="com.isw.payapp.fragments.Terminal" android:label="Terminal Settings" tools:layout="@layout/fragment_terminal">
+        <action android:id="@+id/terminal_to_settings" app:destination="@+id/settings"/>
+    </fragment>
+
+    <fragment android:id="@+id/Network" android:name="com.isw.payapp.fragments.Network" tools:layout="@layout/fragment_network" android:label="Network Settings">
+        <action android:id="@+id/network_to_settings" app:destination="@id/settings"/>
+    </fragment>
+
+    <fragment android:id="@+id/Reports" android:label="Reports" tools:layout="@layout/fragment_reports" android:name="com.isw.payapp.fragments.Reports">
+        <action android:id="@+id/reports_to_index" app:destination="@id/indexpage"/>
+    </fragment>
+
+    <fragment android:id="@+id/PinSelect" android:name="com.isw.payapp.fragments.PinSelect" tools:layout="@layout/fragment_pin_select" android:label="PIN Select">
+        <action android:id="@+id/pinselect_index" app:destination="@id/indexpage"/>
+    </fragment>
+
+
+</navigation>
