@@ -16,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+
             app:popupTheme="@style/Theme.PayApp.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -27,13 +28,13 @@
         android:layout_height="193dp">
 
         <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="344dp"
-            android:layout_height="65dp"
+            android:id="@+id/main_activity_imageView"
+            android:layout_width="360dp"
+            android:layout_height="70dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="0dp"
-            android:scaleType="fitCenter"
 
+            android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@+id/bottomGuideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

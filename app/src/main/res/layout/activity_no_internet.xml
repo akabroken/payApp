@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f2f3f8"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <!-- ImageView at the top -->
+    <ImageView
+        android:id="@+id/imageLogo"
+        android:layout_width="340dp"
+        android:layout_height="70dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:contentDescription="vcb"
+        android:scaleType="fitXY"
+        android:src="@drawable/victoria_bank_logo1" />
+
+    <!-- TextView centered vertically -->
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:paddingBottom="16dp"
+        android:text="No Internet Connection"
+        android:textColor="#5867dd"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <!-- Button below the TextView -->
+    <Button
+        android:id="@+id/retryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#28a745"
+        android:text="Retry"
+        android:textColor="@android:color/white" />
+</RelativeLayout>

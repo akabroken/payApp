@@ -2,8 +2,8 @@ package com.isw.payapp.terminal.controllers;
 
 import android.content.Context;
 
-import com.isw.payapp.terminal.model.EmvModel;
-import com.isw.payapp.terminal.model.TerminalModel;
+import com.isw.payapp.model.EmvModel;
+import com.isw.payapp.model.TerminalModel;
 
 public class TerminalController {
     private Context context;

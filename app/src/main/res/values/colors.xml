@@ -12,6 +12,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="keyboard_text_color">#333333</color>
+    <color name="keyboard_back_color">#E5E5E5</color>
+    <color name="keyboard_pressed_color">#D4D6D8</color>
+    <color name="keyboard_blue_color">#03A9F4</color>
+    <color name="keyboard_white_color">#FFFFFF</color>
+    <color name="graye3">#e3e7ee</color>
 
 
     <color name="Black">#FF000000</color>
@@ -38,4 +44,12 @@
     <drawable name="gray">#ccc</drawable>
     <drawable name="white">#ffffff</drawable>
     <drawable name="color_6b6b6b">#6B6B6B</drawable>
+
+
+    <color name="light_blue">#E3F2FD</color>
+    <color name="dark_blue">#1976D2</color>
+    <color name="light_green">#C8E6C9</color>
+    <color name="dark_green">#388E3C</color>
+    <color name="light_red">#FFEBEE</color>
+    <color name="dark_red">#D32F2F</color>
 </resources>

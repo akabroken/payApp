@@ -1,104 +1,112 @@
 package com.isw.payapp.fragments;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
+
+import com.bumptech.glide.Glide;
 import com.isw.payapp.Adapters.IndexAdapter;
 import com.isw.payapp.R;
 import com.isw.payapp.databinding.FragmentIndexPageBinding;
+import com.isw.payapp.helpers.SessionManager;
+import com.isw.payapp.model.GridMenuItem;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 
 public class IndexPage extends Fragment {
 
     private FragmentIndexPageBinding binding;
-    private RecyclerView recyclerView;
+    private SessionManager sessionManager;
     private IndexAdapter adapter;
 
-    public IndexPage() {
-        // Required empty public constructor
-    }
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = FragmentIndexPageBinding.inflate(inflater, container, false);
+        Glide.with(this)
+                .load(R.drawable.sidian_bank_logo)
+                .into(binding.imageView);
         return binding.getRoot();
     }
 
+    @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        recyclerView = binding.recyclerView.findViewById(R.id.recyclerView);
-        adapter = new IndexAdapter();
+        initializeComponents();
 
-        // Set GridLayout with 3 columns
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
-
-        // Populate RecyclerView with images
-        List<Integer> imageList = getImageList(); // Your method to get image resources
-        List<String> titles = getTitles();
-        adapter.setImageList(imageList, titles);
-
+        checkAuthentication();
+        setupRecyclerView();
+        displayWelcomeMessage();
     }
 
-    private List<Integer> getImageList() {
-        List<Integer> imageList = new ArrayList<>();
-        imageList.add(R.drawable.pos);
-        imageList.add(R.drawable.security_warning);
-        imageList.add(R.drawable.gearsix);
-        imageList.add(R.drawable.office_editing);
-        imageList.add(R.drawable.exit);
-        // Add more images as needed
-        return imageList;
+    private void initializeComponents() {
+        sessionManager = new SessionManager(requireContext());
+        adapter = new IndexAdapter(requireContext());
+        loadImages();
     }
 
-    private List<String> getTitles(){
-        List<String>title = new ArrayList<>();
-        title.add("Transaction");
-        title.add("PIN Select");
-        title.add("Settings");
-        title.add("Reports");
-        title.add("Logout");
-        return  title;
+    private void checkAuthentication() {
+        if (!sessionManager.isLoggedIn()) {
+            navigateTo(R.id.index_to_login);
+        }
     }
 
-    private ArrayList<ArrayList<Bitmap>> getDataForImageViews() {
-        // Add your logic here to create and populate the data
-        ArrayList<ArrayList<Bitmap>> icons = new ArrayList<>();
+    private void loadImages() {
+//            Glide.with(this)
+//                    .load(R.drawable.interswitch_1)
+//                    .into(binding.imageView);
+//     //   }
+    }
 
-        ArrayList<Bitmap> imageData = new ArrayList<>();
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pos);
-        imageData.add(bitmap);
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.security_warning);
-        imageData.add(bitmap);
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gearsix);
-        imageData.add(bitmap);
-        icons.add(imageData);
+    private void setupRecyclerView() {
+        GridLayoutManager layoutManager = new GridLayoutManager(requireContext(), 3);
+        binding.recyclerView.setLayoutManager(layoutManager);
+        binding.recyclerView.setAdapter(adapter);
 
-        ArrayList<Bitmap> imageData2 = new ArrayList<>();
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.office_editing);
-        imageData.add(bitmap);
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.exit);
-        imageData.add(bitmap);
-        icons.add(imageData2);
+        List<GridMenuItem> menuItems = Arrays.asList(
+                new GridMenuItem(R.drawable.security_warning, getString(R.string.pin_select), R.id.index_to_pinselect),
+                new GridMenuItem(R.drawable.gearsix, getString(R.string.settings), R.id.index_to_settings),
+              //  new GridMenuItem(R.drawable.fuel_pay, getString(R.string.fuel_pay), R.id.index_to_fuelpay),
+                new GridMenuItem(R.drawable.exit, getString(R.string.logout), R.id.index_to_login)
+        );
 
-        // Populate imageData with Bitmaps (representing your images)
-        return icons;
+        adapter.setMenuItems(menuItems);
+        adapter.setOnItemClickListener(this::handleMenuItemClick);
+    }
+
+    private void handleMenuItemClick(GridMenuItem menuItem) {
+        if (menuItem.getTitle().equals(getString(R.string.logout))) {
+            sessionManager.logout();
+            showToast(getString(R.string.logged_out_successfully));
+        }
+        navigateTo(menuItem.getActionId());
+    }
+
+    private void navigateTo(int actionId) {
+        try {
+            Navigation.findNavController(requireView()).navigate(actionId);
+        } catch (IllegalArgumentException e) {
+            Log.e("Navigation", "Invalid navigation action", e);
+            showToast(getString(R.string.navigation_error));
+        }
+    }
+
+    private void displayWelcomeMessage() {
+        String username = sessionManager.getKeyFullname();
+        binding.usernameTextView.setText(getString(R.string.welcome_message, username));
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

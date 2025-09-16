@@ -19,13 +19,11 @@ import com.isw.payapp.Adapters.ImageAdapter;
 import com.isw.payapp.R;
 import com.isw.payapp.databinding.FragmentKeyDownloadBinding;
 
-import com.isw.payapp.terminal.model.ItemData;
+import com.isw.payapp.devices.DeviceFactory;
+import com.isw.payapp.devices.interfaces.IPinPadProcessor;
+import com.isw.payapp.model.ItemData;
 import com.isw.payapp.terminal.processors.KeydownloadProcessor;
 import com.isw.payapp.terminal.services.KeyDownloadSrv;
-import com.telpo.emv.EmvService;
-import com.telpo.pinpad.PinpadService;
-import com.telpo.tps550.api.printer.UsbThermalPrinter;
-import com.telpo.tps550.api.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +37,10 @@ public class KeyDownload extends Fragment {
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
 
-    UsbThermalPrinter usbThermalPrinter;
+    //UsbThermalPrinter usbThermalPrinter;
     private KeyDownloadSrv keyDownloadSrv;
+
+    private IPinPadProcessor posPinPad;
     String sMasterKey, sMasterKey1;
     String sPinKey, sPinKey1;
     String sDesKey;
@@ -52,7 +52,7 @@ public class KeyDownload extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        usbThermalPrinter = new UsbThermalPrinter(getContext());
+       // usbThermalPrinter = new UsbThermalPrinter(getContext());
         binding = FragmentKeyDownloadBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
@@ -78,7 +78,9 @@ public class KeyDownload extends Fragment {
         encBDK2 = "B9A28CCCE481A04FDAE4F9D1C03A6ECC";
 
         iKSN = "FFFF000006DDDDE00000";
+        //iPEK = "6B11A506FB85FC07BF4F87428E55386C";
         iPEK = "6B11A506FB85FC07BF4F87428E55386C";
+        //301C04106276A16D9B8C9BDA382A9BADA4AD2F9B04086BBB78309CC1C81E
 
         recyclerView = binding.recyclerView;
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
@@ -87,30 +89,8 @@ public class KeyDownload extends Fragment {
         imageAdapter = new ImageAdapter(getContext(), imageUrls);
         recyclerView.setAdapter(imageAdapter);
 
-        ret = EmvService.Open(getActivity());
-        if (ret != EmvService.EMV_TRUE) {
-            Log.e("ISWKENYA", "EmvService.Open fail");
-            Toast.makeText(getActivity(), "EmvService.Open fail", Toast.LENGTH_SHORT).show();
-        }
-
-        ret = EmvService.deviceOpen();
-        if (ret != 0) {
-            Log.e("ISWKENYA", "EmvService.Open fail");
-            Toast.makeText(getActivity(), "EmvService.Open fail", Toast.LENGTH_SHORT).show();
-        }
-
-        ret = PinpadService.Open((getActivity()));//Returns 0 on success and otherwise on failure
-
-
-        if (ret == PinpadService.PIN_ERROR_NEED_TO_FOMRAT) {
-            PinpadService.TP_PinpadFormat(getActivity());
-            ret = PinpadService.Open((getActivity()));//Returns 0 on success and otherwise on failure
-        }
-
-        Log.d("ISWKENYA", "PinpadService deviceOpen open:" + ret);
-        if (ret != 0) {
-            Toast.makeText(getActivity(), "PinpadService open fail", Toast.LENGTH_SHORT).show();
-        }
+        posPinPad = DeviceFactory.createPinPad(getContext());
+        posPinPad.initPinPad();
 
         imageAdapter.setOnItemClickListener(new ImageAdapter.OnItemClickListener() {
             @Override
@@ -133,29 +113,25 @@ public class KeyDownload extends Fragment {
 
                     case "LoadKey":
                         //String ipektw = "D6D8291E53A7BF2B0000000000000000";
-                        String ipektw = "D6D8291E53A7BF2B";
+                      //  String ipektw = "D6D8291E53A7BF2B"; //test
+                       String ipektw = "33707E4927C4A0D50000000000000000"; //live - "33707E4927C4A0D5"
                         String ipek1 = "6276A16D9B8C9BDA382A9BADA4AD2F9B";
                         //String ipek1 = "6276A16D9B8C9BDA382A9BAD00000F9B";
                         String bdk_ipek = "463E3870D608E6D5E032DFEF0192FBCB";
                         String ipek2 = "6276A16D9B8C9BDA";
                         String ipek3 = "382A9BADA4AD2F9B";
+                        String iksn_live = "FFFF000002DDDDE00000";
                         String iksn_test = "FFFF000006DDDDE00000";
+                        String kcv_test = "CC5A6985E41061B4";
+                        String kcv_live = "10B9824432E458DD";
 
                         new AsyncTask<Void, Void, Integer>() {
 
                             @Override
                             protected Integer doInBackground(Void... voids) {
-                                //TP_PinpadWriteDukptIPEK
-                                // ret = PinpadService.TP_WritePinKey(1, hexStringToByte(sPinKeyDec), PinpadService.KEY_WRITE_DIRECT, 0);
-                                //return PinpadService.TP_PinpadWriteDukptKey(hexStringToByte(bdk_ipek), hexStringToByte(iksn_test), 0, PinpadService.KEY_WRITE_DIRECT, 0);
-                                // return PinpadService.TP_PinpadWriteDukptKey(fromHex2ByteArray(ipek1.getBytes()), fromHex2ByteArray(iksn_test.getBytes()), 3, PinpadService.KEY_WRITE_DIRECT, 0);
-                                if (PinpadService.TP_PinpadCheckKey(PinpadService.KEY_TYPE_DUKPT, 0) == -9) {
-                                    ret = PinpadService.TP_PinpadWriteDukptIPEK(StringUtil.toBytes(ipektw), StringUtil.toBytes(iksn_test), 0, PinpadService.KEY_WRITE_DIRECT, 0);
-                                } else {
-                                    ret = 100;
-                                }
+                                ret = posPinPad.injectDukptKey(ipektw, iksn_live, kcv_live);
+                                posPinPad.deviceClose();
                                 return ret;
-
                             }
 
                             @Override
@@ -175,28 +151,7 @@ public class KeyDownload extends Fragment {
 
                             @Override
                             protected Integer doInBackground(Void... voids) {
-                                // ret = PinpadService.TP_WritePinKey(1, hexStringToByte(sPinKeyDec), PinpadService.KEY_WRITE_DIRECT, 0);
-                                //return PinpadService.TP_PinpadWriteDukptKey(hexStringToByte(bdk_ipek), hexStringToByte(iksn_test), 2, PinpadService.KEY_WRITE_DIRECT, 0);
-                                ret = PinpadService.TP_PinpadDeleteKey(PinpadService.KEY_TYPE_DUKPT, 0);
-                                Log.i("DUKPTDEL", "DELETE IPEK :" + ret);
-                                ret = PinpadService.TP_PinpadDeleteKey(PinpadService.KEY_TYPE_NORMAL, 0);
-                                Log.i("DUKPTDEL", "DELETE MASTER KEY :" + ret);
-                                ret = PinpadService.TP_PinpadDeleteKey(PinpadService.KEY_TYPE_NORMAL, 1);
-                                Log.i("DUKPTDEL", "DELETE MASTER KEY :" + ret);
-                                ret = PinpadService.TP_PinpadDeleteKey(PinpadService.KEY_TYPE_DUKPT, 1);
-                                Log.i("DUKPTDEL", "DELETE MASTER KEY :" + ret);
-                                ret = PinpadService.TP_PinpadDeleteKey(PinpadService.KEY_TYPE_NORMAL, 2);
-                                Log.i("DUKPTDEL", "DELETE MASTER KEY :" + ret);
-                                ret = PinpadService.TP_PinpadDeleteKey(PinpadService.KEY_TYPE_DUKPT, 2);
-                                Log.i("DUKPTDEL", "DELETE MASTER KEY :" + ret);
-                                ret = PinpadService.TP_PinpadDeleteKey(PinpadService.KEY_TYPE_NORMAL, 3);
-                                Log.i("DUKPTDEL", "DELETE MASTER KEY :" + ret);
-                                ret = PinpadService.TP_PinpadDeleteKey(PinpadService.KEY_TYPE_DUKPT, 3);
-                                Log.i("DUKPTDEL", "DELETE MASTER KEY :" + ret);
-                                ret = PinpadService.TP_PinpadDeleteKey(PinpadService.KEY_TYPE_NORMAL, 3);
-                                Log.i("DUKPTDEL", "DELETE MASTER KEY :" + ret);
-                                ret = PinpadService.TP_PinpadDeleteKey(PinpadService.KEY_TYPE_DUKPT, 3);
-                                Log.i("DUKPTDEL", "DELETE MASTER KEY :" + ret);
+                                ret = posPinPad.deleteKeys();
                                 return ret;
 
                             }
@@ -219,7 +174,8 @@ public class KeyDownload extends Fragment {
 
                             @Override
                             protected Integer doInBackground(Void... voids) {
-                                return PinpadService.TP_PinpadFormat(getActivity());
+                              //  return PinpadService.TP_PinpadFormat(getActivity());
+                                return posPinPad.resetKey();
                             }
 
                             @Override
@@ -249,8 +205,7 @@ public class KeyDownload extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        PinpadService.Close();
-        EmvService.deviceClose();
+       posPinPad.deviceClose();
         binding = null;
     }
 

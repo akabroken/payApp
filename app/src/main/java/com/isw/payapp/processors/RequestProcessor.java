@@ -1,133 +1,165 @@
 package com.isw.payapp.processors;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.isw.payapp.dialog.DialogListener;
+import com.isw.payapp.R;
 import com.isw.payapp.dialog.MyProgressDialog;
-import com.isw.payapp.dialog.WritePadDialog;
 import com.isw.payapp.interfaces.CardReaderListener;
 import com.isw.payapp.interfaces.ProgressListener;
-import com.isw.payapp.tasks.CardReaderJob;
-//import com.isw.payapp.tasks.CardReaderTask;
-import com.isw.payapp.terminal.config.DefaultAppCapk;
-import com.isw.payapp.terminal.model.PayData;
-import com.telpo.emv.EmvService;
-import com.telpo.pinpad.PinpadService;
+import com.isw.payapp.payments.CardReaderJob;
+import com.isw.payapp.model.TransactionData;
 
-import java.util.Timer;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import lombok.SneakyThrows;
-
 public class RequestProcessor implements Callable<String> {
-    private Context context;
-    private PayData payData;
-    private Handler handler;
-    Bitmap bitmap;
-    private  Handler uiHandler;
-    //private final int totalProgress;
-    //private final int delayMillis;
-    private final ProgressListener cListener;
-    private  CardReaderJob cardReaderJob;
+    private static final String TAG = "RequestProcessor";
+
+    private final Context context;
+    private final TransactionData payData;
+    private final ProgressListener progressListener;
     private final MyProgressDialog progressDialog;
-    private CardReaderListener cardListener;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    boolean waitsign = true;
+    private CardReaderJob cardReaderJob;
+    private Future<String> cardReaderFuture;
+    private ExecutorService executorService;
+    private volatile boolean isCancelled = false;
 
-//
-//    public PaymentProcessor(Context context, Handler uiHandler, MyProgressDialog progressDialog, PayData payData) {
-//        this.context = context;
-//        this.payData = payData;
-//        this.uiHandler = uiHandler;
-//        this.progressDialog = progressDialog;
-//
-//    }
-    public RequestProcessor(Context context, MyProgressDialog progressDialog, ProgressListener cListener, PayData payData){
-//        this.totalProgress = totalProgress;
-//        this.delayMillis = delayMillis;
-       this.cListener = cListener;
-        this.context = context;
+    public RequestProcessor(Context context,
+                            MyProgressDialog progressDialog,
+                            ProgressListener progressListener,
+                            TransactionData payData) {
+        this.context = context.getApplicationContext();
         this.progressDialog = progressDialog;
+        this.progressListener = progressListener;
         this.payData = payData;
     }
 
-
     @Override
     public String call() throws Exception {
-        String  wait = null;
-        //
-        cardReaderJob = new CardReaderJob(context,payData);
-        cardListener = new CardReaderListener() {
-            @Override
-            public void onProgressUpdate(int progress) throws InterruptedException {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                     //   progressDialog = new MyProgressDialog(context);
-                        progressDialog.setTitle("Starting activity");
-                        progressDialog.setCancelable(true);
-                        progressDialog.setCanceledOnTouchOutside(false);
-                        progressDialog.setMessage("Please wait,, "+ progress);
-                        progressDialog.show();
+        Log.d(TAG, "Starting request processor");
+
+        // Create executor service for card reader job
+        executorService = Executors.newSingleThreadExecutor();
+
+        try {
+            // Create card reader job with listener
+            cardReaderJob = new CardReaderJob(context, payData, createCardReaderListener());
+
+            // Submit the job to executor
+            cardReaderFuture = executorService.submit(cardReaderJob);
+
+            // Wait for completion with timeout
+            String result = cardReaderFuture.get(2, TimeUnit.MINUTES); // 2 minutes timeout
+
+            Log.i(TAG, "Card reader job completed: " + result);
+
+            // Notify progress listener on main thread
+            mainHandler.post(() -> {
+                if (progressListener != null) {
+                    try {
+                        progressListener.onProgressEnd();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+
+            return "Transaction Completed: " + result;
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error in request processor: " + e.getMessage(), e);
+
+            // Handle cancellation specifically
+            if (isCancelled) {
+                mainHandler.post(() -> {
+                    if (progressListener != null) {
+                        try {
+                            progressListener.onProgressEnd();
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 });
-                Thread.sleep(100);
+                return "Transaction Cancelled";
+            }
+
+            // Notify error on main thread
+            mainHandler.post(() -> {
+                if (progressListener != null) {
+                    try {
+                        progressListener.onProgressEnd();
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    // You might want to add an error callback here
+                }
+            });
+
+            throw e;
+
+        } finally {
+            closeResources();
+        }
+    }
+
+    private CardReaderListener createCardReaderListener() {
+        return new CardReaderListener() {
+            @Override
+            public void onProgressUpdate(int progress) {
+                updateUI(() -> {
+                    if (progressDialog != null && !isCancelled) {
+                        progressDialog.setTitle(context.getString(R.string.starting_activity));
+                        progressDialog.setMessage(context.getString(R.string.please_wait, progress));
+                        showProgressDialog();
+                    }
+                });
             }
 
             @Override
             public void onProgressEnd() {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        //
-                        if(progressDialog ==null)
-                         //   progressDialog = new MyProgressDialog(context);
-
+                updateUI(() -> {
+                    if (progressDialog != null && !isCancelled) {
                         progressDialog.dismiss();
-                        return;
+                    }
+                    if (progressListener != null && !isCancelled) {
+                        try {
+                            progressListener.onProgressEnd();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
             }
 
             @Override
             public void onProgressStart(String message) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        //   progressDialog = new MyProgressDialog(context);
-                        progressDialog.setTitle("Initializing..");
-                        progressDialog.setCancelable(true);
-                        progressDialog.setCanceledOnTouchOutside(false);
+                updateUI(() -> {
+                    if (progressDialog != null && !isCancelled) {
+                        progressDialog.setTitle(context.getString(R.string.initializing));
                         progressDialog.setMessage(message);
-                        progressDialog.show();
+                        showProgressDialog();
                     }
                 });
             }
 
             @Override
             public void onRequestSent(String message) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @SneakyThrows
-                    @Override
-                    public void run() {
-                        //   progressDialog = new MyProgressDialog(context);
-                        progressDialog.setTitle("Sending request");
-                        progressDialog.setCancelable(true);
-                        progressDialog.setCanceledOnTouchOutside(false);
+                updateUI(() -> {
+                    if (progressDialog != null && !isCancelled) {
+                        progressDialog.setTitle(context.getString(R.string.sending_request));
                         progressDialog.setMessage(message);
-                        progressDialog.show();
-                        if(message.equals("Complete")){
-                            Thread.sleep(1000);
-                            progressDialog.dismiss();
+                        showProgressDialog();
+
+                        if ("Complete".equals(message)) {
+                            dismissAfterDelay(1000);
                         }
                     }
                 });
@@ -135,70 +167,146 @@ public class RequestProcessor implements Callable<String> {
 
             @Override
             public void onCardDataRead(String cardData) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        //   progressDialog = new MyProgressDialog(context);
-                        progressDialog.setTitle("Card read..");
-                        progressDialog.setCancelable(true);
-                        progressDialog.setCanceledOnTouchOutside(false);
+                updateUI(() -> {
+                    if (progressDialog != null && !isCancelled) {
+                        progressDialog.setTitle(context.getString(R.string.card_read));
                         progressDialog.setMessage(cardData);
-                        progressDialog.show();
-                        if(cardData.equals("CardDetect"))
-                            try {
-                                Thread.sleep(1000);
-                                progressDialog.dismiss();
-                            }catch (Exception e){ e.printStackTrace();}
+                        showProgressDialog();
 
+                        if ("CardDetect".equals(cardData)) {
+                            dismissAfterDelay(1000);
+                        }
                     }
-
                 });
             }
 
             @Override
             public void onRequestComplete(String response) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        //   progressDialog = new MyProgressDialog(context);
-                        progressDialog.setTitle("Process complete");
-                        progressDialog.setCancelable(true);
-                        progressDialog.setCanceledOnTouchOutside(false);
+                updateUI(() -> {
+                    if (progressDialog != null && !isCancelled) {
+                        progressDialog.setTitle(context.getString(R.string.process_complete));
                         progressDialog.setMessage(response);
-                        progressDialog.show();
-                        try{
-                            Thread.sleep(1000);
-                            progressDialog.dismiss();
-                        }catch (Exception e){
-                            e.printStackTrace();
+                        showProgressDialog();
+                        dismissAfterDelay(1000);
+                    }
+
+                    // Also notify progress listener
+                    if (progressListener != null && !isCancelled) {
+                        try {
+                            progressListener.onProgressEnd();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
                         }
                     }
                 });
             }
         };
+    }
 
-       cardReaderJob.setListner(cardListener);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    String result = cardReaderJob.call();
+    private void updateUI(Runnable action) {
+        if (!isCancelled) {
+            mainHandler.post(action);
+        }
+    }
+
+    private void showProgressDialog() {
+        if (progressDialog != null && !isCancelled) {
+            progressDialog.setCancelable(true);
+            progressDialog.setCanceledOnTouchOutside(false);
+            if (!progressDialog.isShowing()) {
+                try {
+                    progressDialog.show();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Error showing progress dialog", e);
                 }
             }
-        }).start();
-
-        Thread.sleep(100);
-        cListener.onProgressEnd();
-        return "Transaction Completed";
+        }
     }
 
-
-    private void close() {
-        PinpadService.Close();
-        EmvService.deviceClose();
+    private void dismissAfterDelay(long delayMillis) {
+        if (!isCancelled) {
+            mainHandler.postDelayed(() -> {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    try {
+                        progressDialog.dismiss();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error dismissing progress dialog", e);
+                    }
+                }
+            }, delayMillis);
+        }
     }
 
+    private void closeResources() {
+        Log.d(TAG, "Closing resources");
+
+        try {
+            // Cancel card reader job if it's still running
+            if (cardReaderFuture != null && !cardReaderFuture.isDone()) {
+                cardReaderFuture.cancel(true);
+            }
+
+            // Cancel the card reader job directly
+            if (cardReaderJob != null) {
+                cardReaderJob.cancelTransaction();
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error cancelling card reader job", e);
+        }
+
+        try {
+            // Shutdown executor service
+            if (executorService != null && !executorService.isShutdown()) {
+                executorService.shutdownNow();
+                if (!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+                    Log.w(TAG, "Executor service did not terminate in time");
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error shutting down executor service", e);
+        }
+
+        try {
+            // Dismiss progress dialog
+            if (progressDialog != null && progressDialog.isShowing()) {
+                mainHandler.post(() -> {
+                    try {
+                        progressDialog.dismiss();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error dismissing progress dialog in cleanup", e);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error in progress dialog cleanup", e);
+        }
+
+        isCancelled = true;
+    }
+
+    // Public method to cancel the processor from outside
+    public void cancel() {
+        Log.i(TAG, "Cancelling request processor");
+        isCancelled = true;
+        closeResources();
+
+        mainHandler.post(() -> {
+            if (progressListener != null) {
+                try {
+                    progressListener.onProgressEnd();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    // Helper method to check if processor is cancelled
+    public boolean isCancelled() {
+        return isCancelled;
+    }
+
+    // Add missing import for Log
 
 }

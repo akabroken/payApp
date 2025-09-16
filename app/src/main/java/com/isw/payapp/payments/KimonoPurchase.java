@@ -1,15 +1,11 @@
 package com.isw.payapp.payments;
 
-import android.util.Log;
-
-import com.isw.payapp.terminal.model.CardModel;
-import com.isw.payapp.terminal.model.EmvModel;
+import com.isw.payapp.model.CardModel;
+import com.isw.payapp.model.EmvModel;
 import com.isw.payapp.utils.CommonUtil;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;

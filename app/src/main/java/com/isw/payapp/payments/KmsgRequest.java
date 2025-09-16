@@ -1,12 +1,11 @@
 package com.isw.payapp.payments;
 
-import com.isw.payapp.terminal.model.CardModel;
-import com.isw.payapp.terminal.model.EmvModel;
-import com.isw.payapp.terminal.model.PayData;
+import com.isw.payapp.model.CardModel;
+import com.isw.payapp.model.EmvModel;
+import com.isw.payapp.model.PayData;
 import com.isw.payapp.utils.CommonUtil;
 
 import java.io.StringWriter;
-import java.io.Writer;
 import java.text.SimpleDateFormat;
 
 import javax.xml.stream.XMLOutputFactory;

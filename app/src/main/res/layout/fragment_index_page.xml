@@ -16,15 +16,16 @@
 
 
         <ImageView
-            android:id="@+id/imageLogo"
-            android:layout_width="123dp"
-            android:layout_height="53dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
-            android:contentDescription="vcb"
+            android:id="@+id/imageView"
+            android:layout_width="360dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="0dp"
             android:scaleType="fitXY"
-            android:src="@drawable/vcblogo" />
+            app:layout_constraintBottom_toTopOf="@+id/bottomGuideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
@@ -33,7 +34,15 @@
         <!--    <androidx.cardview.widget.CardView-->
         <!--        android:layout_width="match_parent"-->
         <!--        android:layout_height="match_parent">-->
-
+        <TextView
+            android:id="@+id/usernameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Welcome, User"
+            android:textColor="#5867dd"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textStyle="bold|italic"/>
 
 
         <androidx.recyclerview.widget.RecyclerView

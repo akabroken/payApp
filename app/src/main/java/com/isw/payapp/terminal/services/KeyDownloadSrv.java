@@ -5,8 +5,6 @@ import android.util.Log;
 
 import com.isw.payapp.terminal.factory.PEDFactory;
 import com.isw.payapp.utils.RSAUtil;
-import com.telpo.emv.EmvService;
-import com.telpo.pinpad.PinpadService;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -31,13 +29,12 @@ public class KeyDownloadSrv {
     private KeyPair keyPair;
     private KeyPairGenerator keyPairGenerator;
     private PEDFactory pedFac;
-    private PinpadService pinpadService;
-    private EmvService emvService;
+
     int ret;
     private static final String Algorithm = "DESede";
     private SecretKey deskey;
     Map<String,Object> pk ;
-    List<String> pk_ ;
+    List<Object> pk_ ;
 
     public KeyDownloadSrv(Context context) {
         this.context = context;
@@ -63,9 +60,9 @@ public class KeyDownloadSrv {
 
     }
 
-    public List<String>PKMod(){
+    public List<Object>PKMod(){
         rsaUtil = new RSAUtil(publicKey, privateKey, keyPair, keyPairGenerator);
-        List<String> publicKeyList = new ArrayList<>();
+        List<Object> publicKeyList = new ArrayList<>();
         try{
 
             pedFac = new PEDFactory(context);
@@ -83,7 +80,7 @@ public class KeyDownloadSrv {
        // rsaUtil = new RSAUtil(publicKey, privateKey, keyPair, keyPairGenerator);
         String dec_out = "";
         try{
-            dec_out = rsaUtil.GetRsaDec(in,"Test");
+      //      dec_out = rsaUtil.GetRsaDec(in,"Test");
 //            deskey = new SecretKeySpec(dec_out.getBytes(), Algorithm);
 //            Cipher cipher = Cipher.getInstance("DESede/ECB/PKCS5Padding");
 //            cipher.init(Cipher.DECRYPT_MODE,deskey);

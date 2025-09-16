@@ -1,7 +1,7 @@
 package com.isw.payapp.payments;
 
-import com.isw.payapp.terminal.model.CardModel;
-import com.isw.payapp.terminal.model.EmvModel;
+import com.isw.payapp.model.CardModel;
+import com.isw.payapp.model.EmvModel;
 import com.isw.payapp.utils.CommonUtil;
 
 import java.io.StringWriter;

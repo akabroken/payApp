@@ -1,5 +1,6 @@
 package com.isw.payapp.terminal.config;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
-import org.json.JSONArray;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +21,7 @@ public class TerminalConfig {
     private Map<String,Object>conf;
 
     private  final String PREFS_NAME = "MyPrefs";
+    private static final String CONFIG_FILE = "config.json";
     private  final String JSON_FILE_NAME = "config.json";
     private  final String TAG = "JsonConfigManager";
 
@@ -86,32 +88,29 @@ public class TerminalConfig {
         }
     }
 
-    // Example of using the code
-//    public  void main(String[] args) {
-//        try {
-//            // Example of creating a JSON object and saving it to SharedPreferences
-//            JSONObject jsonConfig = new JSONObject();
-//            jsonConfig.put("key1", "value1");
-//            jsonConfig.put("key2", 42);
-//
-//            saveTerminalConfigJsonData(context, jsonConfig);
-//
-//            // Example of reading JSON data from SharedPreferences
-//            JSONObject readData = readTerminalConfigJsonData(context);
-//            Log.i(TAG, "Read JSON data from SharedPreferences: " + readData.toString());
-//
-//            // Example of creating a JSON object and saving it to a file
-//            JSONObject jsonConfigFile = new JSONObject();
-//            jsonConfigFile.put("keyA", "valueA");
-//            jsonConfigFile.put("keyB", true);
-//
-//            saveJsonToFile(context, jsonConfigFile);
-//
-//            // Example of reading JSON data from a file
-//            JSONObject readDataFromFile = readJsonFromFile(context);
-//            Log.i(TAG, "Read JSON data from file: " + readDataFromFile.toString());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public  String loadTerminalDataFromJson(Context context, String getStringValue) {
+        String terminalConfig = "";
+
+        try {
+            // Load the JSON file from the assets folder
+
+            InputStream inputStream = context.getAssets().open(CONFIG_FILE);
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            inputStream.close();
+
+            // Convert the JSON file content to a string
+            String jsonString = new String(buffer, "UTF-8");
+
+            // Parse the JSON string into a JSONObject
+            JSONObject jsonObject = new JSONObject(jsonString);
+            terminalConfig = jsonObject.getString(getStringValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return  null;
+        }
+        return terminalConfig;
+    }
+
 }

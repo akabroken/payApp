@@ -8,10 +8,9 @@
 
     <ImageView
         android:id="@+id/imageLogo"
-        android:layout_width="123dp"
-        android:layout_height="53dp"
+        android:layout_width="340dp"
+        android:layout_height="70dp"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/vcblogo"
         android:layout_marginTop="10dp"
         android:layout_marginLeft ="20dp"
         android:scaleType="fitXY"
@@ -33,7 +32,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="20dp"
             android:text="Sign in"
-            android:textColor="#00425F"
+            android:textColor="#00245D"
             android:textSize="28dp"
             android:textStyle="bold" />
 
@@ -52,6 +51,7 @@
                 android:layout_marginTop="15dp">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Username *"
@@ -68,6 +68,7 @@
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Enter PIN *"
@@ -82,9 +83,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:background="@drawable/mybutton"
+                android:backgroundTint="#A3862F"
                 android:text="Login"
-                android:textSize="24dp" />
+                android:textColor="@android:color/white"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/errorMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FF0000"
+                android:visibility="gone"
+                android:layout_marginTop="8dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -93,19 +103,28 @@
                 android:orientation="horizontal">
 
                 <CheckBox
-                    android:id="@+id/checkBox"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/checkBoxAdmin"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Remember me"
+                    android:text="Administrator"
+                    android:textColor="#5F738C"
+                    android:textSize="14dp" />
+
+                <CheckBox
+                    android:id="@+id/checkBoxSuper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Supervisor"
                     android:textColor="#5F738C"
                     android:textSize="14dp" />
 
                 <TextView
-                    android:id="@+id/textView5"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/textViewResetPass"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="88dp"
+
                     android:layout_weight="1"
                     android:text="Forgot PIN?"
                     android:textColor="#A38526"
@@ -113,6 +132,8 @@
 
 
             </LinearLayout>
+            <!-- Error Message (Optional) -->
+
 
             <View
                 android:layout_width="match_parent"

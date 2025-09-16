@@ -36,12 +36,12 @@ import com.isw.payapp.databinding.FragmentPreauthBinding;
 import com.isw.payapp.dialog.MyProgressDialog;
 import com.isw.payapp.dialog.WritePadDialog;
 import com.isw.payapp.interfaces.ProgressListener;
-import com.isw.payapp.tasks.MyHandler;
+import com.isw.payapp.utils.MyHandler;
 import com.isw.payapp.processors.RequestProcessor;
-import com.isw.payapp.terminal.model.PayData;
-import com.telpo.emv.EmvService;
-import com.telpo.pinpad.PinpadService;
-import com.telpo.tps550.api.printer.UsbThermalPrinter;
+import com.isw.payapp.model.TransactionData;
+//import com.telpo.emv.EmvService;
+//import com.telpo.pinpad.PinpadService;
+//import com.telpo.tps550.api.printer.UsbThermalPrinter;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -77,7 +77,7 @@ public class Preauth extends Fragment {
     private String mParam2;
     private String Amount;
     private Context context;
-    EmvService emvService;
+   // EmvService emvService;
     WritePadDialog writePadDialog;
     boolean waitsign = true;
     Bitmap bitmap;
@@ -86,7 +86,7 @@ public class Preauth extends Fragment {
     Button sale;
     String cardNum;
 
-    PayData payData;
+    TransactionData payData;
 
 
     public static int Mag = 0;
@@ -110,7 +110,7 @@ public class Preauth extends Fragment {
     PowerManager.WakeLock wakeLock;
     KeyguardManager km;
 
-    UsbThermalPrinter usbThermalPrinter;
+    //UsbThermalPrinter usbThermalPrinter;
 
     public Preauth() {
         // Required empty public constructor
@@ -178,7 +178,7 @@ public class Preauth extends Fragment {
     @SuppressLint("InvalidWakeLockTag")
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        usbThermalPrinter = new UsbThermalPrinter(getActivity());
+        //usbThermalPrinter = new UsbThermalPrinter(getActivity());
         context = getActivity();
 //        emvService = EmvService.getInstance();
 //        emvService.setListener(listener);
@@ -213,7 +213,7 @@ public class Preauth extends Fragment {
                 Amount = inputAmt.getText().toString();
                 Log.i("PREAUTH", "AMT - "+ Amount);
                 inputAmt.setEnabled(false);
-                PayData payData = new PayData();
+                TransactionData payData = new TransactionData();
                 payData.setAmount(Amount);
 
                 executorService = Executors.newSingleThreadExecutor();
@@ -344,7 +344,7 @@ public class Preauth extends Fragment {
                 progressDialog.dismiss();
             }
         };
-        PayData payData = new PayData();
+        TransactionData payData = new TransactionData();
         payData.setAmount(Amount);
         payData.setPaymentApp(ConstValues.PAY_APP_PREAUTH);
         payData.setPaymentReqTag(ConstValues.POST_PAY_PREAUTH);
@@ -369,8 +369,8 @@ public class Preauth extends Fragment {
     public void onDestroyView() {
 
         fragmentPreauthBinding = null;
-        PinpadService.Close();
-        EmvService.deviceClose();
+//        PinpadService.Close();
+//        EmvService.deviceClose();
 
         super.onDestroyView();
     }

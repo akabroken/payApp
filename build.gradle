@@ -1,9 +1,25 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext {
+        agp_version = '8.9.3'
+    }
+    repositories {
+        google()
+        //noinspection JcenterRepositoryObsolete
+        mavenCentral()
+        mavenLocal()
+        maven { url 'https://gitlab.com/api/v4/projects/4128550/packages/maven' } // mpos repository
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.4' // Use a stable version
+        // Other classpath dependencies (Google Services, Hilt, etc.)
+    }
+}// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id 'com.android.application' version '7.2.1' apply false
-    id 'com.android.library' version '7.2.1' apply false
+    id 'com.android.application' version '8.9.3' apply false
+    id 'com.android.library' version '7.2.2' apply false
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+

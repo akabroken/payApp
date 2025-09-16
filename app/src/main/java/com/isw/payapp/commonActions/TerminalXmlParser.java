@@ -26,7 +26,7 @@ public class TerminalXmlParser {
         
     }
 
-    public String TestKeyDownload( List<String>param) {
+    public String KeyDownload( List<Object>param) {
         String xmlKeyPayload ="";
         //List<String>getPKVal = new ArrayList<>();
         try {
@@ -58,7 +58,7 @@ public class TerminalXmlParser {
             writeElement(xmlStreamWriter, "pstat", "67");
             writeElement(xmlStreamWriter, "lang", "EN");
             writeElement(xmlStreamWriter, "poscondcode", "00");
-            writeElement(xmlStreamWriter, "posgeocode", "00255000000000834");
+            writeElement(xmlStreamWriter, "posgeocode", "00254000000000404");
             writeElement(xmlStreamWriter, "currencycode", "404");
             writeElement(xmlStreamWriter, "tmodel", "Telpo");
             writeElement(xmlStreamWriter, "comms", "GPRS");
@@ -73,7 +73,7 @@ public class TerminalXmlParser {
             xmlStreamWriter.writeStartElement("request");
             writeElement(xmlStreamWriter, "ttid", "000004");
             writeElement(xmlStreamWriter, "type", "trans");
-            writeElement(xmlStreamWriter, "keysetid", "000006");
+            writeElement(xmlStreamWriter, "keysetid", "000024");
             writeElement(xmlStreamWriter, "hook", "C:s_keyhk.kxml");
             // ... add more elements as needed
 
@@ -84,8 +84,8 @@ public class TerminalXmlParser {
             xmlStreamWriter.writeStartElement("keyinfo");
 //            writeElement(xmlStreamWriter, "pkmod", "rdOJscsvOv9quO8OmW0sN99rR6faq7BVyaQQ3ttZAyXnREpLg43q9763ZQyEK7+esCAKU8ogiQM6MjCrg/N5dYVUuk6jucMDbQZXf5O3rGSdzl6Xq6gVeclW77YuBxYuFeLLLVyw6PF4WnxZ2vGGLq3IwhDvK757JpdKfUXV7TU=");
 //            writeElement(xmlStreamWriter, "pkex", "AAEAAQ==");
-            writeElement(xmlStreamWriter, "pkmod", param.get(0));
-            writeElement(xmlStreamWriter, "pkex", param.get(1));
+            writeElement(xmlStreamWriter, "pkmod", (String) param.get(0));
+            writeElement(xmlStreamWriter, "pkex", (String) param.get(1));
             writeElement(xmlStreamWriter, "der", "1");
             xmlStreamWriter.writeEndElement(); // </keyinfo>
 

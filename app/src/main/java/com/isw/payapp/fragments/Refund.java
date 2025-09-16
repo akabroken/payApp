@@ -37,10 +37,10 @@ import com.isw.payapp.dialog.MyProgressDialog;
 import com.isw.payapp.dialog.WritePadDialog;
 import com.isw.payapp.interfaces.ProgressListener;
 import com.isw.payapp.processors.RequestProcessor;
-import com.isw.payapp.terminal.model.PayData;
-import com.telpo.emv.EmvService;
-import com.telpo.pinpad.PinpadService;
-import com.telpo.tps550.api.printer.UsbThermalPrinter;
+import com.isw.payapp.model.TransactionData;
+//import com.telpo.emv.EmvService;
+//import com.telpo.pinpad.PinpadService;
+//import com.telpo.tps550.api.printer.UsbThermalPrinter;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -84,7 +84,7 @@ public class Refund extends Fragment {
 
     private FragmentPaymentBinding binding;
 
-    UsbThermalPrinter usbThermalPrinter;
+   // UsbThermalPrinter usbThermalPrinter;
 
     MyProgressDialog.OnTimeOutListener dialogTimeOutListener = new MyProgressDialog.OnTimeOutListener() {
         @Override
@@ -291,7 +291,7 @@ public class Refund extends Fragment {
                 progressDialog.dismiss();
             }
         };
-        PayData payData = new PayData();
+        TransactionData payData = new TransactionData();
         payData.setAmount(Amount);
         payData.setPaymentApp(ConstValues.PAY_APP_REFUND);
         payData.setPaymentReqTag(ConstValues.POST_PAY_REFUND);
@@ -311,8 +311,8 @@ public class Refund extends Fragment {
 
     @Override
     public void onDestroy() {
-        PinpadService.Close();
-        EmvService.deviceClose();
+       // PinpadService.Close();
+       // EmvService.deviceClose();
         super.onDestroy();
     }
 
@@ -320,8 +320,8 @@ public class Refund extends Fragment {
     public void onDestroyView() {
 
         binding = null;
-        PinpadService.Close();
-        EmvService.deviceClose();
+//        PinpadService.Close();
+//        EmvService.deviceClose();
         super.onDestroyView();
     }
 

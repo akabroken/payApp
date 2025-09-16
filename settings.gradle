@@ -14,3 +14,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "payApp"
 include ':app'
+//include ':app:telpo'
+//include ':app:dspread'
+//include ':app:feitian'
+//include ':app:castles'

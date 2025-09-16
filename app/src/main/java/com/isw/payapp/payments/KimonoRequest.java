@@ -1,20 +1,17 @@
 package com.isw.payapp.payments;
 
-import android.util.Log;
-
-import com.isw.payapp.terminal.model.CardModel;
-import com.isw.payapp.terminal.model.EmvModel;
-import com.isw.payapp.terminal.model.PayData;
-import com.isw.payapp.utils.CommonUtil;
+import com.isw.payapp.model.CardModel;
+import com.isw.payapp.model.EmvModel;
+import com.isw.payapp.model.PayData;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
+import org.w3c.dom.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 public class KimonoRequest {
     private EmvModel emvModel;
@@ -39,127 +36,121 @@ public class KimonoRequest {
             @Override
             public void run() {
                 try {
-                    CommonUtil common = new CommonUtil();
-                    // getPKVal = rsaUtil.GetRsaEnc();
-                    // Create StringWriter and XMLStreamWriter
-                    StringWriter stringWriter = new StringWriter();
-                    XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
-                    XMLStreamWriter xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(stringWriter);
+                    // Create a new Document
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    Document doc = builder.newDocument();
 
-                    // Start writing XML
-                    xmlStreamWriter.writeStartDocument();
-                    xmlStreamWriter.writeStartElement(payData.getPaymentReqTag());
+                    // Root element <kmsg>
+                    Element kmsg = doc.createElement("kmsg");
+                    doc.appendChild(kmsg);
 
-                    // Write elements inside <kmsg>
-                    // writeElement(xmlStreamWriter, "scheme", "standard");
-                    writeElement(xmlStreamWriter, "app", payData.getPaymentApp());
-                    //Terminal Information
-                    // Write <terminalInformation>
-                    xmlStreamWriter.writeStartElement("terminalInformation");
-                    writeElement(xmlStreamWriter, "batteryInformation", "100");
-                    writeElement(xmlStreamWriter, "cellStationId", "");
-                    writeElement(xmlStreamWriter, "currencyCode", "404");
-                    writeElement(xmlStreamWriter, "languageInfo", "EN");
-                    writeElement(xmlStreamWriter, "merchantId", "CBLKE0000000001");
-                    writeElement(xmlStreamWriter, "merchantLocation", "TEST ANDROID ISW");
-                    writeElement(xmlStreamWriter, "posConditionCode", "00");
-                    writeElement(xmlStreamWriter, "posDataCode", "510101501344101");
-                    writeElement(xmlStreamWriter, "merchantType", "4722");
-                    writeElement(xmlStreamWriter, "posEntryMode", "051");
-                    writeElement(xmlStreamWriter, "posGeoCode", "00255000000000254");
-                    writeElement(xmlStreamWriter, "printerStatus", "1");
-                    writeElement(xmlStreamWriter, "terminalId", "CBLKE001");
-                    writeElement(xmlStreamWriter, "terminalType", "TELPO");
-                    writeElement(xmlStreamWriter, "transmissionDate", timeStamp.replace(" ", "T"));
-                    writeElement(xmlStreamWriter, "uniqueId", "5F095339");
-                    xmlStreamWriter.writeEndElement(); // </terminalInformation>
+                    // Child elements under <kmsg>
+                    createElement(doc, kmsg, "scheme", "standard");
+                    createElement(doc, kmsg, "app", "selectpin");
 
-                    // Write <cardData>
-                    xmlStreamWriter.writeStartElement("cardData");
-                    writeElement(xmlStreamWriter, "cardSequenceNumber", emvModel.getCarSeqNo());
-                    // Write <emvData>
-                    if(payData.getCardType().equals("IC") || payData.getCardType().equals("Nfc")) {
-                        xmlStreamWriter.writeStartElement("emvData");
-                        writeElement(xmlStreamWriter, "AmountAuthorized", emvModel.getAmountAuthorized());
-                        writeElement(xmlStreamWriter, "AmountOther", emvModel.getAmountOther());
-                        writeElement(xmlStreamWriter, "ApplicationInterchangeProfile", emvModel.getApplicationInterchangeProfile());
-                        writeElement(xmlStreamWriter, "atc", emvModel.getAtc());
-                        writeElement(xmlStreamWriter, "Cryptogram", emvModel.getCryptogram());
-                        writeElement(xmlStreamWriter, "CryptogramInformationData", emvModel.getCryptogramInformationData());
-                        writeElement(xmlStreamWriter, "CvmResults", emvModel.getCvmResults());
-                        writeElement(xmlStreamWriter, "iad", emvModel.getIssuerApplicationData());
-                        writeElement(xmlStreamWriter, "TransactionCurrencyCode", emvModel.getTransactionCurrencyCode());
-                        writeElement(xmlStreamWriter, "TerminalVerificationResult", emvModel.getTerminalVerificationResult());
-                        writeElement(xmlStreamWriter, "TerminalCountryCode", emvModel.getTerminalCountryCode());
-                        writeElement(xmlStreamWriter, "TerminalType", emvModel.getTerminalType());
-                        writeElement(xmlStreamWriter, "TerminalCapabilities", emvModel.getTerminalCapabilities());
-                        writeElement(xmlStreamWriter, "TransactionDate", emvModel.getTransactionDate());
-                        writeElement(xmlStreamWriter, "TransactionType", emvModel.getTransactionType());
-                        writeElement(xmlStreamWriter, "UnpredictableNumber", emvModel.getUnpredictableNumber());
-                        writeElement(xmlStreamWriter, "DedicatedFileName", emvModel.getDedicatedFileName());
-                        xmlStreamWriter.writeEndElement(); // </emvData>
-                    }
-                    // Write <track2>
-                    xmlStreamWriter.writeStartElement("track2");
-                    writeElement(xmlStreamWriter, "pan", emvModel.getPan());
-                    writeElement(xmlStreamWriter, "expiryMonth", emvModel.getExMonth());
-                    writeElement(xmlStreamWriter, "expiryYear", emvModel.getExpYear());
-//            writeElement(xmlStreamWriter, "track2", String.format("%-38s", emvModel.getTrack2data()).replace(' ', '0'));
-                    writeElement(xmlStreamWriter, "track2", emvModel.getTrack2data());
-                    writeElement(xmlStreamWriter, "serviceRestrictionCode", emvModel.getServiceCode());
-                    xmlStreamWriter.writeEndElement(); // </track2>
-                    writeElement(xmlStreamWriter, "wasFallback", "");
-                    xmlStreamWriter.writeEndElement(); // </cardData>
+                    // <terminfo> element
+                    Element terminfo = doc.createElement("terminfo");
+                    kmsg.appendChild(terminfo);
+                    createElement(doc, terminfo, "mid", payData.getMid());
+                    createElement(doc, terminfo, "ttype", payData.getTtype());
+                    createElement(doc, terminfo, "tmanu", payData.getTmanu());
+                    createElement(doc, terminfo, "tid", payData.getTid());
+                    createElement(doc, terminfo, "uid", payData.getUid());
+                    createElement(doc, terminfo, "mloc", payData.getMloc());
+                    createElement(doc, terminfo, "batt", payData.getBatt());
+                    createElement(doc, terminfo, "tim", payData.getTim());
+                    createElement(doc, terminfo, "csid", payData.getCsid());
+                    createElement(doc, terminfo, "pstat", payData.getPstat());
+                    createElement(doc, terminfo, "lang", payData.getLang());
+                    createElement(doc, terminfo, "poscondcode", payData.getPoscondcode());
+                    createElement(doc, terminfo, "posgeocode", payData.getPosgeocode());
+                    createElement(doc, terminfo, "currencycode", payData.getCurrencycode());
+                    createElement(doc, terminfo, "tmodel", payData.getTmodel());
+                    createElement(doc, terminfo, "comms", payData.getComms());
+                    createElement(doc, terminfo, "cstat", payData.getCstat());
+                    createElement(doc, terminfo, "sversion", payData.getSversion());
+                    createElement(doc, terminfo, "hasbattery", payData.getHasbattery());
+                    createElement(doc, terminfo, "lasttranstime", payData.getLasttranstime());
 
-                    writeElement(xmlStreamWriter, "fromAccount", "default");
-                    writeElement(xmlStreamWriter, "stan", common.goRundom(6));
-                    writeElement(xmlStreamWriter, "minorAmount", Amount);
-                    writeElement(xmlStreamWriter, "rate", "");
-                    writeElement(xmlStreamWriter, "settlementFee", "");
-                    writeElement(xmlStreamWriter, "settlementCurrencyCode", "");
-                    writeElement(xmlStreamWriter, "amountSettlement", "");
-                    writeElement(xmlStreamWriter, "surcharge", "");
-                    writeElement(xmlStreamWriter, "tmsConfiguredTerminalLocation", "");
-                    writeElement(xmlStreamWriter, "acquiringInstitutionId", "420400");
-                    writeElement(xmlStreamWriter, "terminalOwner", "420400");
-                    if(payData.getPaymentReqTag().equals("reversalRequestWithoutOriginalDate") ||
-                    payData.getPaymentReqTag().equals("completionRequest")) {
-                        writeElement(xmlStreamWriter, "originalAuthId", payData.getAuthCode());
-                        writeElement(xmlStreamWriter, "notDisposable", "false");
-                        writeElement(xmlStreamWriter, "originalStan", payData.getTransCnt());
-                        writeElement(xmlStreamWriter, "reversalType", "Reservation");
-                    }
+                    // <request> element
+                    Element request = doc.createElement("request");
+                    kmsg.appendChild(request);
+                    createElement(doc, request, "ttid", payData.getTtid());
+                    createElement(doc, request, "type", payData.getType());
+                    createElement(doc, request, "amt", "0.0");
+                    createElement(doc, request, "hook", "C:selHook.kxml");
+                    createElement(doc, request, "selacctype", "default");
+                    createElement(doc, request, "track2", emvModel.getTrack2data());
+                    createElement(doc, request, "pindata", cardModel.getPinBlock());
+                    createElement(doc, request, "ksn", cardModel.getKsn());
+                    createElement(doc, request, "ksnd", cardModel.getKsnd());
+                    createElement(doc, request, "chvm", "OnlinePin");
 
-                    // Write <pinData>
-                    xmlStreamWriter.writeStartElement("pinData");
-                    writeElement(xmlStreamWriter, "ksn", cardModel.getKsn());
-                    writeElement(xmlStreamWriter, "ksnd", cardModel.getKsnd());
-                    writeElement(xmlStreamWriter, "pinBlock", cardModel.getPinBlock());
-                    writeElement(xmlStreamWriter, "pinType", cardModel.getPinType());
-                    xmlStreamWriter.writeEndElement(); // </pinData>
+                    // <icd> element
+                    Element icd = doc.createElement("icd");
+                    request.appendChild(icd);
+                    createElement(doc, icd, "isfallback", "false");
+                    createElement(doc, icd, "aa", "000000000000");
+                    createElement(doc, icd, "ao", "000000000000");
+                    createElement(doc, icd, "aip", emvModel.getApplicationInterchangeProfile());
+                    createElement(doc, icd, "atc", emvModel.getAtc());
+                    createElement(doc, icd, "cg", emvModel.getCryptogram());
+                    createElement(doc, icd, "cid", emvModel.getCryptogramInformationData());
+                    createElement(doc, icd, "cr", emvModel.getCvmResults());
+                    createElement(doc, icd, "iad", emvModel.getIssuerApplicationData());
+                    createElement(doc, icd, "trc", emvModel.getTransactionCurrencyCode().substring(1));
+                    createElement(doc, icd, "tvr", emvModel.getTerminalVerificationResult());
+                    createElement(doc, icd, "tcc", emvModel.getTerminalCountryCode().substring(1));
+                    createElement(doc, icd, "tty", emvModel.getTerminalType());
+                    createElement(doc, icd, "tck", "R");
+                    createElement(doc, icd, "td", emvModel.getTransactionDate());
+                    createElement(doc, icd, "trt", emvModel.getTransactionType());
+                    createElement(doc, icd, "un", emvModel.getUnpredictableNumber());
+                    createElement(doc, icd, "dfn", emvModel.getDedicatedFileName());
+                    createElement(doc, icd, "tcp", emvModel.getTerminalCapabilities());
 
+                    // Remaining elements under <request>
+                    createElement(doc, request, "posdatacode", payData.getPosdatacode());
+                    createElement(doc, request, "posentrymode", payData.getPosEntryMode());
+                    createElement(doc, request, "cardseqnum", emvModel.getCarSeqNo());
 
-                    writeElement(xmlStreamWriter, "keyLabel", cardModel.getKSNTag());
+                    // <addinfo> element
+                    Element addinfoOuter = doc.createElement("addinfo");
+                    request.appendChild(addinfoOuter);
+                    Element addinfoInner = doc.createElement("addinfo");
+                    addinfoOuter.appendChild(addinfoInner);
+                    createElement(doc, addinfoInner, "tellerdetail", "networkid:"+payData.getMloc()+" Teller1::productcode:"+ payData.getTellerdetail());
+                    createElement(doc, addinfoInner, "selacctype", "default");
 
-                    xmlStreamWriter.writeEndElement(); // </purchaseRequest>
+                    // Convert Document to String
+                    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                    Transformer transformer = transformerFactory.newTransformer();
+                    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                    DOMSource source = new DOMSource(doc);
+                    StringWriter writer = new StringWriter();
+                    StreamResult result = new StreamResult(writer);
+                    transformer.transform(source, result);
 
-                    xmlStreamWriter.writeEndDocument();
+                    // Print the generated XML
+                    System.out.println(writer.toString());
+                    out_data[0] = writer.toString();
 
-                    out_data[0] = stringWriter.toString().replace("<?xml version='1.0' encoding='UTF-8'?>", "");
-                    // Close the XMLStreamWriter
-                    xmlStreamWriter.close();
-                } catch (XMLStreamException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
+
             }
         }).start();
         Thread.sleep(1000);
         return out_data[0];
     }
 
-    private void writeElement(XMLStreamWriter xmlStreamWriter, String name, String value) throws XMLStreamException {
-        xmlStreamWriter.writeStartElement(name);
-        xmlStreamWriter.writeCharacters(value);
-        xmlStreamWriter.writeEndElement();
+    // Helper method to create and append elements
+    private static void createElement(Document doc, Element parent, String tagName, String value) {
+        Element element = doc.createElement(tagName);
+        element.appendChild(doc.createTextNode(value));
+        parent.appendChild(element);
     }
+
 }

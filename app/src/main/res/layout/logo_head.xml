@@ -5,10 +5,10 @@
 
     <ImageView
         android:id="@+id/imageLogo"
-        android:layout_width="123dp"
-        android:layout_height="53dp"
+        android:layout_width="340dp"
+        android:layout_height="70dp"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/vcblogo"
+        android:src="@drawable/sidian_bank_logo"
         android:layout_marginTop="10dp"
         android:layout_marginLeft ="20dp"
         android:scaleType="fitXY"

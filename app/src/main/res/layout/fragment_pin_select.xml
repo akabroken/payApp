@@ -34,7 +34,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="PIN Select"
-                android:textColor="#5F738C"
+                android:textColor="#00245D"
                 android:textSize="24dp"
 
                 android:textStyle="bold" />
@@ -54,18 +54,24 @@
             android:layout_height="match_parent"
             android:layout_marginTop="150dp"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/pinpadEditText"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor ="#5F738C"
-                android:textSize="24dp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginTop="90dp"
-                android:layout_marginLeft="90dp"
-                android:text="Please Insert Card" />
+                android:visibility="gone" />
+
+<!--            <TextView-->
+<!--                android:id="@+id/textView4"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textColor ="#00245D"-->
+<!--                android:textSize="24dp"-->
+<!--                android:textStyle="bold"-->
+<!--                android:gravity="center"-->
+<!--                android:layout_marginTop="90dp"-->
+<!--                android:layout_marginLeft="90dp"-->
+<!--                android:visibility="gone"-->
+<!--                android:text="Please Insert Card" />-->
 
             <ImageView
                 android:id="@+id/imageViewCard"
@@ -74,8 +80,30 @@
                 android:layout_marginLeft="100dp"
                 android:layout_marginTop="50dp"
                 android:layout_weight="0"
+
                 android:scaleType="centerInside"
                 android:src="@drawable/credit_card1" />
+
+
+
+            <View
+                android:id="@+id/scvText"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvReceipt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnSendReceipt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send_receipt"
+                android:visibility="gone" />
 
 
         </LinearLayout>

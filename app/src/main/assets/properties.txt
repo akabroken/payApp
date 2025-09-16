@@ -1,0 +1,5 @@
+
+interswitch.production.url:kimono.interswitch-ke.com
+interswitch.production.port:455
+interswitch.test.url:apps.qa.interswitch-ke.com
+interswitch.test.port:7075

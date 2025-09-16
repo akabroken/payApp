@@ -1,7 +1,6 @@
 package com.isw.payapp.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +11,12 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 
 import com.isw.payapp.Adapters.ImageAdapter;
 import com.isw.payapp.R;
-import com.isw.payapp.database.Kimono;
 import com.isw.payapp.databinding.FragmentHomeBinding;
-import com.isw.payapp.terminal.model.ItemData;
-import com.isw.payapp.terminal.model.CommsModel;
+import com.isw.payapp.model.ItemData;
 
 import java.util.ArrayList;
 import java.util.List;

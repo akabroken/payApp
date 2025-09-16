@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.isw.payapp.R;
-import com.isw.payapp.terminal.model.ItemData;
+import com.isw.payapp.model.ItemData;
 
 import java.util.List;
 

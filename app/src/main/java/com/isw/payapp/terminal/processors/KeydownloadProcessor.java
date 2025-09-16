@@ -50,7 +50,7 @@ public class KeydownloadProcessor {
     private Communication comms;
     private String url;
     private KeyDownloadSrv keyDownloadSrv;
-    private List<String> pkModExp;
+    private List<Object> pkModExp;
     private RSAPublicKey publicKey;
     private RSAPrivateKey privateKey;
     private KeyPair keyPair;
@@ -66,30 +66,25 @@ public class KeydownloadProcessor {
         Map<String, String> postMap = new HashMap<>();
         comms = new Communication();
         parser = new TerminalXmlParser();
-//
-         rsaUtil = new RSAUtil(publicKey, privateKey, keyPair, keyPairGenerator);
+        //rsaUtil = new RSAUtil(publicKey, privateKey, keyPair, keyPairGenerator);
+        rsaUtil = new RSAUtil();
         pkModExp = new ArrayList<>();
         pedFac = new PEDFactory(context);
         pkModExp = rsaUtil.GetRsaEnc();
-        Log.i("DOKEYDOWNLOADLIST", pkModExp.get(0));
-
+        Log.i("DOKEYDOWNLOADLISTIIII", (String) pkModExp.get(0));
+        Log.i("DOKEYDOWNLOADLISTPP", parser.KeyDownload(pkModExp));
         AsyncTask<Object, Void, String> asyncTask = new Communication.HttpPostTask().
-                execute(postUrl, parser.TestKeyDownload(pkModExp));
+                execute(postUrl, parser.KeyDownload(pkModExp));
         String out = asyncTask.get(); // This will wait for AsyncTask to complete
 
+        Log.i("DOKEYDOWNLOADLISTPP", out);
+
         Map<String, String> resultMap = convertXMLToMap(out);
-
-        //String asciiOut = hexToAscii(resultMap.get("pinkey"));
-
         HexConverter hexConverter = new HexConverter();
-
-        String pinKey = rsaUtil.GetRsaDec(hexConverter.fromHex2Binary(resultMap.get("pinkey").getBytes()),"uu");
-
-
-//        asciiOut = decrypt(asciiOut, privateKey.getModulus(), privateKey.getPrivateExponent());
-//        String pinKey = keyDownloadSrv.getDecreaptedValue(asciiOut);
-         //pinKey = keyDownloadSrv.getDecreaptedValue(pinKey);
-        Log.i("DOKEYDOWNLOADLIST", pinKey);
+        String pin_key = resultMap.get("pinkey");
+        Log.i("pin_key--", pin_key);
+        String pinKey = rsaUtil.GetRsaDec(pin_key, (RSAPrivateKey) pkModExp.get(2),"uu");
+        Log.i("DOKEYDOWNLOADLISTOO", pinKey);
     }
 
     public  String decryptHexMessage(String hexMessage, BigInteger modulus, BigInteger exponent) {

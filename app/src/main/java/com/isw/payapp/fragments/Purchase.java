@@ -33,15 +33,15 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.isw.payapp.R;
 import com.isw.payapp.constant.ConstValues;
 import com.isw.payapp.databinding.FragmentPaymentBinding;
+import com.isw.payapp.devices.DeviceFactory;
+import com.isw.payapp.devices.interfaces.IEmvProcessor;
 import com.isw.payapp.dialog.DialogListener;
 import com.isw.payapp.dialog.MyProgressDialog;
 import com.isw.payapp.dialog.WritePadDialog;
 import com.isw.payapp.interfaces.ProgressListener;
 import com.isw.payapp.processors.RequestProcessor;
-import com.isw.payapp.terminal.model.PayData;
-import com.telpo.emv.EmvService;
-import com.telpo.pinpad.PinpadService;
-import com.telpo.tps550.api.printer.UsbThermalPrinter;
+import com.isw.payapp.model.TransactionData;
+
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -57,6 +57,8 @@ public class Purchase extends Fragment {
 
     private ExecutorService executorService;
     private Future<String> futureTask;
+
+    private IEmvProcessor deviceFactoryEmv;
 
     TextView title_tv;
     EditText inputAmt;
@@ -82,11 +84,9 @@ public class Purchase extends Fragment {
     KeyguardManager km;
 
     WritePadDialog writePadDialog;
-    // UsbThermalPrinter usbThermalPrinter=new UsbThermalPrinter(getContext());
 
     private FragmentPaymentBinding binding;
 
-    UsbThermalPrinter usbThermalPrinter;
 
 
 
@@ -117,7 +117,7 @@ public class Purchase extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
+       // deviceFactoryEmv = DeviceFactory.createEmvFunc(context,null,null,null);
         OKplayer = MediaPlayer.create(getActivity(), R.raw.success1);
         FAILplayer = MediaPlayer.create(getActivity(), R.raw.fail1);
         stopPlayer = MediaPlayer.create(getActivity(), R.raw.trans_stop1);
@@ -146,7 +146,7 @@ public class Purchase extends Fragment {
             public void onClick(View v) {
                 Amount = inputAmt.getText().toString();
 
-                PayData payData = new PayData();
+                TransactionData payData = new TransactionData();
                 payData.setAmount(Amount);
                 sale.setEnabled(false);
 
@@ -313,7 +313,7 @@ public class Purchase extends Fragment {
                 progressDialog.dismiss();
             }
         };
-        PayData payData = new PayData();
+        TransactionData payData = new TransactionData();
         payData.setAmount(Amount);
         payData.setPaymentApp(ConstValues.PAY_APP_PURCHASE);
         payData.setPaymentReqTag(ConstValues.POST_PAY_PURCHASE);
@@ -333,8 +333,7 @@ public class Purchase extends Fragment {
 
     @Override
     public void onDestroy() {
-        PinpadService.Close();
-        EmvService.deviceClose();
+        deviceFactoryEmv.cancelTransaction();
         super.onDestroy();
     }
 
@@ -342,8 +341,8 @@ public class Purchase extends Fragment {
     public void onDestroyView() {
 
         binding = null;
-        PinpadService.Close();
-        EmvService.deviceClose();
+
+        deviceFactoryEmv.cancelTransaction();
         super.onDestroyView();
     }
 

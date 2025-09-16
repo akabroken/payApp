@@ -10,7 +10,14 @@
         android:name="com.isw.payapp.fragments.Login"
         tools:layout="@layout/fragment_login">
         <action android:id="@+id/login_to_home" app:destination="@id/indexpage"/>
+        <action android:id="@+id/login_to_resetpassword" app:destination="@id/resetPass"/>
 
+    </fragment>
+
+    <fragment android:id="@+id/resetPass" android:label="ResetPassword"
+        android:name="com.isw.payapp.fragments.ResetPasswordFragment"
+        tools:layout="@layout/fragment_reset_password">
+        <action android:id="@+id/resetPass_to_login" app:destination="@id/Login"/>
     </fragment>
 
     <fragment android:id="@+id/indexpage" android:label="Index"
@@ -22,6 +29,7 @@
         <action android:id="@+id/index_to_login" app:destination="@id/Login"/>
         <action android:id="@+id/index_to_report" app:destination="@+id/Reports"/>
         <action android:id="@+id/index_to_pinselect" app:destination="@+id/PinSelect"/>
+        <action android:id="@+id/index_to_fuelpay" app:destination="@id/FuelPay"/>
     </fragment>
 
     <fragment android:id="@+id/transactions" android:label="Transaction"
@@ -152,9 +160,14 @@
         <action android:id="@+id/reports_to_index" app:destination="@id/indexpage"/>
     </fragment>
 
-    <fragment android:id="@+id/PinSelect" android:name="com.isw.payapp.fragments.PinSelect" tools:layout="@layout/fragment_pin_select" android:label="PIN Select">
-        <action android:id="@+id/pinselect_index" app:destination="@id/indexpage"/>
+    <fragment android:id="@+id/PinSelect" android:name="com.isw.payapp.fragments.PinSelect"
+        tools:layout="@layout/fragment_pin_select" android:label="PIN Select">
+        <action android:id="@+id/action_pinselect_index_to_indexpage" app:destination="@id/indexpage"/>
     </fragment>
 
+    <fragment android:id="@+id/FuelPay" android:name="com.isw.payapp.fragments.FuelManagementFragment"
+        tools:layout="@layout/fragment_fuel_mgnt" android:label="Fuel Payment">
+        <action android:id="@+id/fuelpay_index_page" app:destination="@id/indexpage"/>
+    </fragment>
 
 </navigation>
