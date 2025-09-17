@@ -237,6 +237,8 @@ public final class POSManager {
         Log.i("POSManager", "getCardTradeMode "+getCardTradeMode());
         Log.i("POSManager", "Amount "+amount);
         pos.setCardTradeMode(getCardTradeMode());
+        //Format Id
+        //pos.setFormatId (QPOSService.FORMATID.MKSK);
         pos.setAmount(amount,"",String.valueOf(currencyCode),getTransType());
         pos.doTrade(60);
     }

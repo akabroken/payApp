@@ -1,8 +1,5 @@
 package com.isw.payapp.devices.dspread;
 
-import static com.isw.payapp.utils.DUKPTKeyDerivation.bytesToHex;
-import static com.isw.payapp.utils.DUKPTKeyDerivation.hexStringToByteArray;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -29,7 +27,6 @@ import com.isw.payapp.devices.dspread.callbacks.IPaymentServiceCallback;
 import com.isw.payapp.devices.dspread.callbacks.PaymentResult;
 import com.isw.payapp.devices.dspread.utils.DeviceUtils;
 import com.isw.payapp.devices.dspread.utils.EMVTLVParser;
-import com.isw.payapp.devices.dspread.utils.ICCDecryptor;
 import com.isw.payapp.devices.dspread.utils.QPOSUtil;
 import com.isw.payapp.devices.dspread.utils.TLVParser;
 import com.isw.payapp.devices.interfaces.IEmvProcessor;
@@ -40,12 +37,10 @@ import com.isw.payapp.model.CardModel;
 import com.isw.payapp.model.TransactionData;
 import com.isw.payapp.devices.dspread.Activity.pinkeyboard.PinPadView;
 import com.isw.payapp.devices.dspread.utils.HandleTxnsResultUtils;
-import com.isw.payapp.paymentsRequests.KsmgRequest;
 import com.isw.payapp.terminal.processors.GetwayProcessor;
-import com.isw.payapp.utils.DUKPTKeyDerivation;
-import com.isw.payapp.utils.EmvTlvParser;
-import com.isw.payapp.utils.ThreeDES;
-import com.isw.payapp.utils.TripleDESBackendProcessor;
+import com.isw.payapp.utils.DUKPK2009_CBC;
+import com.isw.payapp.utils.EmvTLVTags;
+import com.isw.payapp.utils.IccTLVDataDecoder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,9 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 import me.goldze.mvvmhabit.utils.ToastUtils;
 
@@ -731,72 +723,77 @@ public class DSpreadEmvService implements IEmvProcessor {
 
             try {
                 Hashtable<String, String> decodeData = POSManager.getInstance().anlysEmvIccData(tlv);
+                TRACE.d("anlysEmvIccData(tlv):" + decodeData.toString());
                 System.out.println("=== EMV ICC Data ===");
                 for (Map.Entry<String, String> entry : decodeData.entrySet()) {
-                    System.out.println(entry.getKey() + " = " + entry.getValue());
+                    //System.out.println(entry.getKey() + " = " + entry.getValue());
+
+                    System.out.println(entry.getValue());
+
                 }
                 System.out.println("====================");
-                String requestTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                        .format(Calendar.getInstance().getTime());
 
-                //Hashtable<String, String> decodeData = POSManager.anlysEmvIccData(tlv);
-              //  TRACE.d("anlysEmvIccData(tlv):" + decodeData.toString());
 
-                String data = "{\"createdAt\": " + requestTime +
-                        ", \"deviceInfo\": " + DeviceUtils.getPhoneDetail() +
-                        ", \"countryCode\": " + DeviceUtils.getDevieCountry(classActivity) +
-                        ", \"tlv\": " + tlv + "}";
-                TRACE.d("PAYLOAD:"+data);
-
-                TLVParser tlvParser = new TLVParser();
-                ICCDecryptor iccDecryptor = new ICCDecryptor();
 
                 EMVTLVParser emvtlvParser = new EMVTLVParser();
-                String tagToExtract = "C0";
-                String tagKSNOfOnlineMsg = emvtlvParser.extractTag(tlv, "C0");
+                String pinBlock = emvtlvParser.extractTag(tlv,  EmvTLVTags.ProprietaryC7);
+                TRACE.d("pinBlock-C7:"+pinBlock);
+
+
+                String tagKSNOfOnlineMsg = emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC1);
                 TRACE.d("CO:"+tagKSNOfOnlineMsg);
-                String tagOnlineMessage = emvtlvParser.extractTag(tlv, "C2");
-//                String onlineMessage = iccDecryptor.decryptIccInfo(tagKSNOfOnlineMsg,tagOnlineMessage);
-//                TRACE.d("onlineMessage\nKSN:"+tagKSNOfOnlineMsg+"\nEncypted Online message:"
-//                        +tagOnlineMessage+"\nDecrypted Online message:"+onlineMessage);
-               // ThreeDES tt = new ThreeDES();
-                //33707E4927C4A0D50000000000000000
-                SecretKey ipek = new SecretKeySpec(hexStringToByteArray("33707E4927C4A0D50000000000000000"), "DESede");
-                 ipek=DUKPTKeyDerivation.deriveSessionKey(ipek,tagKSNOfOnlineMsg);
-                String t_ = ThreeDES.tdesECBDecrypt(bytesToHex(ipek.getEncoded()),tagOnlineMessage);
-                TRACE.d("TTTTTY: "+t_);
+                String tagOnlineMessage = emvtlvParser.extractTag(tlv,  EmvTLVTags.ProprietaryC2);
+                TRACE.d("C2:"+tagOnlineMessage);
+                String clearIccData =null;
+                if (!TextUtils.isEmpty(tagKSNOfOnlineMsg) && !TextUtils.isEmpty(tagOnlineMessage)) {
+                    clearIccData = DUKPK2009_CBC.getData(tagKSNOfOnlineMsg, tagOnlineMessage, DUKPK2009_CBC.Enum_key.DATA, DUKPK2009_CBC.Enum_mode.CBC);
+                    Log.d("clearIccData",clearIccData);
+                    System.out.println("====================");
+                }else{
+                    Log.d("NoClearData","No Data Found");
+                }
 
-//                TripleDESBackendProcessor processor_ = new TripleDESBackendProcessor();
-//                try {
-//                    String result = processor_.processOnlineMessage(tagKSNOfOnlineMsg, tagOnlineMessage);
-//                    TRACE.d("Decrypted message_: " + result);
-//                } catch (Exception e) {
-//                    System.err.println("Error: " + e.getMessage()+"\n");
-//                    e.printStackTrace();
-//                }
-//                Hashtable<String, String> table =  POSManager.getInstance().getENCDataBlock();
-//                for (Map.Entry<String, String> entry : table.entrySet()) {
-//                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-//                }
+                if(clearIccData!=null){
+
+                    // Decode ICC TLV into HashMap
+                    Map<String, String> decodedMap = IccTLVDataDecoder.decodeIccData(clearIccData);
+
+                    //You can Call A Specific TLV Tag Here
+                    System.out.printf("%-35s : %s%n", EmvTLVTags.decodeTag(EmvTLVTags.PAN), decodedMap.get(EmvTLVTags.PAN));
+                    //You can Loop Through all the TAGs below
+                    // Print contents clearly
+                    System.out.println("---- Decoded ICC TLV Contents ----");
+                    for (Map.Entry<String, String> entry : decodedMap.entrySet()) {
+                        System.out.printf("%-35s : %s%n", EmvTLVTags.decodeTag(entry.getKey())+"("+entry.getKey()+")", entry.getValue());
+                    }
 
 
+                    String requestTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                            .format(Calendar.getInstance().getTime());
+                    String data = "{\"createdAt\": " + requestTime +
+                            ", \"deviceInfo\": " + DeviceUtils.getPhoneDetail() +
+                            ", \"countryCode\": " + "" +
+                            ", \"tlv\": " + decodedMap.toString() + "}";
+                    com.dspread.print.util.TRACE.d("PAYLOAD:"+data);
 
-                EmvTlvParser emvTlvParser = new EmvTlvParser();
-                byte[] bytes = emvTlvParser.hexToBytes(tlv);
-                List<EmvTlvParser.Tlv> list = emvTlvParser.parse(bytes);
-                for (EmvTlvParser.Tlv t : list) System.out.println(t);
 
-                //Decrypting data https://dspread.gitlab.io/qpos/#/post-transaction?id=online-request
-                cardModel = new CardModel();
-                GetwayProcessor processor = new GetwayProcessor(classActivity);
+                    //Decrypting data https://dspread.gitlab.io/qpos/#/post-transaction?id=online-request
+                    cardModel = new CardModel();
+                    GetwayProcessor processor = new GetwayProcessor(classActivity);
 //                EmvTLVExtractor emvTLVExtractor = new EmvTLVExtractor(emvService, classTransactionData);
 //                KsmgRequest pinchangeRequest = new KsmgRequest(emvTLVExtractor.extractEmvData(), classTransactionData, cardModel);
 
-                TRACE.d();
-                TRACE.d("TTT:"+classTransactionData.getAmount());
+                    TRACE.d();
+                    TRACE.d("TTT:"+classTransactionData.getAmount());
 
-                // Process online authorization
-                responseMessage = "Online process initiated: " + data;
+                    // Process online authorization
+                    responseMessage = "Online process initiated: " + decodedMap.toString();
+
+                }else{
+                    com.dspread.print.util.TRACE.d("anlysEmvIccData(tlv): No Clear ICC Data Retrieved");
+                }
+
+
 
             } catch (Exception e) {
                 Log.e(TAG, "Error processing online request: " + e.getMessage());

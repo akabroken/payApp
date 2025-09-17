@@ -199,16 +199,19 @@ dependencies {
     telpoImplementation files('libs/telpo/emv_pro4.0.jar')
     telpoImplementation files('libs/telpo/core-3.1.0.jar')
 
-    dspreadImplementation files('libs/d60/dspread_pos_sdk_7.6.4.aar')
-    dspreadImplementation files('libs/d60/dspread_print_sdk-1.7.2-beta.aar')
+    //dspreadImplementation files('libs/d60/dspread_pos_sdk_7.6.4.aar')
+    //dspreadImplementation files('libs/d60/dspread_print_sdk-1.7.2-beta.aar')
     //implementation 'com.dspread.print:dspread_print_sdk:1.5.5-beta'
+
+    implementation 'com.dspread.library:dspread_pos_sdk:7.4.6'
+    implementation 'com.dspread.print:dspread_print_sdk:1.3.5-beta'
 
     feitianImplementation files('libs/feitian/FTSDK_api_V1.0.1.15_20250306.jar')
     feitianImplementation files('libs/feitian/FTMDB_api_V1.0.0_20241017.jar')
     feitianImplementation files('libs/feitian/Logger_V1.00.03_20210811.jar')
 
     implementation files('libs/json-simple-1.1.1.jar')
-    implementation files('libs/Crypto_V1.00.03_20220812.jar')
+    //implementation files('libs/Crypto_V1.00.03_20220812.jar')
     implementation files('libs/finger.jar')
     implementation files('libs/mvvmhabit-release.aar')
     implementation files('libs/SmartCardLib.jar')
