@@ -212,9 +212,10 @@ public class DSpreadPinPadService implements IPinPadProcessor {
         }
 
         @Override
-        public void onReturnSyncVersionInfo(QPOSService.FirmwareStatus firmwareStatus, String s, QPOSService.QposStatus qposStatus) {
+        public void onReturnSyncVersionInfo(MPOSService.FirmwareStatus firmwareStatus, String s, MPOSService.QposStatus qposStatus) {
 
         }
+
 
         @Override
         public void onReturnSpLogResult(String s) {

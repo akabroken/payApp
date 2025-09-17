@@ -189,7 +189,7 @@ public class PinPadView extends RelativeLayout {
             }
 
             if (position == 11) {
-                holder.btnNumber.setOnTouchListener(new View.OnTouchListener() {
+                holder.btnNumber.setOnTouchListener(new OnTouchListener() {
 
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
@@ -210,7 +210,7 @@ public class PinPadView extends RelativeLayout {
                     }
                 });
             }
-            holder.btnNumber.setOnClickListener(new View.OnClickListener() {
+            holder.btnNumber.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (position < 11 && position != 9) {

@@ -117,7 +117,7 @@ public class MyKeyboardView extends KeyboardView{
         }
     }
 
-    private KeyboardView.OnKeyboardActionListener mOnKeyboardActionListener = new KeyboardView.OnKeyboardActionListener() {
+    private OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
 
         @Override
         public void onPress(int primaryCode) {
