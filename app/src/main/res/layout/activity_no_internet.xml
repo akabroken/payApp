@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f2f3f8"
+    android:background="@color/cardview_light_background"
     android:gravity="center"
     android:padding="16dp">
 
-    <!-- ImageView at the top -->
+    <!-- ImageView at the top #f2f3f8-->
     <ImageView
         android:id="@+id/imageLogo"
         android:layout_width="340dp"
@@ -16,7 +16,7 @@
         android:layout_marginTop="10dp"
         android:contentDescription="vcb"
         android:scaleType="fitXY"
-        android:src="@drawable/victoria_bank_logo1" />
+        android:src="@drawable/sidian_bank_logo" />
 
     <!-- TextView centered vertically -->
     <TextView

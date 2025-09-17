@@ -12,7 +12,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.isw.payapp.Adapters.ImageAdapter;
 import com.isw.payapp.R;
 import com.isw.payapp.databinding.FragmentHomeBinding;
@@ -26,31 +25,29 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
+    private List<ItemData> itemDataList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //int[]imageUrls = {R.drawable.keyexchange,R.drawable.card_payment_1,R.drawable.pin_select,R.drawable.reversal_1,R.drawable.settings1};
-        recyclerView = binding.recyclerView;
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        List<ItemData> imageUrls = generateImageUrls();
-        imageAdapter = new ImageAdapter(getContext(), imageUrls);
+        recyclerView = binding.recyclerView;
+        recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+
+        itemDataList = generateItemData();
+        imageAdapter = new ImageAdapter(requireContext(), itemDataList);
         recyclerView.setAdapter(imageAdapter);
 
         imageAdapter.setOnItemClickListener(new ImageAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                ItemData clickedItem = imageUrls.get(position);
-                String clickedTitle = clickedItem.getTitle();
+            public void onItemClick(ItemData itemData, int position) {
+                String clickedTitle = itemData.getTitle();
 
                 switch (clickedTitle) {
                     case "Purchase":
@@ -80,23 +77,15 @@ public class HomeFragment extends Fragment {
                         NavHostFragment.findNavController(HomeFragment.this)
                                 .navigate(R.id.homeFragment_to_refund);
                         break;
+                    case "Reports":
+                        NavHostFragment.findNavController(HomeFragment.this)
+                                .navigate(R.id.index_to_report); // Add this navigation action
+                        break;
                     default:
-                        Toast.makeText(getContext(), "Clicked: " + clickedTitle, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Clicked: " + clickedTitle, Toast.LENGTH_SHORT).show();
                 }
-//                if(clickedTitle.equals("Purchase")){
-//                    NavHostFragment.findNavController(HomeFragment.this)
-//                            .navigate(R.id.action_HomeFragment_to_PaymentFragment);
-//                }
             }
         });
-
-//        binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                NavHostFragment.findNavController(HomeFragment.this)
-//                        .navigate(R.id.action_HomeFragment_to_PaymentFragment);
-//            }
-//        });
     }
 
     @Override
@@ -105,31 +94,26 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    private List<ItemData> generateImageUrls() {
-        List<ItemData> imageUrls = new ArrayList<>();
-//        int[] imageId = {R.drawable.keyexchange, R.drawable.card_payment_1, R.drawable.pin_select, R.drawable.reversal_1, R.drawable.settings1,R.drawable.report};
-//        String[] titleData = {"KeyExchange", "Purchase", "PIN Change", "Reversal", "Settings","Reports"};
+    private List<ItemData> generateItemData() {
+        List<ItemData> itemDataList = new ArrayList<>();
 
         int[] imageId = {R.drawable.new_purchase, R.drawable.new_reversal, R.drawable.new_preauth,
                 R.drawable.new_auth_complete, R.drawable.new_refund,
-//                R.drawable.new_preauth, R.drawable.new_auth_complete,
-//                R.drawable.new_refund,R.drawable.new_pinchange,
                 R.drawable.new_key_mgnt, R.drawable.new_reports};
+
         String[] titleData = {"Purchase", "Reversal", "Preauth", "Authcomp", "Refund",
-//                 "Authcomp", "Refund","Pinchange",
                 "Keymgnt", "Reports"};
 
-        // Use a single loop to iterate through the arrays
-        for (int i = 0; i < imageId.length; i++) {
-            int imageResource = imageId[i];
-            String title = titleData[i];
-
-            ItemData itemData = new ItemData(imageResource, title);
-            imageUrls.add(itemData);
+        // Validate arrays have same length
+        if (imageId.length != titleData.length) {
+            throw new IllegalStateException("Image and title arrays must have the same length");
         }
 
-        return imageUrls;
+        for (int i = 0; i < imageId.length; i++) {
+            ItemData itemData = new ItemData(imageId[i], titleData[i]);
+            itemDataList.add(itemData);
+        }
+
+        return itemDataList;
     }
-
-
 }

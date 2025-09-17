@@ -89,7 +89,7 @@ public class ResetPasswordFragment extends Fragment {
         UserModel userModel = new UserModel();
         CheckBox checkBoxAdmin, checkBoxSuper;
         TerminalConfig terminalConfig = new TerminalConfig();
-        LoginController loginController = new LoginController();
+        LoginController loginController = new LoginController(getContext());
         TextView err = binding.errorMessage.findViewById(R.id.errorMessage);
         try {
             if (TextUtils.isEmpty(username.getText())) {

@@ -32,14 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initial network check
 
-        try {
-           // IPrinterProcessor printer = DeviceFactory.createPrinter(this);
-           // printer.initializePrinter();
-           // printer.printReceipt(null);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
         checkNetworkAndInitialize();
     }
 

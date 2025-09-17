@@ -1,8 +1,6 @@
 package com.isw.payapp.fragments;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
@@ -15,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.isw.payapp.Adapters.ImageAdapter;
 import com.isw.payapp.R;
 import com.isw.payapp.databinding.FragmentKeyDownloadBinding;
@@ -22,210 +21,220 @@ import com.isw.payapp.databinding.FragmentKeyDownloadBinding;
 import com.isw.payapp.devices.DeviceFactory;
 import com.isw.payapp.devices.interfaces.IPinPadProcessor;
 import com.isw.payapp.model.ItemData;
+
+// Import the refactored Processor and its callback
 import com.isw.payapp.terminal.processors.KeydownloadProcessor;
-import com.isw.payapp.terminal.services.KeyDownloadSrv;
+import com.isw.payapp.commonActions.TerminalXmlParser;
+import com.isw.payapp.utils.RSAUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-
-//import android.util.Base64;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class KeyDownload extends Fragment {
 
     private FragmentKeyDownloadBinding binding;
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
-
-    //UsbThermalPrinter usbThermalPrinter;
-    private KeyDownloadSrv keyDownloadSrv;
+    private List<ItemData> itemDataList;
 
     private IPinPadProcessor posPinPad;
-    String sMasterKey, sMasterKey1;
-    String sPinKey, sPinKey1;
-    String sDesKey;
     int ret;
-    String sBDK, sIPEK, encBDK, encBDK2, iKSN, sPinKeyDec, iPEK;
+
+    // Executor for background tasks (replacement for AsyncTask)
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    // Live data (should ideally come from a secure configuration)
+    private final String ipektwLive = "33707E4927C4A0D50000000000000000";
+    private final String iksnLive = "FFFF000002DDDDE00000";
+    private final String kcvLive = "10B9824432E458DD";
+
+    private final String ipektwTest = "D6D8291E53A7BF2B";
+    private final String iksnTest = "FFFF000006DDDDE00000";
+    private final String kcvTest = "10B9824432E458DD";
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-       // usbThermalPrinter = new UsbThermalPrinter(getContext());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentKeyDownloadBinding.inflate(inflater, container, false);
+        Glide.with(this)
+                .load(R.drawable.sidian_bank_logo)
+                .into(binding.imageView);
         return binding.getRoot();
-
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //int ret = -1;
-        //master key
-        sMasterKey1 = "407AC1437929F85702342015A4E07F8C";
-
-        //pin key encrypted with master key
-        sPinKey1 = "C2C89BE64C5846EA266B16451A4AE08A";
-
-        sPinKeyDec = "6B11A506FB85FC07BF4F87428E55386C";
-
-        //des encryption key encrypted with master key
-
-        sBDK = "463E3870D608E6D5E032DFEF0192FBCB";
-
-        encBDK = "E408C836D59898CA42EBBF749726CD91";
-        encBDK2 = "B9A28CCCE481A04FDAE4F9D1C03A6ECC";
-
-        iKSN = "FFFF000006DDDDE00000";
-        //iPEK = "6B11A506FB85FC07BF4F87428E55386C";
-        iPEK = "6B11A506FB85FC07BF4F87428E55386C";
-        //301C04106276A16D9B8C9BDA382A9BADA4AD2F9B04086BBB78309CC1C81E
-
         recyclerView = binding.recyclerView;
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
 
-        List<ItemData> imageUrls = generateImageUrls();
-        imageAdapter = new ImageAdapter(getContext(), imageUrls);
+        itemDataList = generateItemData();
+        imageAdapter = new ImageAdapter(requireContext(), itemDataList);
         recyclerView.setAdapter(imageAdapter);
 
-        posPinPad = DeviceFactory.createPinPad(getContext());
+        // Initialize the PIN pad
+        posPinPad = DeviceFactory.createPinPad(requireContext());
         posPinPad.initPinPad();
 
         imageAdapter.setOnItemClickListener(new ImageAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                ItemData clickedItem = imageUrls.get(position);
-                String clickedTitle = clickedItem.getTitle();
+            public void onItemClick(ItemData itemData, int position) {
+                String clickedTitle = itemData.getTitle();
 
                 switch (clickedTitle) {
                     case "Keydownload":
-                        KeydownloadProcessor processor = new KeydownloadProcessor();
-                        try {
-                            processor.process();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        NavHostFragment.findNavController(KeyDownload.this)
-                                .navigate(R.id.fragment_keydownload_to_homefragment);
+                        handleKeyDownload();
                         break;
 
                     case "LoadKey":
-                        //String ipektw = "D6D8291E53A7BF2B0000000000000000";
-                      //  String ipektw = "D6D8291E53A7BF2B"; //test
-                       String ipektw = "33707E4927C4A0D50000000000000000"; //live - "33707E4927C4A0D5"
-                        String ipek1 = "6276A16D9B8C9BDA382A9BADA4AD2F9B";
-                        //String ipek1 = "6276A16D9B8C9BDA382A9BAD00000F9B";
-                        String bdk_ipek = "463E3870D608E6D5E032DFEF0192FBCB";
-                        String ipek2 = "6276A16D9B8C9BDA";
-                        String ipek3 = "382A9BADA4AD2F9B";
-                        String iksn_live = "FFFF000002DDDDE00000";
-                        String iksn_test = "FFFF000006DDDDE00000";
-                        String kcv_test = "CC5A6985E41061B4";
-                        String kcv_live = "10B9824432E458DD";
-
-                        new AsyncTask<Void, Void, Integer>() {
-
-                            @Override
-                            protected Integer doInBackground(Void... voids) {
-                                ret = posPinPad.injectDukptKey(ipektw, iksn_live, kcv_live);
-                                posPinPad.deviceClose();
-                                return ret;
-                            }
-
-                            @Override
-                            protected void onPostExecute(Integer ret) {
-                                if (0 == ret) {
-                                    Log.i("DUKPTIPEKK", "LOAD INITIAL PIN KEY RESPONSE : " + ret);
-                                    Toast.makeText(getActivity(), "Load INITIAL PIN success!", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Log.i("DUKPTIPEKK", "LOAD INITIAL PIN KEY RESPONSE : " + ret);
-                                    Toast.makeText(getActivity(), "Load INITIAL failed!", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }.execute();
+                        handleLoadKey();
                         break;
+
                     case "Delete":
-                        new AsyncTask<Void, Void, Integer>() {
-
-                            @Override
-                            protected Integer doInBackground(Void... voids) {
-                                ret = posPinPad.deleteKeys();
-                                return ret;
-
-                            }
-
-                            @Override
-                            protected void onPostExecute(Integer ret) {
-                                if (0 == ret) {
-                                    Log.i("DUKPTIPEKK", "DELETE KEYS SUCCESS : " + ret);
-                                    Toast.makeText(getActivity(), "DELETE KEYS SUCCESS !", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Log.i("DUKPTIPEKK", "DELETE KEYS failed  : " + ret);
-                                    Toast.makeText(getActivity(), "DELETE KEYS FAILED !", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }.execute();
+                        handleDeleteKeys();
                         break;
 
                     case "Format":
-                        new AsyncTask<Void, Void, Integer>() {
-
-                            @Override
-                            protected Integer doInBackground(Void... voids) {
-                              //  return PinpadService.TP_PinpadFormat(getActivity());
-                                return posPinPad.resetKey();
-                            }
-
-                            @Override
-                            protected void onPostExecute(Integer ret) {
-                                if (0 == ret) {
-                                    Log.i("DUKPTIPEKK", "PINPAD FORMAT SUCCESS : " + ret);
-                                    Toast.makeText(getActivity(), "PINPAD FORMAT SUCCESS !", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Log.i("DUKPTIPEKK", "PINPAD FORMAT failed  : " + ret);
-                                    Toast.makeText(getActivity(), "PINPAD FORMAT FAILED !", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }.execute();
+                        handleFormatPinPad();
                         break;
+
                     default:
-                        Toast.makeText(getContext(), "Clicked: " + clickedTitle, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Clicked: " + clickedTitle, Toast.LENGTH_SHORT).show();
                 }
-//                if(clickedTitle.equals("Purchase")){
-//                    NavHostFragment.findNavController(HomeFragment.this)
-//                            .navigate(R.id.action_HomeFragment_to_PaymentFragment);
-//                }
             }
         });
+    }
 
+    private void handleKeyDownload() {
+        // Show a progress indicator here if you have one
+       // binding.progressBar.setVisibility(View.VISIBLE);
+
+        TerminalXmlParser parser = new TerminalXmlParser();
+        RSAUtil rsaUtil = new RSAUtil();
+
+        // 2. Get the URL from a config source (e.g., BuildConfig, shared preferences)
+        String keyDownloadUrl = "https://apps.qa.interswitch-ke.com:7075/kmw/kimonoservice/kenya";
+
+        // 3. Create the Processor
+        KeydownloadProcessor processor = new KeydownloadProcessor(
+                requireContext(),
+                parser,
+                rsaUtil,
+                keyDownloadUrl
+        );
+
+        // 4. Execute the key download process asynchronously
+        processor.process(new KeydownloadProcessor.KeyDownloadCallback() {
+            @Override
+            public void onSuccess(String decryptedPinKey) {
+                requireActivity().runOnUiThread(() -> {
+                  //  binding.progressBar.setVisibility(View.GONE);
+                    Toast.makeText(requireContext(), "Key Download & Decryption Successful!", Toast.LENGTH_SHORT).show();
+                    Log.i("KeyDownload", "Decrypted Key: " + decryptedPinKey);
+
+                    // Inject the decrypted key into the PIN pad
+                    executor.execute(() -> {
+                        final int injectionResult = posPinPad.injectDukptKey(decryptedPinKey, iksnLive, kcvLive);
+
+                        requireActivity().runOnUiThread(() -> {
+                            if (injectionResult == 0) {
+                                Toast.makeText(requireContext(), "Key Injection Successful!", Toast.LENGTH_SHORT).show();
+                                // Navigate only on success
+                                NavHostFragment.findNavController(KeyDownload.this)
+                                        .navigate(R.id.fragment_keydownload_to_homefragment);
+                            } else {
+                                Toast.makeText(requireContext(), "Key Injection Failed: " + injectionResult, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    });
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                requireActivity().runOnUiThread(() -> {
+                  //  binding.progressBar.setVisibility(View.GONE);
+                    Log.e("KeyDownload", "Key Download Failed", e);
+                    Toast.makeText(requireContext(), "Key Download Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
+        });
+    }
+
+    private void handleLoadKey() {
+        executor.execute(() -> {
+            final int result = posPinPad.injectDukptKey(ipektwLive, iksnLive, kcvLive);
+
+            requireActivity().runOnUiThread(() -> {
+                if (result == 0) {
+                    Log.i("DUKPT", "LOAD INITIAL PIN KEY SUCCESS: " + result);
+                    Toast.makeText(requireActivity(), "Load INITIAL PIN success!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.i("DUKPT", "LOAD INITIAL PIN KEY FAILED: " + result);
+                    Toast.makeText(requireActivity(), "Load INITIAL PIN failed!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+    }
+
+    private void handleDeleteKeys() {
+        executor.execute(() -> {
+            final int result = posPinPad.deleteKeys();
+
+            requireActivity().runOnUiThread(() -> {
+                if (result == 0) {
+                    Log.i("KeyDownload", "DELETE KEYS SUCCESS: " + result);
+                    Toast.makeText(requireActivity(), "DELETE KEYS SUCCESS!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.i("KeyDownload", "DELETE KEYS FAILED: " + result);
+                    Toast.makeText(requireActivity(), "DELETE KEYS FAILED!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+    }
+
+    private void handleFormatPinPad() {
+        executor.execute(() -> {
+            final int result = posPinPad.resetKey();
+
+            requireActivity().runOnUiThread(() -> {
+                if (result == 0) {
+                    Log.i("KeyDownload", "PINPAD RESET SUCCESS: " + result);
+                    Toast.makeText(requireActivity(), "PINPAD RESET SUCCESS!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.i("KeyDownload", "PINPAD RESET FAILED: " + result);
+                    Toast.makeText(requireActivity(), "PINPAD RESET FAILED!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-       posPinPad.deviceClose();
+        // Clean up the executor when the view is destroyed
+        executor.shutdown();
+        // Close the device connection
+        if (posPinPad != null) {
+            posPinPad.deviceClose();
+        }
         binding = null;
     }
 
-    private List<ItemData> generateImageUrls() {
-        List<ItemData> imageUrls = new ArrayList<>();
-
-        int[] imageId = {R.drawable.new_keydownload, R.drawable.new_load_keys, R.drawable.new_delete_keys, R.drawable.new_format_keys};
+    private List<ItemData> generateItemData() {
+        List<ItemData> itemDataList = new ArrayList<>();
+        int[] imageId = {R.drawable.rkd_key, R.drawable.load_key, R.drawable.key_delete_1, R.drawable.reset_password};
         String[] titleData = {"Keydownload", "LoadKey", "Delete", "Format"};
 
-        // Use a single loop to iterate through the arrays
-        for (int i = 0; i < imageId.length; i++) {
-            int imageResource = imageId[i];
-            String title = titleData[i];
-
-            ItemData itemData = new ItemData(imageResource, title);
-            imageUrls.add(itemData);
+        // Validate arrays have same length
+        if (imageId.length != titleData.length) {
+            throw new IllegalStateException("Image and title arrays must have the same length");
         }
 
-        return imageUrls;
+        for (int i = 0; i < imageId.length; i++) {
+            itemDataList.add(new ItemData(imageId[i], titleData[i]));
+        }
+        return itemDataList;
     }
-
 }
-

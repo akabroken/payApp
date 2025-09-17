@@ -70,7 +70,7 @@ public class Login extends Fragment {
     private void initializeComponents() {
         sessionManager = new SessionManager(requireContext());
         terminalConfig = new TerminalConfig();
-        loginController = new LoginController();
+        loginController = new LoginController(requireContext());
     }
 
     private void setupClickListeners() {
@@ -155,9 +155,9 @@ public class Login extends Fragment {
     }
 
     private void handleLoginResponse(String response, String username) throws Exception {
-        Document doc = parseXmlResponse(response);
-        String responseCode = getValue(doc, "responseCode");
-        String responseMessage = getValue(doc, "responseMessage");
+//        Document doc = parseXmlResponse(response);
+//        String responseCode = getValue(doc, "responseCode");
+//        String responseMessage = getValue(doc, "responseMessage");
 
 //        if ("00".equals(responseCode)) {
 //            String names = getValue(doc, "names");
@@ -169,7 +169,8 @@ public class Login extends Fragment {
 //
 //        }
         //to be removed
-        sessionManager.createSession(username, "names");
+        //sessionManager.createSession(username, "names");
+        sessionManager.createSession("username", "names");
         showToast("Login successful!");
         navigateToHome();
     }
