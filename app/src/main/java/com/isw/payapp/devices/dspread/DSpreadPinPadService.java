@@ -114,6 +114,12 @@ public class DSpreadPinPadService implements IPinPadProcessor {
         // pos.updateWorkKey("");
         pos.doUpdateIPEKOperation("0", demoTrackKsn, encDemoTrackIpek, kcvOut,
                 demoEmvKsn, encDemoEmvIpek, emvKcv, demoPinKsn, encDemoPinIpek, pinKcv);
+//        String ipekGrop = "0" + keyIndex;
+//        pos.doUpdateIPEKOperation(ipekGrop, "09118012400705E00000",
+//                "C22766F7379DD38AA5E1DA8C6AFA75AC", "B2DE27F60A443944",
+//                "09118012400705E00000", "C22766F7379DD38AA5E1DA8C6AFA75AC",
+//                "B2DE27F60A443944", "09118012400705E00000",
+//                "C22766F7379DD38AA5E1DA8C6AFA75AC", "B2DE27F60A443944");
     }
 
     private void connectDevice() {

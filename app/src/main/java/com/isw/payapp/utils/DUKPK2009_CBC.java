@@ -1,5 +1,9 @@
 package com.isw.payapp.utils;
 
+import android.util.Log;
+
+import com.isw.payapp.devices.dspread.utils.TRACE;
+
 import java.math.BigInteger;
 import java.security.Key;
 
@@ -348,6 +352,7 @@ public class DUKPK2009_CBC {
      * 3DES decryption CBC
     **/
     public static byte[] TriDesDecryptionCBC(byte[] byteKey, byte[] dec) {
+        Log.i("DUKPT@))(_CBC", "TriDesDecryptionCBC");
         byte[] en_key = new byte[24];
         if (byteKey.length == 16) {
             System.arraycopy(byteKey, 0, en_key, 0, 16);
@@ -373,7 +378,7 @@ public class DUKPK2009_CBC {
             cipher.init(Cipher.DECRYPT_MODE, deskey, ips);
 
             byte[] de_b = cipher.doFinal(dec);
-
+            Log.i("DUKPT@))(_CBC", "TriDesDecryptionCBC:"+parseByte2HexStr(de_b));
             return de_b;
         } catch (Exception e) {
             e.printStackTrace();

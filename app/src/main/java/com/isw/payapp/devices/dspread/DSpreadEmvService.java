@@ -740,7 +740,7 @@ public class DSpreadEmvService implements IEmvProcessor {
                 TRACE.d("pinBlock-C7:"+pinBlock);
 
 
-                String tagKSNOfOnlineMsg = emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC1);
+                String tagKSNOfOnlineMsg = emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC0);
                 TRACE.d("CO:"+tagKSNOfOnlineMsg);
                 String tagOnlineMessage = emvtlvParser.extractTag(tlv,  EmvTLVTags.ProprietaryC2);
                 TRACE.d("C2:"+tagOnlineMessage);
@@ -796,6 +796,7 @@ public class DSpreadEmvService implements IEmvProcessor {
 
 
             } catch (Exception e) {
+                e.printStackTrace();
                 Log.e(TAG, "Error processing online request: " + e.getMessage());
                 notifyError("Online processing failed");
             }
