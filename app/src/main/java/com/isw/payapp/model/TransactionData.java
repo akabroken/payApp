@@ -7,7 +7,9 @@ import lombok.Setter;
 @Setter
 public class TransactionData {
     private String Amount;
+    private String currency;
     private String AuthCode;
+    private String transactionType;
     private String TransCnt;
     private String kimonoData;
     private String paymentApp;

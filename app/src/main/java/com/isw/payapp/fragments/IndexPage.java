@@ -1,5 +1,6 @@
 package com.isw.payapp.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import com.isw.payapp.R;
 import com.isw.payapp.databinding.FragmentIndexPageBinding;
 import com.isw.payapp.helpers.SessionManager;
 import com.isw.payapp.model.GridMenuItem;
+//import com.isw.payapp.activities.Login; // Make sure this import is correct
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +45,6 @@ public class IndexPage extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         initializeComponents();
-
         checkAuthentication();
         setupRecyclerView();
         displayWelcomeMessage();
@@ -52,20 +53,12 @@ public class IndexPage extends Fragment {
     private void initializeComponents() {
         sessionManager = new SessionManager(requireContext());
         adapter = new IndexAdapter(requireContext());
-        loadImages();
     }
 
     private void checkAuthentication() {
         if (!sessionManager.isLoggedIn()) {
-            navigateTo(R.id.index_to_login);
+            navigateToLogin();
         }
-    }
-
-    private void loadImages() {
-//            Glide.with(this)
-//                    .load(R.drawable.interswitch_1)
-//                    .into(binding.imageView);
-//     //   }
     }
 
     private void setupRecyclerView() {
@@ -76,7 +69,6 @@ public class IndexPage extends Fragment {
         List<GridMenuItem> menuItems = Arrays.asList(
                 new GridMenuItem(R.drawable.security_warning, getString(R.string.pin_select), R.id.index_to_pinselect),
                 new GridMenuItem(R.drawable.gearsix, getString(R.string.settings), R.id.index_to_settings),
-              //  new GridMenuItem(R.drawable.fuel_pay, getString(R.string.fuel_pay), R.id.index_to_fuelpay),
                 new GridMenuItem(R.drawable.exit, getString(R.string.logout), R.id.index_to_login)
         );
 
@@ -88,8 +80,10 @@ public class IndexPage extends Fragment {
         if (menuItem.getTitle().equals(getString(R.string.logout))) {
             sessionManager.logout();
             showToast(getString(R.string.logged_out_successfully));
+            navigateToLogin();
+        } else {
+            navigateTo(menuItem.getActionId());
         }
-        navigateTo(menuItem.getActionId());
     }
 
     private void navigateTo(int actionId) {
@@ -101,12 +95,35 @@ public class IndexPage extends Fragment {
         }
     }
 
+//    private void navigateToLogin() {
+//        Intent intent = new Intent(requireActivity(), Login.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(intent);
+//        requireActivity().finish();
+//        Navigation.findNavController(this).navigate(R.id.index_to_login);
+//    }
+    private void navigateToLogin() {
+        // Use Navigation Component for fragment navigation
+        Navigation.findNavController(requireView()).navigate(R.id.index_to_login);
+    }
+
     private void displayWelcomeMessage() {
         String username = sessionManager.getKeyFullname();
-        binding.usernameTextView.setText(getString(R.string.welcome_message, username));
+        if (username != null) {
+            binding.usernameTextView.setText(getString(R.string.welcome_message, username));
+        }
     }
 
     private void showToast(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Check session expiration when fragment resumes
+        if (sessionManager != null && !sessionManager.isLoggedIn()) {
+            navigateToLogin();
+        }
     }
 }

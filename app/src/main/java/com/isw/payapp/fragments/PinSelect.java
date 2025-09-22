@@ -50,6 +50,8 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
     private boolean isProgressShowing = false;
     private boolean isTransactionInProgress = false;
 
+
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -446,7 +448,14 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
 
     @Override
     public void onDeviceConnected(String res) {
-        showProgress(getString(R.string.device_connected));
+       // showProgress(getString(R.string.device_connected));
+        Context context = getContext();
+        if (context != null) {
+            showProgress(context.getString(R.string.device_connected));
+        } else {
+            // Fallback to application context if needed
+            showProgress(getResources().getString(R.string.device_connected));
+        }
     }
 
     @Override

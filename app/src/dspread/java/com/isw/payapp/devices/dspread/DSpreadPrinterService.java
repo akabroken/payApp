@@ -8,8 +8,6 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.action.printerservice.PrintStyle;
-import com.action.printerservice.barcode.Barcode1D;
-import com.action.printerservice.barcode.Barcode2D;
 import com.dspread.print.device.PrinterDevice;
 import com.dspread.print.device.PrinterInitListener;
 import com.dspread.print.device.PrinterManager;
@@ -19,47 +17,34 @@ import com.dspread.print.widget.PrintLine;
 import com.isw.payapp.R;
 import com.isw.payapp.devices.dspread.utils.DeviceUtils;
 import com.isw.payapp.devices.dspread.utils.QRCodeUtil;
-import com.isw.payapp.devices.interfaces.IPrinterProcessor;
 import com.isw.payapp.model.Receipt;
 
-public class DSpreadPrinterService implements IPrinterProcessor {
+public class DSpreadPrinterService {
 
+    private static DSpreadPrinterService instance;
     private Context context;
     private PrinterDevice mPrinter;
-
-    public static DSpreadPrinterService printerCommand;
     private boolean isInitialized = false;
 
-    public DSpreadPrinterService(Context context) {
-        this.context = context;
+    // Private constructor
+    private DSpreadPrinterService(Context context) {
+        this.context = context.getApplicationContext();
+        initializePrinter();
     }
 
-    public static DSpreadPrinterService getInstance(){
-        if(printerCommand == null){
-            synchronized (DSpreadPrinterService.class) {
-                if (printerCommand == null) {
-                    printerCommand = new DSpreadPrinterService(getInstance().context);
-                }
-            }
+    public static synchronized DSpreadPrinterService getInstance(Context context) {
+        if (instance == null) {
+            instance = new DSpreadPrinterService(context);
         }
-        return printerCommand;
+        return instance;
     }
 
-    public void setPrinter(PrinterDevice printer) {
-        this.mPrinter = printer;
-        this.isInitialized = (printer != null);
-    }
-
-    public PrinterDevice getmPrinter(){
-        return this.mPrinter;
-    }
-
-    @Override
     public void initializePrinter() {
         try {
             mPrinter = PrinterManager.getInstance().getPrinter();
             if (mPrinter == null) {
                 TRACE.e("Failed to get printer instance from PrinterManager");
+                isInitialized = false;
                 return;
             }
 
@@ -72,6 +57,7 @@ public class DSpreadPrinterService implements IPrinterProcessor {
                         mPrinter.setPrinterTerminatedState(PrinterDevice.PrintTerminationState.PRINT_STOP);
                         isInitialized = true;
                     }
+
                     @Override
                     public void disconnected() {
                         TRACE.e("Printer disconnected during initialization");
@@ -90,17 +76,11 @@ public class DSpreadPrinterService implements IPrinterProcessor {
     }
 
     private void ensurePrinterInitialized() throws RemoteException {
-       // mPrinter.close();
-        if (mPrinter == null) {
-            Log.i("PRINTER", "INIT====>");
-            initializePrinter();
-        }
         if (mPrinter == null || !isInitialized) {
             throw new RemoteException("Printer not initialized properly");
         }
     }
 
-    @Override
     public void printText(String text) throws RemoteException {
         ensurePrinterInitialized();
         mPrinter.printText(text);
@@ -144,7 +124,7 @@ public class DSpreadPrinterService implements IPrinterProcessor {
         mPrinter.printText(printContent);
     }
 
-    public Bitmap printQRcode(Context context, String align, String size, String content, String errorLevel) throws RemoteException {
+    public Bitmap printQRcode(String align, String size, String content, String errorLevel) throws RemoteException {
         ensurePrinterInitialized();
         PrintLineStyle style = new PrintLineStyle();
         int printLineAlign = PrintLine.CENTER;
@@ -166,7 +146,7 @@ public class DSpreadPrinterService implements IPrinterProcessor {
         return bitmap;
     }
 
-    public Bitmap printBarCode(Context context, String align, String width, String height, String content, String speedLevel, String densityLevel, String symbology) throws RemoteException {
+    public Bitmap printBarCode(String align, String width, String height, String content, String speedLevel, String densityLevel, String symbology) throws RemoteException {
         ensurePrinterInitialized();
         PrintLineStyle style = new PrintLineStyle();
         int printLineAlign = 0;
@@ -193,7 +173,7 @@ public class DSpreadPrinterService implements IPrinterProcessor {
         return bitmap;
     }
 
-    public Bitmap printPicture(Context context) throws RemoteException {
+    public Bitmap printPicture() throws RemoteException {
         ensurePrinterInitialized();
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.interswitch01);
 
@@ -205,7 +185,7 @@ public class DSpreadPrinterService implements IPrinterProcessor {
         return bitmap;
     }
 
-    public Bitmap printBitmap(Context context, Bitmap bitmap) throws RemoteException {
+    public Bitmap printBitmap(Bitmap bitmap) throws RemoteException {
         ensurePrinterInitialized();
         PrintLineStyle printLineStyle = new PrintLineStyle();
         mPrinter.setFooter(50);
@@ -215,40 +195,43 @@ public class DSpreadPrinterService implements IPrinterProcessor {
         return bitmap;
     }
 
-    @Override
     public void printReceipt(Receipt receipt) throws RemoteException {
         ensurePrinterInitialized();
         mPrinter.addPrintLintStyle(new PrintLineStyle(PrintStyle.FontStyle.BOLD, PrintLine.CENTER, 16));
         mPrinter.addText("-----");
-        mPrinter.addText("POS Signing of purchase orders");
+        mPrinter.addText("Transaction Receipt");
         mPrinter.addText("TELLER COPY");
         mPrinter.addPrintLintStyle(new PrintLineStyle(PrintStyle.FontStyle.NORMAL, PrintLine.CENTER, 14));
         mPrinter.addText("- - - - - - - - - - - - - -");
         mPrinter.addPrintLintStyle(new PrintLineStyle(PrintStyle.FontStyle.NORMAL, PrintLine.LEFT, 14));
-        mPrinter.addText("ISSUER Agricultural Bank of China");
-        mPrinter.addText("ACQ 48873110");
+        mPrinter.addText("Bank:         " + receipt.getBank());
+        mPrinter.addText("");
+        mPrinter.addText("Merchant:     " + receipt.getMerchant());
+        mPrinter.addText("Terminal ID:  " + receipt.getTerminalId());
+        mPrinter.addText("");
+        mPrinter.addText("Amount:       " + receipt.getAmount());
+        mPrinter.addText("Currency      " + receipt.getCurrency());
+        mPrinter.addText("Date:     " + receipt.getDateTime());
+        mPrinter.addText("");
         mPrinter.addText("CARD number.");
         mPrinter.addPrintLintStyle(new PrintLineStyle(PrintStyle.FontStyle.NORMAL, PrintLine.LEFT, 14));
-        mPrinter.addText("6228 48******8 116 S");
+        mPrinter.addText(receipt.getCardNumber());
         mPrinter.addText("TYPE of transaction(TXN TYPE)");
-        mPrinter.addText("SALE");
+        mPrinter.addText("" + receipt.getTransactionType());
+        mPrinter.addText("");
+        mPrinter.addText("AID:      " + receipt.getAid());
+        mPrinter.addText("ATC:      " + receipt.getAtc());
+        mPrinter.addText("TVR:      " + receipt.getTvr());
+        mPrinter.addText("");
+        mPrinter.addText("Response message");
+        mPrinter.addText(receipt.getResponse());
+        mPrinter.addText("");
+        mPrinter.addText("");
         mPrinter.addPrintLintStyle(new PrintLineStyle(PrintStyle.FontStyle.NORMAL, PrintLine.CENTER, 14));
         mPrinter.addText("- - - - - - - - - - - - - -");
-        mPrinter.addTexts(new String[]{"BATCH NO", "000043"}, new int[]{5, 5}, new int[]{PrintStyle.Alignment.NORMAL, PrintStyle.Alignment.CENTER});
-        mPrinter.addTexts(new String[]{"VOUCHER NO", "000509"}, new int[]{5, 5}, new int[]{PrintStyle.Alignment.NORMAL, PrintStyle.Alignment.CENTER});
-        mPrinter.addTexts(new String[]{"AUTH NO", "000786"}, new int[]{5, 5}, new int[]{PrintStyle.Alignment.NORMAL, PrintStyle.Alignment.CENTER});
-        mPrinter.addTexts(new String[]{"DATE/TIME", "2010/12/07 16:15:17"}, new int[]{5, 5}, new int[]{PrintStyle.Alignment.NORMAL, PrintStyle.Alignment.CENTER});
-        mPrinter.addTexts(new String[]{"REF NO", "000001595276"}, new int[]{5, 5}, new int[]{PrintStyle.Alignment.NORMAL, PrintStyle.Alignment.CENTER});
-        mPrinter.addTexts(new String[]{"2014/12/07 16:12:17", ""}, new int[]{5, 5}, new int[]{PrintStyle.Alignment.NORMAL, PrintStyle.Alignment.CENTER});
-        mPrinter.addTexts(new String[]{"AMOUNT:", ""}, new int[]{5, 5}, new int[]{PrintStyle.Alignment.NORMAL, PrintStyle.Alignment.CENTER});
-        mPrinter.addText("RMB:249.00");
-        mPrinter.addPrintLintStyle(new PrintLineStyle(PrintStyle.FontStyle.NORMAL, PrintLine.CENTER, 12));
         mPrinter.addText("- - - - - - - - - - - - - -");
-        mPrinter.addText("Please scan the QRCode for getting more information: ");
-        mPrinter.addBarCode(context, Barcode1D.CODE_128.name(), 400, 100, "123456", PrintLine.CENTER);
-        mPrinter.addText("Please scan the QRCode for getting more information:");
-        mPrinter.addQRCode(300, Barcode2D.QR_CODE.name(), "123456", PrintLine.CENTER);
         mPrinter.setFooter(50);
+
         mPrinter.print(context);
     }
 
@@ -277,7 +260,7 @@ public class DSpreadPrinterService implements IPrinterProcessor {
         mPrinter.getPrinterVoltage();
     }
 
-    public void close(){
+    public void close() {
         if (mPrinter != null) {
             mPrinter.close();
             isInitialized = false;
@@ -286,5 +269,25 @@ public class DSpreadPrinterService implements IPrinterProcessor {
 
     public boolean isInitialized() {
         return isInitialized;
+    }
+
+    public PrinterDevice getPrinter() {
+        return mPrinter;
+    }
+
+    // Optional: Method to clear the instance (useful for testing)
+    public static void clearInstance() {
+        instance = null;
+    }
+
+    // Method to check if printer is available
+    public static boolean isPrinterAvailable(Context context) {
+        try {
+            PrinterDevice printer = PrinterManager.getInstance().getPrinter();
+            return printer != null;
+        } catch (Exception e) {
+            TRACE.e("Error checking printer availability: " + e.getMessage());
+            return false;
+        }
     }
 }

@@ -4,6 +4,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
@@ -24,7 +25,8 @@ public interface IApiServices {
     @POST("kmw/kimonoservice/kenya")
     @Headers({
             "Content-Type: application/xml", // Explicitly sets the Content-Type header
-            "Accept: application/xml"        // Explicitly tells the server we expect XML back
+            "Accept: application/xml" ,       // Explicitly tells the server we expect XML back
+            "User-Agent:kimono"
     })
     Call<String> downloadKeys(@Body String xmlRequest);
 
@@ -50,4 +52,57 @@ public interface IApiServices {
     @POST("kmw/kimonoservice/kenya")
     @Headers("Content-Type: application/xml")
     Call<ResponseBody> downloadKeysRawResponse(@Body String xmlRequest);
+
+    /**
+     * (ALTERNATIVE VERSION - For Binary Data Response)
+     * If the server response might not be a simple string (e.g., binary data in the XML),
+     * it's safer to use Retrofit's ResponseBody and handle the parsing manually.
+     *
+     * @param xmlRequest The full XML request body as a String.
+     * @return A Retrofit {@link Call} object that can be executed to get a raw {@link ResponseBody}.
+     */
+    @POST("kmw/kimonoservice/kenya")
+    @Headers({"Content-Type: application/xml","Accept: application/xml" ,"User-Agent:kimono"})
+    Call<String> postPayloadString(@Body String xmlRequest);
+
+
+    /**
+     * (ALTERNATIVE VERSION - For Binary Data Response)
+     * If the server response might not be a simple string (e.g., binary data in the XML),
+     * it's safer to use Retrofit's ResponseBody and handle the parsing manually.
+     *
+     * @param xmlRequest The full XML request body as a String.
+     * @return A Retrofit {@link Call} object that can be executed to get a raw {@link ResponseBody}.
+     */
+    @POST("kmw/kimonoservice/kenya")
+    @Headers({"Content-Type: application/xml","Accept: application/xml" ,"User-Agent:kimono"})
+    Call<ResponseBody> postPayload(@Body String xmlRequest);
+
+    /**
+     * (ALTERNATIVE VERSION - For Binary Data Response)
+     * If the server response might not be a simple string (e.g., binary data in the XML),
+     * it's safer to use Retrofit's ResponseBody and handle the parsing manually.
+     *
+     * @param xmlRequest The full XML request body as a String.
+     * @return A Retrofit {@link Call} object that can be executed to get a raw {@link ResponseBody}.
+     */
+    @GET("kmw/kimonoservice/kenya")
+    @Headers({"Content-Type: application/xml","Accept: application/xml" ,"User-Agent:kimono"})
+    Call<ResponseBody> getPayload(@Body String xmlRequest);
+
+    /**
+     * (ALTERNATIVE VERSION - For Binary Data Response)
+     * If the server response might not be a simple string (e.g., binary data in the XML),
+     * it's safer to use Retrofit's ResponseBody and handle the parsing manually.
+     *
+     * @param xmlRequest The full XML request body as a String.
+     * @return A Retrofit {@link Call} object that can be executed to get a raw {@link ResponseBody}.
+     */
+    @GET("kmw/kimonoservice/kenya")
+    @Headers({"Content-Type: application/xml","Accept: application/xml" ,"User-Agent:kimono"})
+    Call<String> getPayloadString(@Body String xmlRequest);
+
+
+
+
 }

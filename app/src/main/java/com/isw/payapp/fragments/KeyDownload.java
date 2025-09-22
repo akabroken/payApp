@@ -23,6 +23,7 @@ import com.isw.payapp.devices.interfaces.IPinPadProcessor;
 import com.isw.payapp.model.ItemData;
 
 // Import the refactored Processor and its callback
+import com.isw.payapp.terminal.config.TerminalConfig;
 import com.isw.payapp.terminal.processors.KeydownloadProcessor;
 import com.isw.payapp.commonActions.TerminalXmlParser;
 import com.isw.payapp.utils.RSAUtil;
@@ -114,7 +115,8 @@ public class KeyDownload extends Fragment {
         RSAUtil rsaUtil = new RSAUtil();
 
         // 2. Get the URL from a config source (e.g., BuildConfig, shared preferences)
-        String keyDownloadUrl = "https://apps.qa.interswitch-ke.com:7075/kmw/kimonoservice/kenya";
+        String keyDownloadUrl = "https://" + TerminalConfig.loadTerminalDataFromJson(getContext(), "__transip") + ":"
+                + TerminalConfig.loadTerminalDataFromJson(getContext(), "__transport") + "/";;
 
         // 3. Create the Processor
         KeydownloadProcessor processor = new KeydownloadProcessor(
@@ -237,4 +239,6 @@ public class KeyDownload extends Fragment {
         }
         return itemDataList;
     }
+
+    
 }

@@ -48,7 +48,7 @@ public class KsmgRequest {
         }
     }
 
-    private String generatePayload() throws Exception {
+    public String generatePayload() throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.newDocument();

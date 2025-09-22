@@ -1,5 +1,7 @@
 package com.isw.payapp;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -20,8 +24,12 @@ import com.isw.payapp.devices.DeviceFactory;
 import com.isw.payapp.devices.interfaces.IPrinterProcessor;
 import com.isw.payapp.utils.NetworkUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
+    private static final int PERMISSION_REQUEST_CODE = 1001;
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private boolean isNetworkAvailable = true;
@@ -32,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initial network check
 
-
+        checkPermissions();
         checkNetworkAndInitialize();
     }
 
@@ -43,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
             showNoInternetLayout();
             return;
         }
+
 
         initializeMainApp();
     }
@@ -133,5 +142,29 @@ public class MainActivity extends AppCompatActivity {
                 R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    // In your MainActivity or base activity
+    private void checkPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String[] permissions = {
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.ACCESS_NETWORK_STATE
+            };
+
+            List<String> permissionsToRequest = new ArrayList<>();
+            for (String permission : permissions) {
+                if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    permissionsToRequest.add(permission);
+                }
+            }
+
+            if (!permissionsToRequest.isEmpty()) {
+                ActivityCompat.requestPermissions(this, permissionsToRequest.toArray(new String[0]), PERMISSION_REQUEST_CODE);
+            }
+        }
     }
 }

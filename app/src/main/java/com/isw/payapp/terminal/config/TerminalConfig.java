@@ -18,31 +18,31 @@ import java.io.IOException;
 
 public class TerminalConfig {
 
-    private Map<String,Object>conf;
+    private static Map<String,Object>conf;
 
-    private  final String PREFS_NAME = "MyPrefs";
+    private static final String PREFS_NAME = "MyPrefs";
     private static final String CONFIG_FILE = "config.json";
-    private  final String JSON_FILE_NAME = "config.json";
-    private  final String TAG = "JsonConfigManager";
+    private static final String JSON_FILE_NAME = "config.json";
+    private static final String TAG = "JsonConfigManager";
 
     public TerminalConfig(){
 
     }
 
-    public Map<String,Object> readConfig(String jsonConfig){
+    public static Map<String,Object> readConfig(String jsonConfig){
         conf = new HashMap<>();
         return conf;
     }
 
     // Save JSON data to SharedPreferences
-    public void saveTerminalConfigJsonData(Context context, JSONObject jsonData) {
+    public static void saveTerminalConfigJsonData(Context context, JSONObject jsonData) {
         SharedPreferences.Editor editor = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit();
         editor.putString("jsonConfig", jsonData.toString());
         editor.apply();
     }
 
     // Read JSON data from SharedPreferences
-    public  JSONObject readTerminalConfigJsonData(Context context) {
+    public static JSONObject readTerminalConfigJsonData(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String jsonConfigString = prefs.getString("jsonConfig", "{}");
 
@@ -55,7 +55,7 @@ public class TerminalConfig {
     }
 
     // Save JSON data to a file
-    public  void saveTerminalConfigJsonToFile(Context context, JSONObject jsonData) {
+    public static void saveTerminalConfigJsonToFile(Context context, JSONObject jsonData) {
         File externalStorage = Environment.getExternalStorageDirectory();
         File jsonFile = new File(externalStorage, JSON_FILE_NAME);
 
@@ -68,7 +68,7 @@ public class TerminalConfig {
     }
 
     // Read JSON data from a file
-    public  JSONObject readTerminalConfigJsonFromFile(Context context) {
+    public static JSONObject readTerminalConfigJsonFromFile(Context context) {
         File externalStorage = Environment.getExternalStorageDirectory();
         File jsonFile = new File(externalStorage, JSON_FILE_NAME);
 
@@ -88,7 +88,7 @@ public class TerminalConfig {
         }
     }
 
-    public  String loadTerminalDataFromJson(Context context, String getStringValue) {
+    public static String loadTerminalDataFromJson(Context context, String getStringValue) {
         String terminalConfig = "";
 
         try {
