@@ -5,6 +5,9 @@ package com.isw.payapp.commonActions;
 *
 * */
 
+import android.content.Context;
+
+import com.isw.payapp.terminal.config.TerminalConfig;
 import com.isw.payapp.utils.RSAUtil;
 
 import java.io.StringWriter;
@@ -14,6 +17,9 @@ import java.util.List;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class TerminalXmlParser {
 
@@ -26,9 +32,12 @@ public class TerminalXmlParser {
         
     }
 
-    public String KeyDownload( List<Object>param) {
+    public static String KeyDownload(Context context, List<Object>param) {
         String xmlKeyPayload ="";
         //List<String>getPKVal = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        String formattedDateTime = now.format(formatter);
         try {
            // getPKVal = rsaUtil.GetRsaEnc();
             // Create StringWriter and XMLStreamWriter
@@ -46,26 +55,26 @@ public class TerminalXmlParser {
 
             // Write <terminfo>
             xmlStreamWriter.writeStartElement("terminfo");
-            writeElement(xmlStreamWriter, "mid", "CBLKE0000000001");
+            writeElement(xmlStreamWriter, "mid", TerminalConfig.loadTerminalDataFromJson(context,"__mid"));
             writeElement(xmlStreamWriter, "ttype", "POS");
-            writeElement(xmlStreamWriter, "tmanu", "PAX");
-            writeElement(xmlStreamWriter, "tid", "CBLKE001");
+            writeElement(xmlStreamWriter, "tmanu", "DSPREAD");
+            writeElement(xmlStreamWriter, "tid", TerminalConfig.loadTerminalDataFromJson(context,"__tid"));
             writeElement(xmlStreamWriter, "uid", "5C809201");
-            writeElement(xmlStreamWriter, "mloc", "CREDIT BANK");
+            writeElement(xmlStreamWriter, "mloc", TerminalConfig.loadTerminalDataFromJson(context,"__merchantloc"));
             writeElement(xmlStreamWriter, "batt", "0");
-            writeElement(xmlStreamWriter, "tim", "2023/10/03 09:34:11");
+            writeElement(xmlStreamWriter, "tim", formattedDateTime);
             writeElement(xmlStreamWriter, "csid", "SS:0");
             writeElement(xmlStreamWriter, "pstat", "67");
             writeElement(xmlStreamWriter, "lang", "EN");
             writeElement(xmlStreamWriter, "poscondcode", "00");
             writeElement(xmlStreamWriter, "posgeocode", "00254000000000404");
             writeElement(xmlStreamWriter, "currencycode", "404");
-            writeElement(xmlStreamWriter, "tmodel", "Telpo");
+            writeElement(xmlStreamWriter, "tmodel", "DSPREAD");
             writeElement(xmlStreamWriter, "comms", "GPRS");
             writeElement(xmlStreamWriter, "cstat", "0");
             writeElement(xmlStreamWriter, "sversion", "kimono-v3.15.4");
             writeElement(xmlStreamWriter, "hasbattery", "1");
-            writeElement(xmlStreamWriter, "lasttranstime", "2023/09/22 17:06:43");
+            writeElement(xmlStreamWriter, "lasttranstime", formattedDateTime);
             // ... add more elements as needed
             xmlStreamWriter.writeEndElement(); // </terminfo>
 
@@ -73,7 +82,7 @@ public class TerminalXmlParser {
             xmlStreamWriter.writeStartElement("request");
             writeElement(xmlStreamWriter, "ttid", "000004");
             writeElement(xmlStreamWriter, "type", "trans");
-            writeElement(xmlStreamWriter, "keysetid", "000024");
+            writeElement(xmlStreamWriter, "keysetid", "000002");
             writeElement(xmlStreamWriter, "hook", "C:s_keyhk.kxml");
             // ... add more elements as needed
 
@@ -82,8 +91,6 @@ public class TerminalXmlParser {
 
             // Write <keyinfo> inside <addinfo>
             xmlStreamWriter.writeStartElement("keyinfo");
-//            writeElement(xmlStreamWriter, "pkmod", "rdOJscsvOv9quO8OmW0sN99rR6faq7BVyaQQ3ttZAyXnREpLg43q9763ZQyEK7+esCAKU8ogiQM6MjCrg/N5dYVUuk6jucMDbQZXf5O3rGSdzl6Xq6gVeclW77YuBxYuFeLLLVyw6PF4WnxZ2vGGLq3IwhDvK757JpdKfUXV7TU=");
-//            writeElement(xmlStreamWriter, "pkex", "AAEAAQ==");
             writeElement(xmlStreamWriter, "pkmod", (String) param.get(0));
             writeElement(xmlStreamWriter, "pkex", (String) param.get(1));
             writeElement(xmlStreamWriter, "der", "1");
@@ -108,7 +115,7 @@ public class TerminalXmlParser {
         return xmlKeyPayload;
     }
 
-    private  void writeElement(XMLStreamWriter xmlStreamWriter, String name, String value) throws XMLStreamException {
+    private static void writeElement(XMLStreamWriter xmlStreamWriter, String name, String value) throws XMLStreamException {
         xmlStreamWriter.writeStartElement(name);
         xmlStreamWriter.writeCharacters(value);
         xmlStreamWriter.writeEndElement();

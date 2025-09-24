@@ -45,13 +45,13 @@ public class KeyDownloadSrv {
 
     public void DoKeyDownloaderProcess(){
         String dataval = "Test Telpo RSA";
-        rsaUtil = new RSAUtil(publicKey, privateKey, keyPair, keyPairGenerator);
+       // rsaUtil = new RSAUtil(publicKey, privateKey, keyPair, keyPairGenerator);
         pk_ = new ArrayList<>();
         try{
 
             pedFac = new PEDFactory(context);
 
-            pk_ = rsaUtil.GetRsaEnc();
+          //  pk_ = rsaUtil.GetRsaEnc();
             Log.i("DOKEYDOWNLOADLIST", "pkMod : "+pk_.get(0) +"\n pkExp : "+pk_.get(1));
 
         }catch (Exception e){
@@ -61,13 +61,13 @@ public class KeyDownloadSrv {
     }
 
     public List<Object>PKMod(){
-        rsaUtil = new RSAUtil(publicKey, privateKey, keyPair, keyPairGenerator);
+        //rsaUtil = new RSAUtil(publicKey, privateKey, keyPair, keyPairGenerator);
         List<Object> publicKeyList = new ArrayList<>();
         try{
 
             pedFac = new PEDFactory(context);
 
-            publicKeyList = rsaUtil.GetRsaEnc();
+          //  publicKeyList = rsaUtil.GetRsaEnc();
             //Log.i("DOKEYDOWNLOADLIST", "pkMod : "+publicKeyList.get(0) +"\n pkExp : "+publicKeyList.get(1));
 
         }catch (Exception e){

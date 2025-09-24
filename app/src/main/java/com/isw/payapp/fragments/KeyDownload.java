@@ -1,9 +1,12 @@
 package com.isw.payapp.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,22 +17,27 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.dspread.print.util.TRACE;
 import com.isw.payapp.Adapters.ImageAdapter;
 import com.isw.payapp.R;
 import com.isw.payapp.databinding.FragmentKeyDownloadBinding;
 
 import com.isw.payapp.devices.DeviceFactory;
 import com.isw.payapp.devices.interfaces.IPinPadProcessor;
+import com.isw.payapp.devices.services.NetworkService;
 import com.isw.payapp.model.ItemData;
 
 // Import the refactored Processor and its callback
 import com.isw.payapp.terminal.config.TerminalConfig;
-import com.isw.payapp.terminal.processors.KeydownloadProcessor;
 import com.isw.payapp.commonActions.TerminalXmlParser;
+import com.isw.payapp.utils.CommonUtil;
+import com.isw.payapp.utils.NetworkExecutor;
 import com.isw.payapp.utils.RSAUtil;
+import com.isw.payapp.utils.ThreeDES;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -54,6 +62,10 @@ public class KeyDownload extends Fragment {
     private final String ipektwTest = "D6D8291E53A7BF2B";
     private final String iksnTest = "FFFF000006DDDDE00000";
     private final String kcvTest = "10B9824432E458DD";
+
+    // Progress dialog
+    private ProgressDialog progressDialog;
+    private AlertDialog confirmationDialog;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -85,19 +97,55 @@ public class KeyDownload extends Fragment {
 
                 switch (clickedTitle) {
                     case "Keydownload":
-                        handleKeyDownload();
+                        showConfirmationDialog("Key Download",
+                                "Are you sure you want to download new keys? This will overwrite existing keys.",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (which == DialogInterface.BUTTON_POSITIVE) {
+                                            handleKeyDownload();
+                                        }
+                                    }
+                                });
                         break;
 
                     case "LoadKey":
-                        handleLoadKey();
+                        showConfirmationDialog("Load Key",
+                                "Are you sure you want to load the initial PIN key?",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (which == DialogInterface.BUTTON_POSITIVE) {
+                                            handleLoadKey();
+                                        }
+                                    }
+                                });
                         break;
 
                     case "Delete":
-                        handleDeleteKeys();
+                        showConfirmationDialog("Delete Keys",
+                                "WARNING: This will delete all keys from the device. Are you sure you want to proceed?",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (which == DialogInterface.BUTTON_POSITIVE) {
+                                            handleDeleteKeys();
+                                        }
+                                    }
+                                });
                         break;
 
                     case "Format":
-                        handleFormatPinPad();
+                        showConfirmationDialog("Format PIN Pad",
+                                "WARNING: This will reset the PIN pad to factory settings. All data will be lost. Are you sure?",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (which == DialogInterface.BUTTON_POSITIVE) {
+                                            handleFormatPinPad();
+                                        }
+                                    }
+                                });
                         break;
 
                     default:
@@ -107,73 +155,131 @@ public class KeyDownload extends Fragment {
         });
     }
 
+    private void showProgressDialog(String message) {
+        requireActivity().runOnUiThread(() -> {
+            if (progressDialog == null) {
+                progressDialog = new ProgressDialog(requireContext());
+                progressDialog.setCancelable(false);
+                progressDialog.setIndeterminate(true);
+            }
+            progressDialog.setMessage(message);
+            if (!progressDialog.isShowing()) {
+                progressDialog.show();
+            }
+        });
+    }
+
+    private void hideProgressDialog() {
+        requireActivity().runOnUiThread(() -> {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+        });
+    }
+
+    private void showConfirmationDialog(String title, String message, DialogInterface.OnClickListener listener) {
+        requireActivity().runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Yes", listener)
+                    .setNegativeButton("No", null)
+                    .setCancelable(true);
+
+            if (confirmationDialog != null && confirmationDialog.isShowing()) {
+                confirmationDialog.dismiss();
+            }
+            confirmationDialog = builder.create();
+            confirmationDialog.show();
+        });
+    }
+
+    private void showResultDialog(String title, String message, boolean isSuccess) {
+        requireActivity().runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("OK", null)
+                    .setCancelable(true);
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        });
+    }
+
     private void handleKeyDownload() {
-        // Show a progress indicator here if you have one
-       // binding.progressBar.setVisibility(View.VISIBLE);
+        showProgressDialog("Downloading keys... Please wait.");
 
         TerminalXmlParser parser = new TerminalXmlParser();
-        RSAUtil rsaUtil = new RSAUtil();
+        RSAUtil rsaUtil = new RSAUtil(1024);
+        ExecutorService networkExecutor = NetworkExecutor.getExecutor();
 
-        // 2. Get the URL from a config source (e.g., BuildConfig, shared preferences)
         String keyDownloadUrl = "https://" + TerminalConfig.loadTerminalDataFromJson(getContext(), "__transip") + ":"
-                + TerminalConfig.loadTerminalDataFromJson(getContext(), "__transport") + "/";;
+                + TerminalConfig.loadTerminalDataFromJson(getContext(), "__transport") + "/";
 
-        // 3. Create the Processor
-        KeydownloadProcessor processor = new KeydownloadProcessor(
-                requireContext(),
-                parser,
-                rsaUtil,
-                keyDownloadUrl
-        );
+        networkExecutor.execute(() -> {
+            try {
+                NetworkService.initialize(getContext(), keyDownloadUrl);
+                NetworkService networkService = NetworkService.getInstance();
+                List<Object> pkModExp = new ArrayList<>();
+                Map<String, String> components = rsaUtil.getPublicKeyPrivateComponents();
+                pkModExp.add(components.get("modulus"));
+                pkModExp.add(components.get("exponent"));
 
-        // 4. Execute the key download process asynchronously
-        processor.process(new KeydownloadProcessor.KeyDownloadCallback() {
-            @Override
-            public void onSuccess(String decryptedPinKey) {
-                requireActivity().runOnUiThread(() -> {
-                  //  binding.progressBar.setVisibility(View.GONE);
-                    Toast.makeText(requireContext(), "Key Download & Decryption Successful!", Toast.LENGTH_SHORT).show();
-                    Log.i("KeyDownload", "Decrypted Key: " + decryptedPinKey);
+                String response = networkService.postPayLoadSync(TerminalXmlParser.KeyDownload(getContext(), pkModExp));
+                TRACE.i("RESPONSE::" + response);
 
-                    // Inject the decrypted key into the PIN pad
-                    executor.execute(() -> {
-                        final int injectionResult = posPinPad.injectDukptKey(decryptedPinKey, iksnLive, kcvLive);
+                Map<String, String> resultMap = CommonUtil.convertXMLToMap(response);
+                String pin_key = resultMap.get("pinkey");
+                String pinKey = rsaUtil.decryptWithPrivateKeyComponents(pin_key, components.get("priModulus"),
+                        components.get("priExponent"), true);
 
-                        requireActivity().runOnUiThread(() -> {
-                            if (injectionResult == 0) {
-                                Toast.makeText(requireContext(), "Key Injection Successful!", Toast.LENGTH_SHORT).show();
-                                // Navigate only on success
-                                NavHostFragment.findNavController(KeyDownload.this)
-                                        .navigate(R.id.fragment_keydownload_to_homefragment);
-                            } else {
-                                Toast.makeText(requireContext(), "Key Injection Failed: " + injectionResult, Toast.LENGTH_LONG).show();
-                            }
-                        });
+
+
+                TRACE.i("pinKey.substring(0,32):" + pinKey);
+
+                executor.execute(() -> {
+                    final int result = posPinPad.injectDukptKey(pinKey.substring(14,46), iksnLive, "");
+
+                    requireActivity().runOnUiThread(() -> {
+                        hideProgressDialog();
+                        if (result == 0) {
+                            Log.i("DUKPT", "LOAD INITIAL PIN KEY SUCCESS: " + result);
+                            showResultDialog("Success", "Key download completed successfully!", true);
+                            Toast.makeText(requireActivity(), "Load INITIAL PIN success!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.i("DUKPT", "LOAD INITIAL PIN KEY FAILED: " + result);
+                            showResultDialog("Error", "Key download failed! Error code: " + result, false);
+                            Toast.makeText(requireActivity(), "Load INITIAL PIN failed!", Toast.LENGTH_SHORT).show();
+                        }
                     });
                 });
-            }
-
-            @Override
-            public void onFailure(Exception e) {
+            } catch (Exception e) {
+                e.printStackTrace();
                 requireActivity().runOnUiThread(() -> {
-                  //  binding.progressBar.setVisibility(View.GONE);
-                    Log.e("KeyDownload", "Key Download Failed", e);
-                    Toast.makeText(requireContext(), "Key Download Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    hideProgressDialog();
+                    showResultDialog("Error", "Key download failed: " + e.getMessage(), false);
+                    Toast.makeText(requireActivity(), "Key download error!", Toast.LENGTH_SHORT).show();
                 });
             }
         });
     }
 
     private void handleLoadKey() {
+        showProgressDialog("Loading initial PIN key...");
+
         executor.execute(() -> {
             final int result = posPinPad.injectDukptKey(ipektwLive, iksnLive, kcvLive);
 
             requireActivity().runOnUiThread(() -> {
+                hideProgressDialog();
                 if (result == 0) {
                     Log.i("DUKPT", "LOAD INITIAL PIN KEY SUCCESS: " + result);
+                    showResultDialog("Success", "Initial PIN key loaded successfully!", true);
                     Toast.makeText(requireActivity(), "Load INITIAL PIN success!", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.i("DUKPT", "LOAD INITIAL PIN KEY FAILED: " + result);
+                    showResultDialog("Error", "Failed to load initial PIN key! Error code: " + result, false);
                     Toast.makeText(requireActivity(), "Load INITIAL PIN failed!", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -181,15 +287,20 @@ public class KeyDownload extends Fragment {
     }
 
     private void handleDeleteKeys() {
+        showProgressDialog("Deleting keys...");
+
         executor.execute(() -> {
             final int result = posPinPad.deleteKeys();
 
             requireActivity().runOnUiThread(() -> {
+                hideProgressDialog();
                 if (result == 0) {
                     Log.i("KeyDownload", "DELETE KEYS SUCCESS: " + result);
+                    showResultDialog("Success", "All keys deleted successfully!", true);
                     Toast.makeText(requireActivity(), "DELETE KEYS SUCCESS!", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.i("KeyDownload", "DELETE KEYS FAILED: " + result);
+                    showResultDialog("Error", "Failed to delete keys! Error code: " + result, false);
                     Toast.makeText(requireActivity(), "DELETE KEYS FAILED!", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -197,15 +308,20 @@ public class KeyDownload extends Fragment {
     }
 
     private void handleFormatPinPad() {
+        showProgressDialog("Resetting PIN pad...");
+
         executor.execute(() -> {
             final int result = posPinPad.resetKey();
 
             requireActivity().runOnUiThread(() -> {
+                hideProgressDialog();
                 if (result == 0) {
                     Log.i("KeyDownload", "PINPAD RESET SUCCESS: " + result);
+                    showResultDialog("Success", "PIN pad reset successfully!", true);
                     Toast.makeText(requireActivity(), "PINPAD RESET SUCCESS!", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.i("KeyDownload", "PINPAD RESET FAILED: " + result);
+                    showResultDialog("Error", "PIN pad reset failed! Error code: " + result, false);
                     Toast.makeText(requireActivity(), "PINPAD RESET FAILED!", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -215,6 +331,14 @@ public class KeyDownload extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Clean up dialogs
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        if (confirmationDialog != null && confirmationDialog.isShowing()) {
+            confirmationDialog.dismiss();
+        }
+
         // Clean up the executor when the view is destroyed
         executor.shutdown();
         // Close the device connection
@@ -239,6 +363,4 @@ public class KeyDownload extends Fragment {
         }
         return itemDataList;
     }
-
-    
 }

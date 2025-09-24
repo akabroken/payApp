@@ -7,9 +7,7 @@ import android.util.Log;
 import com.dspread.print.util.TRACE;
 import com.dspread.xpos.MPOSService;
 import com.dspread.xpos.QPOSService;
-import com.isw.payapp.devices.dspread.callbacks.IConnectionServiceCallback;
-import com.isw.payapp.devices.dspread.callbacks.IPaymentServiceCallback;
-import com.isw.payapp.devices.dspread.utils.FileUtils;
+import com.isw.payapp.devices.dspread.utils.DUKPK2009_CBC;
 import com.isw.payapp.devices.interfaces.IPinPadProcessor;
 import com.isw.payapp.utils.ThreeDES;
 
@@ -21,175 +19,224 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DSpreadPinPadService implements IPinPadProcessor {
-    private Context context;
-    private QPOSService.QPOSServiceListener listener;
     private static final String TAG = "DSpreadPINPadService";
-    private QPOSService pos;
+    private static final int OPERATION_TIMEOUT_SECONDS = 30;
 
-    // Synchronization objects for async operations
+    private final Context context;
+    private final QPOSService pos;
+    private final QPOSCallback callback;
+
+    // Thread-safe operation state
     private CountDownLatch operationLatch;
-    private int lastOperationResult = -1;
-    private boolean lastOperationSuccess = false;
+    private final AtomicBoolean lastOperationSuccess = new AtomicBoolean(false);
 
-    public DSpreadPinPadService(Context context){
+    public DSpreadPinPadService(Context context) {
         this.context = context;
-        this.listener = new Callback();
+        this.callback = new QPOSCallback();
+        this.pos = QPOSService.getInstance(context, QPOSService.CommunicationMode.UART);
+        pos.initListener(callback);
     }
 
     @Override
     public void initPinPad() {
-        Log.i(TAG, "Initializing EMV Service");
+        Log.i(TAG, "Initializing PIN Pad Service");
         try {
-            pos = QPOSService.getInstance(context, QPOSService.CommunicationMode.UART);
             pos.openUart();
-            pos.initListener(listener);
+            pos.setFormatId(QPOSService.FORMATID.DUKPT_MKSK);
             Log.i(TAG, "PIN Pad initialized successfully");
         } catch (Exception e) {
             Log.e(TAG, "Failed to initialize PIN Pad", e);
+            throw new RuntimeException("PIN Pad initialization failed", e);
         }
     }
 
     @Override
-    public int injectDukptKey(String key, String iKsn, String kcv) {
-        Log.i(TAG, "Injecting DUKPT key: KSN=" + iKsn);
+    public int injectDukptKey(String key, String ksn, String kcv) {
+        Log.i(TAG, "Injecting DUKPT key: KSN=" + ksn);
+
+        validateInputParameters(key, ksn);
+        resetOperationState();
 
         try {
-            // Reset previous operation state
-            lastOperationSuccess = false;
-            operationLatch = new CountDownLatch(1);
-            resetWorkingKey();
-
-            // Set master key first
-            pos.setMasterKey("1A4D672DCA6CB3351FD1B02B237AF9AE", "08D7B4FB629D0885", 1);
-
-            // Wait for master key setting to complete with timeout
-            boolean masterKeySet = operationLatch.await(30, TimeUnit.SECONDS);
-//            if (!masterKeySet || !lastOperationSuccess) {
-//                Log.e(TAG, "Failed to set master key");
-//                return -1;
-//            }
-
-            // Reset for next operation
-            operationLatch = new CountDownLatch(1);
-            lastOperationSuccess = false;
-
-            // Inject DUKPT keys
-            injectDukpt(key, iKsn);
-
-            // Wait for DUKPT injection to complete
-            boolean dukptInjected = operationLatch.await(30, TimeUnit.SECONDS);
-//            if (!dukptInjected || !lastOperationSuccess) {
-//                Log.e(TAG, "Failed to inject DUKPT keys");
-//                return -2;
-//            }
-
-            // Load EMV configurations
-            loadEmvConfigs();
-
-            Log.i(TAG, "DUKPT key injection completed successfully");
-            return 0;
-
+            return executeDukptInjection(key, ksn);
         } catch (InterruptedException e) {
-            Log.e(TAG, "Operation interrupted", e);
+            Log.e(TAG, "DUKPT injection interrupted", e);
             Thread.currentThread().interrupt();
-            return -3;
+            return ErrorCode.OPERATION_INTERRUPTED;
         } catch (Exception e) {
             Log.e(TAG, "Unexpected error during DUKPT injection", e);
-            return -4;
+            return ErrorCode.UNEXPECTED_ERROR;
         }
     }
 
-    private void injectDukpt(String key, String iKsn) {
+    private void validateInputParameters(String key, String ksn) {
+        if (key == null || key.trim().isEmpty()) {
+            throw new IllegalArgumentException("Key cannot be null or empty");
+        }
+        if (ksn == null || ksn.trim().isEmpty()) {
+            throw new IllegalArgumentException("KSN cannot be null or empty");
+        }
+    }
+
+    private int executeDukptInjection(String key, String ksn) throws InterruptedException {
+        // Inject DUKPT keys
+        injectDukptKeys(key, ksn);
+
+        // Wait for operation completion
+        if (!operationLatch.await(OPERATION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+            Log.e(TAG, "DUKPT injection timeout");
+            return ErrorCode.OPERATION_TIMEOUT;
+        }
+
+        if (!lastOperationSuccess.get()) {
+            Log.e(TAG, "DUKPT injection failed");
+            return ErrorCode.OPERATION_FAILED;
+        }
+
+        // Load EMV configurations
+        loadEmvConfigs();
+
+        Log.i(TAG, "DUKPT key injection completed successfully");
+        return ErrorCode.SUCCESS;
+    }
+
+    private void injectDukptKeys(String key, String ksn) {
         try {
-            String tmk = "1A4D672DCA6CB3351FD1B02B237AF9AE";
             ThreeDES threeDES = new ThreeDES();
-            String demoTrackKsn = iKsn;
-            String demoTrackIpek = key;
+            //DUKPK2009_CBC.GetDUKPTKey(threeDES.hexStringToByteArray(ksn) ,threeDES.hexStringToByteArray(key));
+            //threeDES.byteArrayToHexString(DUKPK2009_CBC.GetDUKPTKey(threeDES.hexStringToByteArray(ksn) ,threeDES.hexStringToByteArray(key)));;//
 
-            // Calculate KCV
-            String demoIpekKcv = threeDES.tdesECBEncrypt(demoTrackIpek, "0000000000000000");
-            String kcvOut = threeDES.extractKcv(demoIpekKcv);
-            Log.i(TAG, "Track IPEK KCV: " + kcvOut);
+            String defaultMasterKey = "0123456789ABCDEFFEDCBA9876543210"; //
 
-            // Encrypt IPEK with TMK
-            String encDemoTrackIpek = threeDES.tdesECBEncrypt(tmk, demoTrackIpek);
-            Log.i(TAG, "Encrypted Track IPEK: " + encDemoTrackIpek);
 
-            // Use same values for EMV and PIN for simplicity (adjust as needed)
-            String demoEmvKsn = iKsn;
-            String demoEmvIpek = key;
-            String demoEmvIpekKcv = threeDES.tdesECBEncrypt(demoEmvIpek, "0000000000000000");
-            String emvKcv = threeDES.extractKcv(demoEmvIpekKcv);
-            Log.i(TAG, "EMV IPEK KCV: " + emvKcv);
+            pos.resetQPOS();
+            pos.resetPosStatus();
+            pos.doTrade(60);
 
-            String encDemoEmvIpek = threeDES.tdesECBEncrypt(tmk, demoEmvIpek);
-            Log.i(TAG, "Encrypted EMV IPEK: " + encDemoEmvIpek);
+            String configPem = FileUtils.readAssetFile("debug_certificate.pem", context)
+                    .replace("-----BEGIN PRIVATE KEY-----","")
+                    .replace("-----END PRIVATE KEY-----","")
+                    .replace("\n","").trim();
+            pos.updateWorkKey(configPem);
 
-            String demoPinKsn = iKsn;
-            String demoPinIpek = key;
-            String demoPinIpekKcv = threeDES.tdesECBEncrypt(demoPinIpek, "0000000000000000");
-            String pinKcv = threeDES.extractKcv(demoPinIpekKcv);
-            Log.i(TAG, "PIN IPEK KCV: " + pinKcv);
+            //E92628BFF599820E6AD70DB7C3B574AE - ENc bdk
 
-            String encDemoPinIpek = threeDES.tdesECBEncrypt(tmk, demoPinIpek);
-            Log.i(TAG, "Encrypted PIN IPEK: " + encDemoPinIpek);
 
-            // Update IPEK operation
-            pos.doUpdateIPEKOperation("0", demoTrackKsn, encDemoTrackIpek, kcvOut,
-                    demoEmvKsn, encDemoEmvIpek, emvKcv, demoPinKsn, encDemoPinIpek, pinKcv);
+            String masterKey = "50C9E6C522C6779ECC3BB995157B51B3" ;//kcv - 08D7B4FB629D0885 - "1A4D672DCA6CB3351FD1B02B237AF9AE"
+            String encryptedMasterKey = threeDES.tdesECBEncrypt(defaultMasterKey, masterKey);
+            String masterKeyKcv = threeDES.extractKcv(threeDES.tdesECBEncrypt(defaultMasterKey, "0000000000000000"));
+            TRACE.i("New Encrypted master key and check value : "+encryptedMasterKey+" :"+masterKeyKcv);
+
+           //
+            //
+            pos.setMasterKey(defaultMasterKey, masterKeyKcv, 0);
+
+           // pos.up()
+
+           // DukptKeySet maSterKeyKeys_ = createDukptKeySet(threeDES, key.substring(6), ksn, encryptedMasterKey, "Track");
+            TRACE.i("MASTER KEY::"+defaultMasterKey);
+            TRACE.i("IPEK KEY::"+key);
+            DukptKeySet trackKeys = createDukptKeySet(threeDES, key, ksn, defaultMasterKey, "Track");
+            DukptKeySet emvKeys = createDukptKeySet(threeDES, key, ksn, defaultMasterKey, "EMV");
+            DukptKeySet pinKeys = createDukptKeySet(threeDES, key, ksn, defaultMasterKey, "PIN");
+
+            logKeyDetails(trackKeys, emvKeys, pinKeys);
+
+            String checkValue = threeDES.generateCheckValue(key);
+            System.out.println("16-digit Check Value: " + checkValue);
+
+            TRACE.i("IPEK::"+key.substring(6));
+            TRACE.i("KCV::"+key.substring(0,6));
+
+//            pos.doUpdateIPEKOperation("0",
+//                    ksn, key.substring(6), key.substring(0,6),
+//                    ksn, key.substring(6), key.substring(0,6),
+//                    ksn, key.substring(6), key.substring(0,6));
+
+//            pos.doUpdateIPEKOperation("0",
+//                    trackKeys.ksn, trackKeys.encryptedIpek, trackKeys.kcv,
+//                    emvKeys.ksn, emvKeys.encryptedIpek, emvKeys.kcv,
+//                    pinKeys.ksn, pinKeys.encryptedIpek, pinKeys.kcv);
+            pos.doUpdateIPEKOperation("0", "09118012400705E00000",
+                    "C22766F7379DD38AA5E1DA8C6AFA75AC", "B2DE27F60A443944",
+                    "09118012400705E00000", "C22766F7379DD38AA5E1DA8C6AFA75AC",
+                    "B2DE27F60A443944", "09118012400705E00000",
+                    "C22766F7379DD38AA5E1DA8C6AFA75AC", "B2DE27F60A443944");
 
         } catch (Exception e) {
             Log.e(TAG, "Error in DUKPT injection process", e);
-            if (operationLatch != null) {
-                operationLatch.countDown();
-            }
+            completeOperation(false);
         }
     }
 
-    private void connectDevice() {
-        // Implement proper device connection if needed
-        Log.i(TAG, "Connect device functionality not fully implemented");
+    private DukptKeySet createDukptKeySet(ThreeDES threeDES, String key, String ksn,
+                                          String masterKey, String keyType) {
+        String kcv = threeDES.extractKcv(threeDES.tdesECBEncrypt(key, "0000000000000000"));
+        String encryptedIpek = threeDES.tdesECBEncrypt(masterKey, key);
+
+        Log.i(TAG, String.format("%s IPEK KCV: %s", keyType, kcv));
+        Log.i(TAG, String.format("Encrypted %s IPEK: %s", keyType, encryptedIpek));
+
+        return new DukptKeySet(ksn, encryptedIpek, kcv);
+    }
+
+    private void logKeyDetails(DukptKeySet... keySets) {
+        for (DukptKeySet keySet : keySets) {
+            Log.d(TAG, "KeySet - KSN: " + keySet.ksn + ", KCV: " + keySet.kcv);
+        }
+    }
+
+    private void resetOperationState() {
+        operationLatch = new CountDownLatch(1);
+        lastOperationSuccess.set(false);
+    }
+
+    private void completeOperation(boolean success) {
+        lastOperationSuccess.set(success);
+        if (operationLatch != null) {
+            operationLatch.countDown();
+        }
     }
 
     @Override
     public int resetKey() {
+        Log.i(TAG, "Resetting PIN Pad keys");
         try {
-            Log.i(TAG, "Resetting PIN Pad keys");
             pos.resetQPOS();
-            return 0;
+            return ErrorCode.SUCCESS;
         } catch (Exception e) {
             Log.e(TAG, "Failed to reset keys", e);
-            return -1;
+            return ErrorCode.OPERATION_FAILED;
+        }
+    }
+
+    @Override
+    public int deleteKeys() {
+        Log.i(TAG, "Deleting all keys");
+        try {
+            pos.resetQPOS();
+            return ErrorCode.SUCCESS;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to delete keys", e);
+            return ErrorCode.OPERATION_FAILED;
         }
     }
 
     @Override
     public void deleteKey() {
-        // Single key deletion - implement based on your requirements
-        Log.i(TAG, "Delete key functionality not implemented");
-    }
-
-    @Override
-    public int deleteKeys() {
-        try {
-            Log.i(TAG, "Deleting all keys");
-            // This might vary based on your specific device requirements
-            pos.resetQPOS();
-            return 0;
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to delete keys", e);
-            return -1;
-        }
+        Log.w(TAG, "Single key deletion not implemented - use deleteKeys() instead");
     }
 
     @Override
     public void deviceClose() {
+        Log.i(TAG, "Closing device connection");
         try {
             if (pos != null) {
                 pos.closeUart();
-                Log.i(TAG, "Device connection closed");
+                Log.i(TAG, "Device connection closed successfully");
             }
         } catch (Exception e) {
             Log.e(TAG, "Error closing device", e);
@@ -198,71 +245,455 @@ public class DSpreadPinPadService implements IPinPadProcessor {
 
     private void loadEmvConfigs() {
         try {
-            String fileName = "emv_profile_tlv.xml";
-            String configContent = new String(FileUtils.readAssetsLine(fileName, context));
+            String configContent = FileUtils.readAssetFile("emv_profile_tlv.xml", context);
             pos.updateEMVConfigByXml(configContent);
-            Log.i(TAG, "EMV configurations loaded");
+            Log.i(TAG, "EMV configurations loaded successfully");
         } catch (Exception e) {
             Log.e(TAG, "Failed to load EMV configurations", e);
         }
     }
 
-    private void resetWorkingKey(){
-        try {
-            String fileName = "debug_certificate.pem";
-            String configContent = new String(FileUtils.readAssetsLine(fileName, context));
-            pos.updateWorkKey(configContent);
-            Log.i(TAG, "Working Key Loaded");
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to load Working Key", e);
-        }
-    }
-
-    private class Callback implements QPOSService.QPOSServiceListener {
-        // Implement only the essential callback methods
-
-        @Override
-        public void onReturnSetMasterKeyResult(boolean success) {
-            Log.i(TAG, "Master key set result: " + success);
-            lastOperationSuccess = success;
-            if (operationLatch != null) {
-                operationLatch.countDown();
-            }
-        }
-
-        @Override
-        public void onReturnSetMasterKeyResult(boolean b, Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void onRequestUpdateKey(String s) {
-
-        }
+    /**
+     * Simplified callback handler focusing on essential operations
+     */
+    private class QPOSCallback implements QPOSService.QPOSServiceListener {
 
         @Override
         public void onReturnUpdateIPEKResult(boolean success) {
             Log.i(TAG, "IPEK update result: " + success);
-            lastOperationSuccess = success;
-            if (operationLatch != null) {
-                operationLatch.countDown();
-            }
+            completeOperation(success);
         }
 
         @Override
-        public void onReturnRSAResult(String s) {
+        public void onRequestSetMPOCPin() {
 
         }
 
         @Override
-        public void onReturnUpdateEMVResult(boolean b) {
+        public void onReturnGetMPOCPinResult(String s, Hashtable<String, String> hashtable) {
 
         }
 
         @Override
-        public void onReturnUpdateEMVResult(boolean b, List<String> list) {
+        public void onGetDeviceTestResult(boolean b) {
 
         }
+
+        @Override
+        public void onQposRequestPinResult(List<String> list, int i) {
+
+        }
+
+        @Override
+        public void onReturnD20SleepTimeResult(boolean b) {
+
+        }
+
+        @Override
+        public void onQposRequestPinStartResult(List<String> list) {
+
+        }
+
+        @Override
+        public void onQposPinMapSyncResult(boolean b, boolean b1) {
+
+        }
+
+        @Override
+        public void onRequestWaitingUser() {
+
+        }
+
+        @Override
+        public void onReturnSyncVersionInfo(QPOSService.FirmwareStatus firmwareStatus, String s, QPOSService.QposStatus qposStatus) {
+
+        }
+
+        @Override
+        public void onReturnSpLogResult(String s) {
+
+        }
+
+        @Override
+        public void onReturnRsaResult(String s) {
+
+        }
+
+        @Override
+        public void onQposInitModeResult(boolean b) {
+
+        }
+
+        @Override
+        public void onD20StatusResult(String s) {
+
+        }
+
+        @Override
+        public void onQposTestSelfCommandResult(boolean b, String s) {
+
+        }
+
+        @Override
+        public void onQposTestCommandResult(boolean b, String s) {
+
+        }
+
+        @Override
+        public void onQposGetRealTimeSelfDestructStatus(boolean b, String s) {
+
+        }
+
+        @Override
+        public void onReturPosSelfDestructRecords(boolean b, String s) {
+
+        }
+
+        @Override
+        public void onQposIdResult(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onQposKsnResult(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onQposIsCardExist(boolean b) {
+
+        }
+
+        @Override
+        public void onRequestDeviceScanFinished() {
+
+        }
+
+        @Override
+        public void onQposInfoResult(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onQposUpdateDataWithKeyResult(boolean b) {
+
+        }
+
+        @Override
+        public void onQposGetDeviceECCPublicKeyResult(String s) {
+
+        }
+
+        @Override
+        public void onQposUpdateServerECCPublicKeyResult(boolean b) {
+
+        }
+
+        @Override
+        public void onQposTestResult(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onQposCertificateInfoResult(List<String> list) {
+
+        }
+
+        @Override
+        public void onQposGenerateSessionKeysResult(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onQposDoSetRsaPublicKey(boolean b) {
+
+        }
+
+        @Override
+        public void onSearchMifareCardResult(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onBatchReadMifareCardResult(String s, Hashtable<String, List<String>> hashtable) {
+
+        }
+
+        @Override
+        public void onBatchWriteMifareCardResult(String s, Hashtable<String, List<String>> hashtable) {
+
+        }
+
+        @Override
+        public void onDoTradeResult(QPOSService.DoTradeResult doTradeResult, Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onFinishMifareCardResult(boolean b) {
+
+        }
+
+        @Override
+        public void onVerifyMifareCardResult(boolean b) {
+
+        }
+
+        @Override
+        public void onReadMifareCardResult(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onWriteMifareCardResult(boolean b) {
+
+        }
+
+        @Override
+        public void onOperateMifareCardResult(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void getMifareCardVersion(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void getMifareReadData(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void getMifareFastReadData(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void writeMifareULData(String s) {
+
+        }
+
+        @Override
+        public void verifyMifareULData(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void transferMifareData(String s) {
+
+        }
+
+        @Override
+        public void onRequestSetAmount() {
+
+        }
+
+        @Override
+        public void onRequestSelectEmvApp(ArrayList<String> arrayList) {
+
+        }
+
+        @Override
+        public void onRequestIsServerConnected() {
+
+        }
+
+        @Override
+        public void onRequestFinalConfirm() {
+
+        }
+
+        @Override
+        public void onRequestOnlineProcess(String s) {
+
+        }
+
+        @Override
+        public void onRequestTime() {
+
+        }
+
+        @Override
+        public void onRequestTransactionResult(QPOSService.TransactionResult transactionResult) {
+
+        }
+
+        @Override
+        public void onRequestTransactionLog(String s) {
+
+        }
+
+        @Override
+        public void onRequestBatchData(String s) {
+
+        }
+
+        @Override
+        public void onRequestQposConnected() {
+            Log.i(TAG, "QPOS device connected");
+        }
+
+        @Override
+        public void onRequestQposDisconnected() {
+            Log.w(TAG, "QPOS device disconnected");
+        }
+
+        @Override
+        public void onRequestNoQposDetected() {
+
+        }
+
+        @Override
+        public void onRequestNoQposDetectedUnbond() {
+
+        }
+
+        @Override
+        public void onError(QPOSService.Error error) {
+            Log.e(TAG, "PIN Pad error: " + error);
+            completeOperation(false);
+        }
+
+        @Override
+        public void onRequestDisplay(QPOSService.Display display) {
+
+        }
+
+        @Override
+        public void onReturnReversalData(String s) {
+
+        }
+
+        @Override
+        public void onReturnGetPinInputResult(int i) {
+
+        }
+
+        @Override
+        public void onReturnGetKeyBoardInputResult(String s) {
+
+        }
+
+        @Override
+        public void onReturnGetPinResult(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onReturnPowerOnIccResult(boolean b, String s, String s1, int i) {
+
+        }
+
+        @Override
+        public void onReturnPowerOffIccResult(boolean b) {
+
+        }
+
+        @Override
+        public void onReturnApduResult(boolean b, String s, int i) {
+
+        }
+
+        @Override
+        public void onReturnPowerOnFelicaResult(MPOSService.FelicaStatusCode felicaStatusCode) {
+
+        }
+
+        @Override
+        public void onReturnPowerOffFelicaResult(MPOSService.FelicaStatusCode felicaStatusCode) {
+
+        }
+
+        @Override
+        public void onReturnSendApduFelicaResult(MPOSService.FelicaStatusCode felicaStatusCode, String s, String s1) {
+
+        }
+
+        @Override
+        public void onReturnSetSleepTimeResult(boolean b) {
+
+        }
+
+        @Override
+        public void onGetCardNoResult(String s) {
+
+        }
+
+        @Override
+        public void onGetCardInfoResult(Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onRequestSignatureResult(byte[] bytes) {
+
+        }
+
+        @Override
+        public void onRequestCalculateMac(String s) {
+
+        }
+
+        // Region: Essential callback implementations
+        //================================================================
+        @Override
+        public void onReturnSetMasterKeyResult(boolean success) {
+            Log.d(TAG, "Master key set result: " + success);
+        }
+
+        @Override
+        public void onReturnSetMasterKeyResult(boolean success, java.util.Hashtable<String, String> details) {
+            Log.d(TAG, "Master key set result: " + success);
+        }
+
+        @Override
+        public void onRequestUpdateWorkKeyResult(QPOSService.UpdateInformationResult result) {
+            Log.i(TAG, "Work key update result: " + result);
+        }
+
+        @Override
+        public void onRequestUpdateWorkKeyResult(QPOSService.UpdateInformationResult updateInformationResult, Hashtable<String, String> hashtable) {
+
+        }
+
+        @Override
+        public void onRequestSendTR31KeyResult(boolean b) {
+
+        }
+
+        @Override
+        public void onReturnCustomConfigResult(boolean b, String s) {
+
+        }
+
+        @Override
+        public void onReturnDoInputCustomStr(boolean b, String s, String s1) {
+
+        }
+
+        @Override
+        public void onRetuenGetTR31Token(String s) {
+
+        }
+
+        @Override
+        public void onRequestSetPin() {
+
+        }
+
+        @Override
+        public void onRequestSetPin(boolean b, int i) {
+
+        }
+        //================================================================
+
+        // Region: Empty implementations for unused callbacks
+        //================================================================
+        @Override public void onRequestUpdateKey(String key) {}
+        @Override public void onReturnRSAResult(String result) {}
+        @Override public void onReturnUpdateEMVResult(boolean success) {}
+        @Override public void onReturnUpdateEMVResult(boolean success, java.util.List<String> list) {}
 
         @Override
         public void onReturnGetQuickEmvResult(boolean b) {
@@ -284,10 +715,7 @@ public class DSpreadPinPadService implements IPinPadProcessor {
 
         }
 
-        @Override
-        public void onDeviceFound(BluetoothDevice bluetoothDevice) {
-
-        }
+        @Override public void onDeviceFound(BluetoothDevice device) {}
 
         @Override
         public void onReturnBatchSendAPDUResult(LinkedHashMap<Integer, String> linkedHashMap) {
@@ -361,6 +789,7 @@ public class DSpreadPinPadService implements IPinPadProcessor {
 
         @Override
         public void onUpdateMasterKeyResult(boolean b, Hashtable<String, String> hashtable) {
+            TRACE.d("onUpdateMasterKeyResult" + hashtable );
 
         }
 
@@ -678,421 +1107,48 @@ public class DSpreadPinPadService implements IPinPadProcessor {
         public void onReturnDeviceCertAndSignatureResult(String s, String s1) {
 
         }
-
-        @Override
-        public void onRequestUpdateWorkKeyResult(QPOSService.UpdateInformationResult updateInformationResult) {
-            Log.i(TAG, "Work key update result: " + updateInformationResult.toString());
-        }
-
-        @Override
-        public void onRequestUpdateWorkKeyResult(QPOSService.UpdateInformationResult updateInformationResult, Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void onRequestSendTR31KeyResult(boolean b) {
-
-        }
-
-        @Override
-        public void onReturnCustomConfigResult(boolean b, String s) {
-
-        }
-
-        @Override
-        public void onReturnDoInputCustomStr(boolean b, String s, String s1) {
-
-        }
-
-        @Override
-        public void onRetuenGetTR31Token(String s) {
-
-        }
-
-        @Override
-        public void onRequestSetPin() {
-
-        }
-
-        @Override
-        public void onRequestSetPin(boolean b, int i) {
-
-        }
-
-        @Override
-        public void onError(QPOSService.Error error) {
-            Log.e(TAG, "PIN Pad error: " + error.toString());
-            lastOperationSuccess = false;
-            if (operationLatch != null) {
-                operationLatch.countDown();
-            }
-        }
-
-        @Override
-        public void onRequestDisplay(QPOSService.Display display) {
-
-        }
-
-        @Override
-        public void onReturnReversalData(String s) {
-
-        }
-
-        @Override
-        public void onReturnGetPinInputResult(int i) {
-
-        }
-
-        @Override
-        public void onReturnGetKeyBoardInputResult(String s) {
-
-        }
-
-        @Override
-        public void onReturnGetPinResult(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void onReturnPowerOnIccResult(boolean b, String s, String s1, int i) {
-
-        }
-
-        @Override
-        public void onReturnPowerOffIccResult(boolean b) {
-
-        }
-
-        @Override
-        public void onReturnApduResult(boolean b, String s, int i) {
-
-        }
-
-        @Override
-        public void onReturnPowerOnFelicaResult(MPOSService.FelicaStatusCode felicaStatusCode) {
-
-        }
-
-        @Override
-        public void onReturnPowerOffFelicaResult(MPOSService.FelicaStatusCode felicaStatusCode) {
-
-        }
-
-        @Override
-        public void onReturnSendApduFelicaResult(MPOSService.FelicaStatusCode felicaStatusCode, String s, String s1) {
-
-        }
-
-        @Override
-        public void onReturnSetSleepTimeResult(boolean b) {
-
-        }
-
-        @Override
-        public void onGetCardNoResult(String s) {
-
-        }
-
-        @Override
-        public void onGetCardInfoResult(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void onRequestSignatureResult(byte[] bytes) {
-
-        }
-
-        @Override
-        public void onRequestCalculateMac(String s) {
-
-        }
-
-        @Override
-        public void onRequestQposConnected() {
-            Log.i(TAG, "QPOS device connected");
-        }
-
-        @Override
-        public void onRequestQposDisconnected() {
-            Log.w(TAG, "QPOS device disconnected");
-        }
-
-        @Override
-        public void onRequestNoQposDetected() {
-
-        }
-
-        @Override
-        public void onRequestNoQposDetectedUnbond() {
-
-        }
-
-        // Add empty implementations for other required methods but only log essential ones
-        @Override public void onQposInfoResult(Hashtable<String, String> hashtable) {}
-
-        @Override
-        public void onQposUpdateDataWithKeyResult(boolean b) {
-
-        }
-
-        @Override
-        public void onQposGetDeviceECCPublicKeyResult(String s) {
-
-        }
-
-        @Override
-        public void onQposUpdateServerECCPublicKeyResult(boolean b) {
-
-        }
-
-        @Override
-        public void onQposTestResult(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void onQposCertificateInfoResult(List<String> list) {
-
-        }
-
-        @Override
-        public void onQposGenerateSessionKeysResult(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void onQposDoSetRsaPublicKey(boolean b) {
-
-        }
-
-        @Override
-        public void onSearchMifareCardResult(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void onBatchReadMifareCardResult(String s, Hashtable<String, List<String>> hashtable) {
-
-        }
-
-        @Override
-        public void onBatchWriteMifareCardResult(String s, Hashtable<String, List<String>> hashtable) {
-
-        }
-
-        @Override
-        public void onDoTradeResult(QPOSService.DoTradeResult doTradeResult, Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void onFinishMifareCardResult(boolean b) {
-
-        }
-
-        @Override
-        public void onVerifyMifareCardResult(boolean b) {
-
-        }
-
-        @Override
-        public void onReadMifareCardResult(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void onWriteMifareCardResult(boolean b) {
-
-        }
-
-        @Override
-        public void onOperateMifareCardResult(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void getMifareCardVersion(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void getMifareReadData(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void getMifareFastReadData(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void writeMifareULData(String s) {
-
-        }
-
-        @Override
-        public void verifyMifareULData(Hashtable<String, String> hashtable) {
-
-        }
-
-        @Override
-        public void transferMifareData(String s) {
-
-        }
-
-        @Override
-        public void onRequestSetAmount() {
-
-        }
-
-        @Override
-        public void onRequestSelectEmvApp(ArrayList<String> arrayList) {
-
-        }
-
-        @Override
-        public void onRequestIsServerConnected() {
-
-        }
-
-        @Override
-        public void onRequestFinalConfirm() {
-
-        }
-
-        @Override
-        public void onRequestOnlineProcess(String s) {
-
-        }
-
-        @Override
-        public void onRequestTime() {
-
-        }
-
-        @Override
-        public void onRequestTransactionResult(QPOSService.TransactionResult transactionResult) {
-
-        }
-
-        @Override
-        public void onRequestTransactionLog(String s) {
-
-        }
-
-        @Override
-        public void onRequestBatchData(String s) {
-
-        }
-
-        @Override public void onQposIdResult(Hashtable<String, String> hashtable) {}
-        @Override public void onQposKsnResult(Hashtable<String, String> hashtable) {}
-
-        @Override
-        public void onQposIsCardExist(boolean b) {
-
-        }
-
-        @Override
-        public void onRequestDeviceScanFinished() {
-
-        }
-
-        // Empty implementations for all other methods to avoid breaking changes
-        @Override public void onRequestSetMPOCPin() {}
-        @Override public void onReturnGetMPOCPinResult(String s, Hashtable<String, String> hashtable) {}
-
-        @Override
-        public void onGetDeviceTestResult(boolean b) {
-
-        }
-
-        @Override
-        public void onQposRequestPinResult(List<String> list, int i) {
-
-        }
-
-        @Override
-        public void onReturnD20SleepTimeResult(boolean b) {
-
-        }
-
-        @Override
-        public void onQposRequestPinStartResult(List<String> list) {
-
-        }
-
-        @Override
-        public void onQposPinMapSyncResult(boolean b, boolean b1) {
-
-        }
-
-        @Override
-        public void onRequestWaitingUser() {
-
-        }
-
-        @Override
-        public void onReturnSyncVersionInfo(QPOSService.FirmwareStatus firmwareStatus, String s, QPOSService.QposStatus qposStatus) {
-
-        }
-
-        @Override
-        public void onReturnSpLogResult(String s) {
-
-        }
-
-        @Override
-        public void onReturnRsaResult(String s) {
-
-        }
-
-        @Override
-        public void onQposInitModeResult(boolean b) {
-
-        }
-
-        @Override
-        public void onD20StatusResult(String s) {
-
-        }
-
-        @Override
-        public void onQposTestSelfCommandResult(boolean b, String s) {
-
-        }
-
-        @Override
-        public void onQposTestCommandResult(boolean b, String s) {
-
-        }
-
-        @Override
-        public void onQposGetRealTimeSelfDestructStatus(boolean b, String s) {
-
-        }
-
-        @Override
-        public void onReturPosSelfDestructRecords(boolean b, String s) {
-
-        }
-        // ... [keep all other empty methods but add @Override annotation] ...
-
-        // Add empty implementations for all remaining methods from the interface
-        // This ensures you don't break when the SDK updates
+        // Add other empty implementations as needed...
+        //================================================================
+
+        // Note: Keep all other required interface methods with empty implementations
+        // to maintain compatibility with the QPOSServiceListener interface
     }
 
-    // Add any missing methods that might be required by your IPinPadProcessor interface
-//    @Override
-//    public boolean isDeviceConnected() {
-//        // Implement device connection check
-//        return pos != null;
-//    }
-//
-//    @Override
-//    public String getDeviceInfo() {
-//        // Implement device info retrieval
-//        return "D-Spread PIN Pad Service";
-//    }
+    /**
+     * Helper class for DUKPT key set management
+     */
+    private static class DukptKeySet {
+        final String ksn;
+        final String encryptedIpek;
+        final String kcv;
+
+        //final String masterKey
+
+        DukptKeySet(String ksn, String encryptedIpek, String kcv) {
+            this.ksn = ksn;
+            this.encryptedIpek = encryptedIpek;
+            this.kcv = kcv;
+        }
+    }
+
+    /**
+     * Error codes for better error handling
+     */
+    private static class ErrorCode {
+        static final int SUCCESS = 0;
+        static final int OPERATION_FAILED = -1;
+        static final int OPERATION_TIMEOUT = -2;
+        static final int OPERATION_INTERRUPTED = -3;
+        static final int UNEXPECTED_ERROR = -4;
+    }
+
+    // Add this utility method to FileUtils or create locally
+    private static class FileUtils {
+        static String readAssetFile(String fileName, Context context) throws Exception {
+            // Implementation depends on your existing FileUtils class
+            // This is a placeholder for the actual implementation
+            return new String(com.isw.payapp.devices.dspread.utils.FileUtils
+                    .readAssetsLine(fileName, context));
+        }
+    }
 }
