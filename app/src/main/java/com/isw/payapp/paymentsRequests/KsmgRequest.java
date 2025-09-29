@@ -108,7 +108,7 @@ public class KsmgRequest {
         createElement(doc, request, "hook", "C:selHook.kxml");
         createElement(doc, request, "selacctype", "default");
         createElement(doc, request, "track2", emvModel.getTrack2data());
-        createElement(doc, request, "pindata", cardModel.getPinBlock());
+        createElement(doc, request, "pindata", cardModel.getPinBlock()); //3C9F313A12DB7614
         createElement(doc, request, "ksn", cardModel.getKsn());
         createElement(doc, request, "ksnd", cardModel.getKsnd());
         createElement(doc, request, "chvm", "OnlinePin");

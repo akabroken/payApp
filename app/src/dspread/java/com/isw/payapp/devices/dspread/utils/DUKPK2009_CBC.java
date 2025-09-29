@@ -38,7 +38,7 @@ public class DUKPK2009_CBC {
         byte[] ipek = null;
         byte[] byte_ksn = parseHexStr2Byte(ksn);
         if (clearIpek == null || clearIpek.length() == 0) {
-            String bdk = "0123456789ABCDEFFEDCBA9876543210";
+            String bdk = "B30D16EAE5372C9457326464E62C5E61";//" B30D16EAE5372C9457326464E62C5E61""E92628BFF599820E6AD70DB7C3B574AE".toUpperCase();//"D8DE53632DE273D3EF3D2AA35253F2DC";//"E92628BFF599820E6AD70DB7C3B574AE";
             byte[] byte_bdk = parseHexStr2Byte(bdk);
             ipek = GenerateIPEK(byte_ksn, byte_bdk);
 
@@ -114,7 +114,6 @@ public class DUKPK2009_CBC {
         byte[] buf = TriDesEncryption(pinKey,byte_pin);
         String deResultStr = parseByte2HexStr(buf);
         System.out.println("data: " + deResultStr);
-
         return deResultStr;
     }
 

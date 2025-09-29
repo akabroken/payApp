@@ -97,6 +97,7 @@ public class DSpreadEmvService implements IEmvProcessor {
     private IPaymentServiceCallback paymentServiceCallback;
     private KeyboardUtil keyboardUtil;
     private PinPadDialog pinPadDialog;
+    private PinPadView pinPadView; // Proper PINPAD initialization
     private boolean isChangePin = false;
     private boolean isPinBack = false;
     private int timeOfPinInput = 0;
@@ -120,6 +121,7 @@ public class DSpreadEmvService implements IEmvProcessor {
         this.mainHandler = new Handler(Looper.getMainLooper());
         this.transactionExecutor = Executors.newSingleThreadExecutor();
         this.responseMessage = "";
+        initializePinPad(); // Initialize PINPAD in constructor
     }
 
     private Activity getActivity() {
@@ -133,6 +135,32 @@ public class DSpreadEmvService implements IEmvProcessor {
         this.tvReceiptRef = new WeakReference<>(tvReceipt);
         this.btnSendReceiptRef = new WeakReference<>(btnSendReceipt);
         Log.d(TAG, "Views set successfully");
+
+        // Re-initialize PINPAD with the new views
+        initializePinPad();
+    }
+
+    // Initialize PINPAD properly
+    private void initializePinPad() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            Log.w(TAG, "Activity is null, cannot initialize PINPAD");
+            return;
+        }
+
+        try {
+            // Initialize PinPadView
+            pinPadView = new PinPadView(activity);
+            pinPadView.setRandomNumber(true); // Enable random number layout
+
+            // Initialize PinPadDialog
+            pinPadDialog = new PinPadDialog(activity);
+            pinPadDialog.setPinPadView(pinPadView);
+
+            Log.d(TAG, "PINPAD initialized successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error initializing PINPAD: " + e.getMessage());
+        }
     }
 
     // Helper methods to safely get UI components
@@ -148,6 +176,7 @@ public class DSpreadEmvService implements IEmvProcessor {
     public void initializeDevice() throws Exception {
         checkPermissions();
         initializePOSManager();
+        initializePinPad(); // Ensure PINPAD is initialized
     }
 
     @Override
@@ -201,6 +230,12 @@ public class DSpreadEmvService implements IEmvProcessor {
 
     public void releaseResources() {
         isTransactionActive = false;
+
+        // Clean up PINPAD resources
+        if (pinPadView != null) {
+            pinPadView.cleanup();
+            pinPadView = null;
+        }
 
         // Shutdown executor gracefully
         if (!transactionExecutor.isShutdown()) {
@@ -268,11 +303,12 @@ public class DSpreadEmvService implements IEmvProcessor {
 
         transactionExecutor.execute(() -> {
             try {
-                if (!POSManager.getInstance().isDeviceReady()) {
-                    connectDevice();
-                } else {
-                    executeTransaction();
-                }
+                connectDevice();
+//                if (!POSManager.getInstance().isDeviceReady()) {
+//                    connectDevice();
+//                } else {
+//                    executeTransaction();
+//                }
             } catch (Exception e) {
                 notifyError("Transaction start failed: " + e.getMessage());
             }
@@ -538,7 +574,15 @@ public class DSpreadEmvService implements IEmvProcessor {
             try {
                 classEmvCallBacks.onTitleTextChanged(activity.getString(R.string.input_pin));
 
-                pinPadDialog = new PinPadDialog(activity);
+                // Ensure PINPAD is initialized
+                if (pinPadDialog == null) {
+                    initializePinPad();
+                }
+
+                if (pinPadDialog == null) {
+                    throw new IllegalStateException("PINPAD dialog not initialized");
+                }
+
                 pinPadDialog.getPayViewPass()
                         .setRandomNumber(true)
                         .setPayClickListener(POSManager.getInstance().getQPOSService(),
@@ -580,7 +624,7 @@ public class DSpreadEmvService implements IEmvProcessor {
                 pinPadDialog.show();
             } catch (Exception e) {
                 Log.e(TAG, "Error showing PIN pad dialog: " + e.getMessage());
-                notifyError("PIN input failed");
+                notifyError("PIN input failed: " + e.getMessage());
             }
         }
 
@@ -676,12 +720,10 @@ public class DSpreadEmvService implements IEmvProcessor {
         }
 
         private void handleMCRResult(PaymentResult result) {
-            // Handle magnetic card results
             classEmvCallBacks.onTransactionSuccess("Magnetic card transaction completed");
         }
 
         private void handleNFCResult(PaymentResult result) {
-            // Handle NFC results
             classEmvCallBacks.onTransactionSuccess("NFC transaction completed");
         }
 
@@ -765,7 +807,6 @@ public class DSpreadEmvService implements IEmvProcessor {
         @Override
         public void onRequestOnlineProcess(final String tlv) {
             TRACE.d("onRequestOnlineProcess::\n" + tlv);
-            // Process this on a background thread to avoid blocking UI
             transactionExecutor.execute(() -> handleOnlineProcessRequest(tlv));
         }
 
@@ -831,16 +872,13 @@ public class DSpreadEmvService implements IEmvProcessor {
                 }
 
                 if (clearIccData != null) {
-                    // Decode ICC TLV into HashMap
                     Map<String, String> decodedMap = IccTLVDataDecoder.decodeIccData(clearIccData);
 
-                    // Print contents clearly
                     System.out.println("---- Decoded ICC TLV Contents ----");
                     for (Map.Entry<String, String> entry : decodedMap.entrySet()) {
                         System.out.printf("%-35s : %s%n", EmvTLVTags.decodeTag(entry.getKey()) + "(" + entry.getKey() + ")", entry.getValue());
                     }
 
-                    // Create card and EMV models
                     cardModel = new CardModel();
                     cardModel.setPan(decodedMap.get(EmvTLVTags.PAN));
                     cardModel.setKsn(emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC1));
@@ -870,7 +908,6 @@ public class DSpreadEmvService implements IEmvProcessor {
                     TRACE.d(pinchangeRequest.Payload());
                     TRACE.d("TTT:" + classTransactionData.getAmount());
 
-                    // Process online authorization
                     responseMessage = "Online process initiated: " + decodedMap.toString();
                     processNetworkRequest(pinchangeRequest, emvModel);
 
@@ -925,7 +962,6 @@ public class DSpreadEmvService implements IEmvProcessor {
 
                 String respMessage = XMLUtils.isErrorResponse(response);
 
-                // Show printer preview dialog
                 showPrinterPreviewDialog(respMessage, emvModel);
 
             } catch (Exception e) {
@@ -989,7 +1025,6 @@ public class DSpreadEmvService implements IEmvProcessor {
             return receipt;
         }
 
-        // Add this method for actual printing
         private void printReceipt(Receipt receipt) {
             Activity activity = getActivity();
             if (activity == null) return;

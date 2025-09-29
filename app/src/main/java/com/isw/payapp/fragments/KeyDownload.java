@@ -55,7 +55,7 @@ public class KeyDownload extends Fragment {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     // Live data (should ideally come from a secure configuration)
-    private final String ipektwLive = "33707E4927C4A0D50000000000000000";
+    private final String ipektwLive = "33707E4927C4A0D51282944D541770D4";
     private final String iksnLive = "FFFF000002DDDDE00000";
     private final String kcvLive = "10B9824432E458DD";
 
@@ -222,7 +222,7 @@ public class KeyDownload extends Fragment {
                 NetworkService.initialize(getContext(), keyDownloadUrl);
                 NetworkService networkService = NetworkService.getInstance();
                 List<Object> pkModExp = new ArrayList<>();
-                Map<String, String> components = rsaUtil.getPublicKeyPrivateComponents();
+                Map<String, String> components = rsaUtil.getKeyComponents();
                 pkModExp.add(components.get("modulus"));
                 pkModExp.add(components.get("exponent"));
 
@@ -230,16 +230,17 @@ public class KeyDownload extends Fragment {
                 TRACE.i("RESPONSE::" + response);
 
                 Map<String, String> resultMap = CommonUtil.convertXMLToMap(response);
-                String pin_key = resultMap.get("pinkey");
-                String pinKey = rsaUtil.decryptWithPrivateKeyComponents(pin_key, components.get("priModulus"),
-                        components.get("priExponent"), true);
+                String encryptedKey = resultMap.get("pinkey");
+
+                String clearKey = rsaUtil.decryptWithKeyComponents(encryptedKey, components.get("privateModulus"),
+                        components.get("privateExponent"), true);
 
 
 
-                TRACE.i("pinKey.substring(0,32):" + pinKey);
+                TRACE.i("pinKey.substring(0,32):" + clearKey);
 
                 executor.execute(() -> {
-                    final int result = posPinPad.injectDukptKey(pinKey.substring(14,46), iksnLive, "");
+                    final int result = posPinPad.injectDukptKey(clearKey, iksnLive, "");
 
                     requireActivity().runOnUiThread(() -> {
                         hideProgressDialog();

@@ -65,27 +65,115 @@ public final class POSManager {
         this.listener = new QPOSServiceListener();
         mainHandler = new Handler(Looper.getMainLooper());
         paymentResult = new PaymentResult();
+        Utils.init(context);
     }
 
     /**
      * Initialize POSManager with application context
      * @param context Application context
      */
-    public static void init(Context context) {
-        getInstance(context);
-        Utils.init(context);
+//    public static void init(Context context) {
+//        getInstance(context);
+//        Utils.init(context);
+//    }
+
+    /**
+     * Initialize POSManager with application context
+     * @param context Application context
+     */
+    public static synchronized  void init(Context context) {
+//        if (instance == null) {
+//            instance = new POSManager(context);
+//            Log.d("POSManager", "POSManager initialized successfully");
+//        } else {
+//            Log.d("POSManager", "POSManager already initialized");
+//            // Update context if needed, but don't create new instance
+//            if (instance.context == null) {
+//                instance.context = context.getApplicationContext();
+//            }
+//        }
+        if (instance == null) {
+            // Check if this is being called from the Application class
+            boolean isFromApplication = isCalledFromApplicationClass();
+
+            if (!isFromApplication) {
+                Log.w("POSManager", "POSManager.init() called from non-Application class: " + getCallerClassName());
+                // You can choose to allow this or throw an exception
+                // For now, we'll allow it but log a warning
+            }
+
+            instance = new POSManager(context);
+            Utils.init(context);
+            Log.d("POSManager", "POSManager initialized by: " + getCallerClassName());
+        } else {
+            Log.d("POSManager", "POSManager already initialized by: " + getCallerClassName());
+        }
     }
+
+    /**
+     * Check if initialization is called from Application class
+     */
+    private static boolean isCalledFromApplicationClass() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (StackTraceElement element : stackTrace) {
+            if (element.getClassName().contains("Application")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get the class name of the caller
+     */
+    private static String getCallerClassName() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        if (stackTrace.length > 4) { // 0: getStackTrace, 1: getCallerClassName, 2: init, 3: caller
+            return stackTrace[4].getClassName();
+        }
+        return "Unknown";
+    }
+
+    /**
+     * Reset POSManager (use with caution)
+     */
+    public static synchronized void reset() {
+        if (instance != null) {
+            instance.close();
+            instance = null;
+            Log.d("POSManager", "POSManager reset");
+        }
+    }
+
+
 
     public static POSManager getInstance(Context context) {
         if (instance == null) {
             synchronized (POSManager.class) {
                 if (instance == null) {
                     instance = new POSManager(context);
+
+                    Log.w("POSManager", "Auto-initialized POSManager - this should be done explicitly");
                 }
             }
         }
         return instance;
     }
+
+//    public QPOSService getQPOSService(){
+//        return this.pos;
+//    }
+    /**
+     * Check if POSManager is already initialized
+     */
+    public static boolean isInitialized() {
+        return instance != null;
+    }
+
+    public void setQPOSService(QPOSService pos){
+        this.pos = pos;
+    }
+
 
     /**
      * Get singleton instance of POSManager
@@ -104,6 +192,7 @@ public final class POSManager {
      * @param callback Callback to handle connection events
      */
     public void connect(String deviceAddress, IConnectionServiceCallback callback) {
+        TRACE.i("connect(String deviceAddress, IConnectionServiceCallback callback)"+deviceAddress);
         connectLatch = new CountDownLatch(1);
         registerConnectionCallback(callback);
 
@@ -122,6 +211,7 @@ public final class POSManager {
     }
 
     public void connect(String deviceAddress){
+        TRACE.i("Connect...."+deviceAddress);
         if(!deviceAddress.isEmpty()){
             if(deviceAddress.contains(":")){
                 posType = POS_TYPE.BLUETOOTH;
@@ -141,7 +231,7 @@ public final class POSManager {
 
             initMode(QPOSService.CommunicationMode.UART);
             pos.forceOpenUart(30);
-           // pos.openUart();
+         //  pos.openUart();
             pos.openLog(true);
 
         }
@@ -237,8 +327,10 @@ public final class POSManager {
         Log.i("POSManager", "getCardTradeMode "+getCardTradeMode());
         Log.i("POSManager", "Amount "+amount);
         pos.setCardTradeMode(getCardTradeMode());
-        pos.setAmount(amount,"",String.valueOf(currencyCode),getTransType());
-        pos.doTrade(60);
+        pos.setAmount(amount,"0",String.valueOf(currencyCode),getTransType());
+        //pos.doTrade(60);
+        pos.doCheckCard(60);
+
     }
 
     public void getDeviceId(){
@@ -364,40 +456,40 @@ public final class POSManager {
         updateWorkKey("debug_certificate.pem");
        // pos.wait(99);
         String tmk = "0123456789ABCDEFFEDCBA9876543210";
-        threeDES = new ThreeDES();
-        String demoTrackKsn = iKsn;
-        String demoTrackIpek = key;
-        // Calculate KCV (encrypt zero data)
-        String demoIpekKcv = threeDES.tdesECBEncrypt(demoTrackIpek, "0000000000000000");
-        String kcvOut = threeDES.extractKcv(demoIpekKcv);
-        System.out.println("Track IPEK KCV: " + kcvOut); // Should be: 377EE0
-
-        // Encrypt IPEK with TMK
-        String encDemoTrackIpek = threeDES.tdesECBEncrypt(tmk, demoTrackIpek);
-        System.out.println("Encrypted Track IPEK: " + encDemoTrackIpek);
-
-        // Similar operations for EMV and PIN keys
-        String demoEmvKsn = iKsn;
-        String demoEmvIpek = key;
-        String demoEmvIpekKcv = threeDES.tdesECBEncrypt(demoEmvIpek, "0000000000000000");
-        String emvKcv = threeDES.extractKcv(demoEmvIpekKcv);
-        System.out.println("EMV IPEK KCV: " + emvKcv); // Should be: AE8F91
-
-        String encDemoEmvIpek = threeDES.tdesECBEncrypt(tmk, demoEmvIpek);
-        System.out.println("Encrypted EMV IPEK: " + encDemoEmvIpek);
-
-        String demoPinKsn = iKsn;
-        String demoPinIpek = key;
-        String demoPinIpekKcv = threeDES.tdesECBEncrypt(demoPinIpek, "0000000000000000");
-        String pinKcv = threeDES.extractKcv(demoPinIpekKcv);
-        System.out.println("PIN IPEK KCV: " + pinKcv); // Should be: 7DD75C
-
-        String encDemoPinIpek = threeDES.tdesECBEncrypt(tmk, demoPinIpek);
-        System.out.println("Encrypted PIN IPEK: " + encDemoPinIpek);
-
-       // pos.updateWorkKey("");
-        pos.doUpdateIPEKOperation("1", demoTrackKsn, encDemoTrackIpek, kcvOut,
-                demoEmvKsn, encDemoEmvIpek, emvKcv, demoPinKsn, encDemoPinIpek, pinKcv);
+//        threeDES = new ThreeDES();
+//        String demoTrackKsn = iKsn;
+//        String demoTrackIpek = key;
+//        // Calculate KCV (encrypt zero data)
+//        String demoIpekKcv = threeDES.tdesECBEncrypt(demoTrackIpek, "0000000000000000");
+//        String kcvOut = threeDES.extractKcv(demoIpekKcv);
+//        System.out.println("Track IPEK KCV: " + kcvOut); // Should be: 377EE0
+//
+//        // Encrypt IPEK with TMK
+//        String encDemoTrackIpek = threeDES.tdesECBEncrypt(tmk, demoTrackIpek);
+//        System.out.println("Encrypted Track IPEK: " + encDemoTrackIpek);
+//
+//        // Similar operations for EMV and PIN keys
+//        String demoEmvKsn = iKsn;
+//        String demoEmvIpek = key;
+//        String demoEmvIpekKcv = threeDES.tdesECBEncrypt(demoEmvIpek, "0000000000000000");
+//        String emvKcv = threeDES.extractKcv(demoEmvIpekKcv);
+//        System.out.println("EMV IPEK KCV: " + emvKcv); // Should be: AE8F91
+//
+//        String encDemoEmvIpek = threeDES.tdesECBEncrypt(tmk, demoEmvIpek);
+//        System.out.println("Encrypted EMV IPEK: " + encDemoEmvIpek);
+//
+//        String demoPinKsn = iKsn;
+//        String demoPinIpek = key;
+//        String demoPinIpekKcv = threeDES.tdesECBEncrypt(demoPinIpek, "0000000000000000");
+//        String pinKcv = threeDES.extractKcv(demoPinIpekKcv);
+//        System.out.println("PIN IPEK KCV: " + pinKcv); // Should be: 7DD75C
+//
+//        String encDemoPinIpek = threeDES.tdesECBEncrypt(tmk, demoPinIpek);
+//        System.out.println("Encrypted PIN IPEK: " + encDemoPinIpek);
+//
+//       // pos.updateWorkKey("");
+//        pos.doUpdateIPEKOperation("1", demoTrackKsn, encDemoTrackIpek, kcvOut,
+//                demoEmvKsn, encDemoEmvIpek, emvKcv, demoPinKsn, encDemoPinIpek, pinKcv);
 
     }
 
