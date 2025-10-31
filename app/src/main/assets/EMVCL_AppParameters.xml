@@ -1,0 +1,983 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Body>
+
+    <Parameters AID="A0000002771010" KernelID="77" TransTypeGroup="00,20">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <ContactlessReaderFloorLimit>000000010000</ContactlessReaderFloorLimit>
+        <CVMRequiredLimit>000000001500</CVMRequiredLimit>
+        <TerminalFloorLimit>00002710</TerminalFloorLimit>
+        <TerminalCLReceiptRequiredLimit>000000005000</TerminalCLReceiptRequiredLimit>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>0000000000</TerminalActionCodeOnline>
+        <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+        <InteracRetryLimit>02</InteracRetryLimit>
+        <MerchantTypeIndicator>03</MerchantTypeIndicator>
+        <TerminalTransactionInformation>D88700</TerminalTransactionInformation>
+        <TerminalOptionStatus>E000</TerminalOptionStatus>
+    </Parameters>
+
+    <Parameters AID="A0000005241010" KernelID="0D" TransTypeGroup="00,01,02,09">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <IFDSerial>12345678</IFDSerial>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <MerchantCategoryCode>9999</MerchantCategoryCode>
+        <AcquirerID></AcquirerID>
+        <MerchantID></MerchantID>
+        <TerminalCountryCode>0356</TerminalCountryCode>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E060C8</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0356</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalActionCodeDefault>FE50BCA000</TerminalActionCodeDefault><!--DC4000A800 -->
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial><!--0010000000 -->
+        <TerminalActionCodeOnline>FE50BCF800</TerminalActionCodeOnline> <!--DC4004F800 -->
+        <MagStripeApplicationVersionNumber>0001</MagStripeApplicationVersionNumber>
+        <MagStripeCVMCapabilityNoCVMRequired>00</MagStripeCVMCapabilityNoCVMRequired>
+        <MagStripeCVMCapabilityCVMRequired>30</MagStripeCVMCapabilityCVMRequired>
+        <DefaultUDOL>9F6A04</DefaultUDOL>
+        <CardDataInputCapability>E0</CardDataInputCapability>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <CVMCapability_Required>60</CVMCapability_Required>  <!--68 -->
+        <KernelConfiguration>30</KernelConfiguration> <!-- 20 B0 -->
+        <SecurityCapability>08</SecurityCapability> <!-- 9F1D086CF8800000000000-->
+        <TerminalRiskManageData>6CF8800000000000</TerminalRiskManageData>
+        <ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+        <MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+        <TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+        <TerminalFloorLimit>00000001</TerminalFloorLimit>
+        <ExtraTags>9F1D086C7A800000000000</ExtraTags>
+    </Parameters>
+    <!-- MC  20-->
+    <Parameters AID="A0000000041010" KernelID="02" TransTypeGroup="00,01,02,09,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <MerchantCategoryCode>9999</MerchantCategoryCode>
+        <AcquirerID></AcquirerID>
+        <MerchantID></MerchantID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E040C8</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent></TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalActionCodeDefault>FE50BCA000</TerminalActionCodeDefault><!--DC4000A800 -->
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial><!--0010000000 -->
+        <TerminalActionCodeOnline>FE50BCF800</TerminalActionCodeOnline> <!--DC4004F800 -->
+        <MagStripeApplicationVersionNumber>0001</MagStripeApplicationVersionNumber>
+        <MagStripeCVMCapabilityNoCVMRequired>00</MagStripeCVMCapabilityNoCVMRequired>
+        <MagStripeCVMCapabilityCVMRequired>30</MagStripeCVMCapabilityCVMRequired>
+        <DefaultUDOL>9F6A04</DefaultUDOL>
+        <CardDataInputCapability>E0</CardDataInputCapability>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <CVMCapability_Required>60</CVMCapability_Required>  <!--68 -->
+        <KernelConfiguration>30</KernelConfiguration> <!-- 20 B0 -->
+        <SecurityCapability>08</SecurityCapability> <!-- 9F1D086CF8800000000000-->
+        <TerminalRiskManageData>6CF8800000000000</TerminalRiskManageData>
+        <ExtraTags>9F1D086CF8800000000000DF812406000000030000DF812506000000030000DF812606000000010000</ExtraTags>
+    </Parameters>
+    <Parameters AID="A0000000041010" KernelID="02" TransTypeGroup="20" >
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <AcquirerID>112233445566</AcquirerID>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <MerchantCategoryCode>9999</MerchantCategoryCode>
+        <MerchantNameLocation>SHOP 1</MerchantNameLocation>
+        <MerchantID>112233445566</MerchantID>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <TerminalCapabilities>E060C8</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <TerminalActionCodeDefault>FE50BCA000</TerminalActionCodeDefault><!--DC4000A800 -->
+        <TerminalActionCodeDenial>FFFFFFFFFF</TerminalActionCodeDenial><!--0010000000 -->
+        <TerminalActionCodeOnline>FE50BCF800</TerminalActionCodeOnline> <!--DC4004F800 -->
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <CardDataInputCapability>E0</CardDataInputCapability>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <CVMCapability_Required>60</CVMCapability_Required><!-- 60  68-->
+        <KernelConfiguration>A0</KernelConfiguration> <!-- 20 -->
+        <SecurityCapability>08</SecurityCapability>
+        <TerminalRiskManageData>4CF8800000000000</TerminalRiskManageData>
+        <ExtraTags>9F1D084CF8800000000000DF812406000000030000DF812506000000030000DF812606000000010000</ExtraTags>
+    </Parameters>
+    <Parameters AID="A0000000043060" KernelID="02" TransTypeGroup="00,01,02,09,21" >
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <AcquirerID>112233445566</AcquirerID>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <MerchantCategoryCode>9999</MerchantCategoryCode>
+        <MerchantNameLocation>SHOP 1</MerchantNameLocation>
+        <MerchantID>112233445566</MerchantID>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <TerminalCapabilities>E060C8</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <TerminalActionCodeDefault>F45004800C</TerminalActionCodeDefault><!--DC4000A800 -->
+        <TerminalActionCodeDenial>0000800000</TerminalActionCodeDenial><!--0010000000 -->
+        <TerminalActionCodeOnline>F45004800C</TerminalActionCodeOnline> <!--DC4004F800 -->
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <CardDataInputCapability>E0</CardDataInputCapability>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <CVMCapability_Required>60</CVMCapability_Required><!-- 60  68-->
+        <KernelConfiguration>A0</KernelConfiguration> <!-- 20 -->
+        <SecurityCapability>08</SecurityCapability>
+        <TerminalRiskManageData>4CF8800000000000</TerminalRiskManageData>
+        <ExtraTags>9F1D084CF8800000000000DF812406000000030000DF812506000000030000DF812606000000010000</ExtraTags>
+    </Parameters>
+    <Parameters AID="A0000000043060" KernelID="02" TransTypeGroup="20" >
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <AcquirerID>112233445566</AcquirerID>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <MerchantCategoryCode>9999</MerchantCategoryCode>
+        <MerchantNameLocation>SHOP 1</MerchantNameLocation>
+        <MerchantID>112233445566</MerchantID>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <TerminalCapabilities>E060C8</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <TerminalActionCodeDefault>FE50BCA000</TerminalActionCodeDefault><!--DC4000A800 -->
+        <TerminalActionCodeDenial>FFFFFFFFFF</TerminalActionCodeDenial><!--0010000000 -->
+        <TerminalActionCodeOnline>FE50BCF800</TerminalActionCodeOnline> <!--DC4004F800 -->
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <CardDataInputCapability>E0</CardDataInputCapability>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <CVMCapability_Required>60</CVMCapability_Required><!-- 60  68-->
+        <KernelConfiguration>A0</KernelConfiguration> <!-- 20 -->
+        <SecurityCapability>08</SecurityCapability>
+        <TerminalRiskManageData>4CF8800000000000</TerminalRiskManageData>
+        <ExtraTags>9F1D084CF8800000000000DF812406000000030000DF812506000000030000DF812606000000010000</ExtraTags>
+    </Parameters>
+    <!-- VS -->
+    <Parameters AID="A0000000031010" KernelID="03" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000050000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalTransactionQualifier>2600C000</TerminalTransactionQualifier> <!-- 7720C000 -->
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <Parameters AID="A0000000032010" KernelID="03" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000050000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalTransactionQualifier>3600C000</TerminalTransactionQualifier>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <Parameters AID="A0000000032020" KernelID="03" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000050000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalTransactionQualifier>3600C000</TerminalTransactionQualifier>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <Parameters AID="A0000000033010" KernelID="03" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000050000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalTransactionQualifier>26800000</TerminalTransactionQualifier>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <Parameters AID="A0000000034010" KernelID="03" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000050000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalTransactionQualifier>3600C000</TerminalTransactionQualifier>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <Parameters AID="A0000000035010" KernelID="03" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000050000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalTransactionQualifier>3600C000</TerminalTransactionQualifier>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <!-- CUP -->
+    <Parameters AID="A0000003330101" KernelID="07" TransTypeGroup="00">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>D84000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>DC4004F800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000030000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalTransactionQualifier>26800000</TerminalTransactionQualifier>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <Parameters AID="A000000333010101" KernelID="07" TransTypeGroup="00">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>D84000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>DC4004F800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000030000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalTransactionQualifier>26800000</TerminalTransactionQualifier>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <Parameters AID="A000000333010102" KernelID="07" TransTypeGroup="00">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>D84000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>DC4004F800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000030000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalTransactionQualifier>26800000</TerminalTransactionQualifier>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <Parameters AID="A000000333010103" KernelID="07" TransTypeGroup="00">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>D84000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>DC4004F800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000030000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalTransactionQualifier>26800000</TerminalTransactionQualifier>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <!-- AMEX -->
+    <Parameters AID="A00000002501" KernelID="04" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalActionCodeDefault>DC50FC9800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>DE00FC9800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E028C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent></TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000001000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000001200</ReaderContactlessFloorLimit> <!--000000001200-->
+        <NoOndeviceCVMTransactionLimit>000000001500</NoOndeviceCVMTransactionLimit>
+        <MerchantNameLocation>Railway Operator</MerchantNameLocation>
+        <EnhancedContactlessReaderCapabilities>DCE04000</EnhancedContactlessReaderCapabilities> <!--D8A84000-->
+        <KernelConfiguration>093C3500</KernelConfiguration>
+        <ExtraTags>9F6D01C81F400101</ExtraTags>  <!--9F6D01C0-->
+    </Parameters>
+    <Parameters AID="A0000001523010" KernelID="06" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode></MerchantCategoryCode>
+        <TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities></AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F8C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent></TransCurrencyExponent>
+        <AppVersionNumber>0001</AppVersionNumber>
+        <TerminalTransactionQualifier>B600C000</TerminalTransactionQualifier>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <CVMRequiredLimit>000000025000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
+        <NoOndeviceCVMTransactionLimit>000100000000</NoOndeviceCVMTransactionLimit>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+
+    <Parameters AID="A0000001524010" KernelID="06" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode></MerchantCategoryCode>
+        <TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+        <AcquirerID></AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities></AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E0F8C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent></TransCurrencyExponent>
+        <AppVersionNumber>0001</AppVersionNumber>
+        <TerminalTransactionQualifier>B600C000</TerminalTransactionQualifier>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <CVMRequiredLimit>000000025000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
+        <NoOndeviceCVMTransactionLimit>000100000000</NoOndeviceCVMTransactionLimit>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <StatusCheck>01</StatusCheck>
+    </Parameters>
+    <Parameters AID="A0000000651010" KernelID="05" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <MerchantCategoryCode>7032</MerchantCategoryCode>
+        <TerminalActionCodeDefault>9040008000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0410000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>9040008000</TerminalActionCodeOnline>
+        <AcquirerID>000000000010</AcquirerID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <MerchantID></MerchantID>
+        <MerchantNameLocation>5858204D45524348414E54205959204C4F434154494F4E</MerchantNameLocation>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000004500</ReaderContactlessFloorLimit>
+        <NoOndeviceCVMTransactionLimit>000000020000</NoOndeviceCVMTransactionLimit>
+        <CombinationOptions>7B00</CombinationOptions>
+        <StaticTerminalInterchangeProfile>708000</StaticTerminalInterchangeProfile>
+        <Removaltimeout>1000</Removaltimeout>
+    </Parameters>
+
+
+    <!-- cpace -->
+    <Parameters AID="A0000001761010" KernelID="2E" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <TerminalCapabilities>E040C8</TerminalCapabilities>
+        <TerminalType>22</TerminalType>
+        <AdditionalTerminalCapabilities>FF00F0F3FF</AdditionalTerminalCapabilities>
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <CVMCapability_Required>68</CVMCapability_Required>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <KernelConfiguration>30</KernelConfiguration>
+        <MerchantNameLocation>ECPC CPACE TEST</MerchantNameLocation>
+        <MerchantCategoryCode>5411</MerchantCategoryCode>
+        <ReaderContactlessFloorLimit>000000003000</ReaderContactlessFloorLimit>
+        <CVMRequiredLimit>000000005000</CVMRequiredLimit>
+        <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>2060C48800</TerminalActionCodeOnline>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TermTransTimeForRRCommand>0012</TermTransTimeForRRCommand>
+        <TermTransTimeForRRResponse>0018</TermTransTimeForRRResponse>
+        <MinTimeRRTolerance>0014</MinTimeRRTolerance>
+        <MaxTimeRRTolerance>0032</MaxTimeRRTolerance>
+        <RRMinTimeDiffLimit>012C</RRMinTimeDiffLimit>
+        <RRTransTimeMismatchLimit>32</RRTransTimeMismatchLimit>
+        <TransCurrencyCode>0978</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+    </Parameters>
+
+
+    <Parameters AID="A0000001761010" KernelID="02" TransTypeGroup="00,01,02,09,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <MerchantCategoryCode>9999</MerchantCategoryCode>
+        <AcquirerID></AcquirerID>
+        <MerchantID></MerchantID>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <MerchantNameLocation></MerchantNameLocation>
+        <TerminalCapabilities>E040C8</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+        <TerminalID></TerminalID>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyExponent></TransCurrencyExponent>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>  <!--000000080000-->
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <TerminalActionCodeDefault>FE50BCA000</TerminalActionCodeDefault><!--DC4000A800 -->
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial><!--0010000000 -->
+        <TerminalActionCodeOnline>FE50BCF800</TerminalActionCodeOnline> <!--DC4004F800 -->
+        <MagStripeApplicationVersionNumber>0001</MagStripeApplicationVersionNumber>
+        <MagStripeCVMCapabilityNoCVMRequired>00</MagStripeCVMCapabilityNoCVMRequired>
+        <MagStripeCVMCapabilityCVMRequired>30</MagStripeCVMCapabilityCVMRequired>
+        <DefaultUDOL>9F6A04</DefaultUDOL>
+        <CardDataInputCapability>E0</CardDataInputCapability>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <CVMCapability_Required>60</CVMCapability_Required>  <!--68 -->
+        <KernelConfiguration>30</KernelConfiguration> <!-- 20 B0 -->
+        <SecurityCapability>08</SecurityCapability> <!-- 9F1D086CF8800000000000-->
+        <TerminalRiskManageData>6CF8800000000000</TerminalRiskManageData>
+        <ExtraTags>9F1D086CF8800000000000DF812406000000030000DF812506000000030000DF812606000000010000</ExtraTags>
+    </Parameters>
+
+    <Parameters AID="A0000001762010" KernelID="2E" TransTypeGroup="00,01,09,20,21">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <TerminalCapabilities>E0F8C8</TerminalCapabilities>
+        <TerminalType>22</TerminalType>
+        <AdditionalTerminalCapabilities>FF00F0F3FF</AdditionalTerminalCapabilities>
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <CVMCapability_Required>68</CVMCapability_Required>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <KernelConfiguration>30</KernelConfiguration>
+        <MerchantNameLocation>ECPC CPACE TEST</MerchantNameLocation>
+        <MerchantCategoryCode>5411</MerchantCategoryCode>
+        <ReaderContactlessFloorLimit>000000003000</ReaderContactlessFloorLimit>
+        <CVMRequiredLimit>000000005000</CVMRequiredLimit>
+        <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>2060C48800</TerminalActionCodeOnline>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TermTransTimeForRRCommand>0012</TermTransTimeForRRCommand>
+        <TermTransTimeForRRResponse>0018</TermTransTimeForRRResponse>
+        <MinTimeRRTolerance>0014</MinTimeRRTolerance>
+        <MaxTimeRRTolerance>0032</MaxTimeRRTolerance>
+        <RRMinTimeDiffLimit>012C</RRMinTimeDiffLimit>
+        <RRTransTimeMismatchLimit>32</RRTransTimeMismatchLimit>
+        <TransCurrencyCode>0978</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+    </Parameters>
+
+    <Parameters AID="A0000000421010" KernelID="2E" TransTypeGroup="00,01,09,20,21">
+        <!-- CB: ASI must to be configured -->
+        <ASI>00</ASI>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <TerminalCapabilities>E0F8C8</TerminalCapabilities>
+        <TerminalType>22</TerminalType>
+        <AdditionalTerminalCapabilities>FF00F0F3FF</AdditionalTerminalCapabilities>
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <CVMCapability_Required>68</CVMCapability_Required>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <KernelConfiguration>30</KernelConfiguration>
+        <MerchantNameLocation>ECPC CPACE TEST</MerchantNameLocation>
+        <MerchantCategoryCode>5411</MerchantCategoryCode>
+        <ReaderContactlessFloorLimit>000000003000</ReaderContactlessFloorLimit>
+        <CVMRequiredLimit>000000005000</CVMRequiredLimit>
+        <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>2060C48800</TerminalActionCodeOnline>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TermTransTimeForRRCommand>0012</TermTransTimeForRRCommand>
+        <TermTransTimeForRRResponse>0018</TermTransTimeForRRResponse>
+        <MinTimeRRTolerance>0014</MinTimeRRTolerance>
+        <MaxTimeRRTolerance>0032</MaxTimeRRTolerance>
+        <RRMinTimeDiffLimit>012C</RRMinTimeDiffLimit>
+        <RRTransTimeMismatchLimit>32</RRTransTimeMismatchLimit>
+        <TransCurrencyCode>0978</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+    </Parameters>
+
+    <Parameters AID="A0000001760101" KernelID="2E" TransTypeGroup="00,01,09,20,21">
+        <!--MB: ASI must to be configured -->
+        <ASI>00</ASI>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <TerminalCapabilities>E0F8C8</TerminalCapabilities>
+        <TerminalType>22</TerminalType>
+        <AdditionalTerminalCapabilities>FF00F0F3FF</AdditionalTerminalCapabilities>
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <CVMCapability_Required>68</CVMCapability_Required>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <KernelConfiguration>30</KernelConfiguration>
+        <MerchantNameLocation>ECPC CPACE TEST</MerchantNameLocation>
+        <MerchantCategoryCode>5411</MerchantCategoryCode>
+        <ReaderContactlessFloorLimit>000000003000</ReaderContactlessFloorLimit>
+        <CVMRequiredLimit>000000005000</CVMRequiredLimit>
+        <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>2060C48800</TerminalActionCodeOnline>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TermTransTimeForRRCommand>0012</TermTransTimeForRRCommand>
+        <TermTransTimeForRRResponse>0018</TermTransTimeForRRResponse>
+        <MinTimeRRTolerance>0014</MinTimeRRTolerance>
+        <MaxTimeRRTolerance>0032</MaxTimeRRTolerance>
+        <RRMinTimeDiffLimit>012C</RRMinTimeDiffLimit>
+        <RRTransTimeMismatchLimit>32</RRTransTimeMismatchLimit>
+        <TransCurrencyCode>0978</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+    </Parameters>
+    <Parameters AID="A0000003591010028001" KernelID="2E" TransTypeGroup="00,01,09,20,21">
+        <!--Girocard: ASI must to be configured -->
+        <ASI>00</ASI>
+        <AppVersionNumber>0002</AppVersionNumber>
+        <TerminalCapabilities>E0F8C8</TerminalCapabilities>
+        <TerminalType>22</TerminalType>
+        <AdditionalTerminalCapabilities>FF00F0F3FF</AdditionalTerminalCapabilities>
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>
+        <NoOndeviceCVMTransactionLimit>999999999999</NoOndeviceCVMTransactionLimit>
+        <CVMCapability_Required>68</CVMCapability_Required>
+        <CVMCapability_NotRequired>08</CVMCapability_NotRequired>
+        <KernelConfiguration>30</KernelConfiguration>
+        <MerchantNameLocation>ECPC CPACE TEST</MerchantNameLocation>
+        <MerchantCategoryCode>5411</MerchantCategoryCode>
+        <ReaderContactlessFloorLimit>000000003000</ReaderContactlessFloorLimit>
+        <CVMRequiredLimit>000000005000</CVMRequiredLimit>
+        <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>2060C48800</TerminalActionCodeOnline>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TermTransTimeForRRCommand>0012</TermTransTimeForRRCommand>
+        <TermTransTimeForRRResponse>0018</TermTransTimeForRRResponse>
+        <MinTimeRRTolerance>0014</MinTimeRRTolerance>
+        <MaxTimeRRTolerance>0032</MaxTimeRRTolerance>
+        <RRMinTimeDiffLimit>012C</RRMinTimeDiffLimit>
+        <RRTransTimeMismatchLimit>32</RRTransTimeMismatchLimit>
+        <TransCurrencyCode>0978</TransCurrencyCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+    </Parameters>
+
+
+
+    <!-- Test -->
+    <Parameters AID="A00000038410" KernelID="78" TransTypeGroup="00,01,09,20">
+        <ASI>01</ASI>
+        <AppVersionNumber>0100</AppVersionNumber>
+        <TerminalType>22</TerminalType>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCapabilities>E04808</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>FF80F0F3FF</AdditionalTerminalCapabilities>
+        <TerminalTransactionQualifier>00004000</TerminalTransactionQualifier>
+        <ReaderContactlessTransactionLimit>000000010000</ReaderContactlessTransactionLimit>
+        <ReaderContactlessFloorLimit>00001388</ReaderContactlessFloorLimit>
+        <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>0000008000</TerminalActionCodeOnline>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <TerminalFloorLimit>00001388</TerminalFloorLimit>
+        <AccountType>10</AccountType>
+    </Parameters>
+
+    <Parameters AID="A00000038420" KernelID="78" TransTypeGroup="00,01,09,20">
+        <ASI>01</ASI>
+        <AppVersionNumber>0100</AppVersionNumber>
+        <TerminalType>22</TerminalType>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCapabilities>E04808</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>FF80F0F3FF</AdditionalTerminalCapabilities>
+        <TerminalTransactionQualifier>00004000</TerminalTransactionQualifier>
+        <ReaderContactlessTransactionLimit>000000010000</ReaderContactlessTransactionLimit>
+        <ReaderContactlessFloorLimit>00001388</ReaderContactlessFloorLimit>
+        <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>0000008000</TerminalActionCodeOnline>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <TerminalFloorLimit>00001388</TerminalFloorLimit>
+        <AccountType>20</AccountType>
+        <!--AccountType = 5F57 -->
+    </Parameters>
+    <Parameters AID="A0000002281010" KernelID="02" TransTypeGroup="00,01,09,20">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <AcquirerID>112233445566</AcquirerID>
+        <AppVersionNumber>0001</AppVersionNumber>
+        <MerchantCategoryCode>9999</MerchantCategoryCode>
+        <MerchantNameLocation>SHOP 1</MerchantNameLocation>
+        <MerchantID>112233445566</MerchantID>
+        <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <SecurityCapability>08</SecurityCapability>
+        <TerminalActionCodeDefault>BC40BC8000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>BC40BC8000</TerminalActionCodeOnline>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
+        <NoOndeviceCVMTransactionLimit>000000010000</NoOndeviceCVMTransactionLimit>
+        <OndeviceCVMTransactionLimit>999999999999</OndeviceCVMTransactionLimit>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <ExtraTags>
+            9F1D084C00800000000000DF8121050000800000DF812205F45004800CDF812005F45004800C9F6D0200019F6A04F7C02999DF811F01089F5300
+        </ExtraTags>
+    </Parameters>
+
+    <Parameters AID="A0000002282010" KernelID="03" TransTypeGroup="00,01,09,20">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>00</OnlineOptionOnZeroAmount>
+        <AcquirerID>112233445566</AcquirerID>
+        <AppVersionNumber>0001</AppVersionNumber>
+        <MerchantCategoryCode>4112</MerchantCategoryCode>
+        <TerminalType>22</TerminalType>
+        <TerminalTransactionQualifier>35E04000</TerminalTransactionQualifier>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <TerminalActionCodeDefault>BC40BC8000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>BC40BC8000</TerminalActionCodeOnline>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
+        <NoOndeviceCVMTransactionLimit>000000005000</NoOndeviceCVMTransactionLimit>
+        <OndeviceCVMTransactionLimit>000000005000</OndeviceCVMTransactionLimit>
+        <CVMRequiredLimit>000000001000</CVMRequiredLimit>
+        <ExtraTags>9F1D0862F8000000000000</ExtraTags>
+    </Parameters>
+
+    <Parameters AID="A0000002281010" KernelID="08" TransTypeGroup="00,01,09,20">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <IFDSerial>12345678</IFDSerial>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <AcquirerID>112233445566</AcquirerID>
+        <AppVersionNumber>0001</AppVersionNumber>
+        <MerchantCategoryCode>9999</MerchantCategoryCode>
+        <TerminalType>22</TerminalType>
+        <TerminalTransactionQualifier>35E04000</TerminalTransactionQualifier>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <TerminalActionCodeDefault>BC40BC8000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>BC40BC8000</TerminalActionCodeOnline>
+        <TerminalFloorLimit>000000000000</TerminalFloorLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
+        <NoOndeviceCVMTransactionLimit>000099999999</NoOndeviceCVMTransactionLimit>
+        <OndeviceCVMTransactionLimit>000099999999</OndeviceCVMTransactionLimit>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <AdditionalTagObjectList>9F25029F19069F6E15</AdditionalTagObjectList>
+        <ContactlessAppKernelCapabilities>3400400399</ContactlessAppKernelCapabilities>
+        <ExtraTags>9F1D0862F8000000000000</ExtraTags>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <ContactlessPOSImplementationOptions>00</ContactlessPOSImplementationOptions>
+    </Parameters>
+    <Parameters AID="A000000658" KernelID="40" TransTypeGroup="00,01,09,20">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>FFFFFFFFFF</TerminalActionCodeOnline>
+        <TerminalType>22</TerminalType>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyExponent></TransCurrencyExponent>
+        <AppVersionNumber>0101</AppVersionNumber>
+        <CVMRequiredLimit>000000100000</CVMRequiredLimit>
+        <ReaderContactlessFloorLimit>000000500000</ReaderContactlessFloorLimit>
+        <OndeviceCVMTransactionLimit>000009999900</OndeviceCVMTransactionLimit>
+        <NoOndeviceCVMTransactionLimit>000009999900</NoOndeviceCVMTransactionLimit>
+        <ExtraTags>DF560103DF5501C8</ExtraTags>
+    </Parameters>
+
+    <Parameters AID="D9999999991010" KernelID="08" TransTypeGroup="00,01,09,20">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <IFDSerial>12345678</IFDSerial>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <AcquirerID>112233445566</AcquirerID>
+        <AppVersionNumber>0001</AppVersionNumber>
+        <MerchantCategoryCode>9999</MerchantCategoryCode>
+        <TerminalType>22</TerminalType>
+        <TerminalTransactionQualifier>35E04000</TerminalTransactionQualifier>
+        <TerminalCapabilities>E0F0C8</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <TerminalActionCodeDefault>BC40BC8000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>BC40BC8000</TerminalActionCodeOnline>
+        <TerminalFloorLimit>000000000000</TerminalFloorLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
+        <NoOndeviceCVMTransactionLimit>000099999999</NoOndeviceCVMTransactionLimit>
+        <OndeviceCVMTransactionLimit>000099999999</OndeviceCVMTransactionLimit>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <AdditionalTagObjectList>9F25029F19069F6E15</AdditionalTagObjectList>
+        <ContactlessAppKernelCapabilities>3400400399</ContactlessAppKernelCapabilities>
+        <ExtraTags>9F1D0862F8000000000000</ExtraTags>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <ContactlessPOSImplementationOptions>00</ContactlessPOSImplementationOptions>
+    </Parameters>
+
+    <Parameters AID="A0000003710001" KernelID="08" TransTypeGroup="00,01,09,20">
+        <!--ASI must to be configured -->
+        <ASI>00</ASI>
+        <IFDSerial>12345678</IFDSerial>
+        <StatusCheck>01</StatusCheck>
+        <ZeroAmountAllowed>01</ZeroAmountAllowed>
+        <OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+        <AcquirerID>112233445566</AcquirerID>
+        <AppVersionNumber>0001</AppVersionNumber>
+        <MerchantCategoryCode>9999</MerchantCategoryCode>
+        <TerminalType>22</TerminalType>
+        <TerminalTransactionQualifier>35E04000</TerminalTransactionQualifier>
+        <TerminalCapabilities>E040C8</TerminalCapabilities>
+        <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
+        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyExponent>02</TransCurrencyExponent>
+        <TerminalActionCodeDefault>BC40BC8000</TerminalActionCodeDefault>
+        <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+        <TerminalActionCodeOnline>BC40BC8000</TerminalActionCodeOnline>
+        <TerminalFloorLimit>000000000000</TerminalFloorLimit>
+        <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
+        <NoOndeviceCVMTransactionLimit>000099999999</NoOndeviceCVMTransactionLimit>
+        <OndeviceCVMTransactionLimit>000099999999</OndeviceCVMTransactionLimit>
+        <CVMRequiredLimit>000000010000</CVMRequiredLimit>
+        <AdditionalTagObjectList>9F25029F19069F6E15</AdditionalTagObjectList>
+        <ContactlessAppKernelCapabilities>3400400399</ContactlessAppKernelCapabilities>
+        <ExtraTags>9F1D0862F8000000000000</ExtraTags>
+        <DefaultDDOL>9F3704</DefaultDDOL>
+        <ContactlessPOSImplementationOptions>00</ContactlessPOSImplementationOptions>
+    </Parameters>
+
+</Body>

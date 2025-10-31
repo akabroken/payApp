@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Body>
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>001000</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>000010</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>000011</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>000101</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>000110</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>000111</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>001001</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>001010</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>001011</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>001100</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>001101</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>001110</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="A000000003">
+		<CAPKIndex>50</CAPKIndex>
+		<Cert_SN>014455</Cert_SN>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>001111</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>010000</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>010001</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>010010</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>010011</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>010100</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>010101</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>010111</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>011000</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>011001</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>011010</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>011011</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>011100</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>011101</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>011110</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>011111</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+	<CRL RID="D999999999">
+		<CAPKIndex>01</CAPKIndex>
+		<Cert_SN>100000</Cert_SN>
+		<AdditionData>000000</AdditionData>
+	</CRL>
+
+</Body>

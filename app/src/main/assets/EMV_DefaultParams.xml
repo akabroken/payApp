@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Body>
+	<AcquirerID>123456789012</AcquirerID>
+	<TerminalID>EMVTest</TerminalID>
+	<TerminalCapabilities>E040C8</TerminalCapabilities>
+	<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+    <TerminalType>22</TerminalType>
+	<MerchantCategoryCode>0101</MerchantCategoryCode>
+	<MerchantID>000000000000000</MerchantID>
+	<MerchantNameLocation>Railway Operator</MerchantNameLocation>
+	<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+	<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+	<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+</Body>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    Bit0: purchase; Bit1: withdraw or cash; Bit2: cashback; Bit3: refund-->
+<!--    <string-array name="trans_type">-->
+<!--        <item>Bit0: purchase</item>-->
+<!--        <item>Bit1: withdraw or cash</item>-->
+<!--        <item>Bit2: cashback</item>-->
+<!--        <item>Bit3: refund</item>-->
+<!--    </string-array>-->
+
+
+    <string-array name="trans_type">
+        <item>purchase</item>
+        <item>cash</item>
+        <item>cashback</item>
+        <item>refund</item>
+    </string-array>
+</resources>

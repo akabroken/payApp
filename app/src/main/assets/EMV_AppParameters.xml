@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Body>
+
+	<Parameters AID="A0000005241010">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0101</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>FEF8FCF8F0</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>FEF8FCF8F0</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>123456789100</AcquirerID>
+		<MerchantCategoryCode>1234</MerchantCategoryCode>
+		<MerchantID>000000000000000</MerchantID>
+		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
+		<TerminalID>Front123</TerminalID>
+		<TransCurrencyCode>0356</TransCurrencyCode>
+		<TerminalCountryCode>0356</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0356</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>00</TransSupportTransLog>
+		<TransSupportRandomTransSelection>00</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>01</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+	<!-- MIR -->
+	<Parameters AID="A000000658">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0001</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>123456789100</AcquirerID>
+		<MerchantCategoryCode>1234</MerchantCategoryCode>
+		<MerchantID>000000000000000</MerchantID>
+		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
+		<TerminalID>Front123</TerminalID>
+		<TransCurrencyCode>0643</TransCurrencyCode>
+		<TerminalCountryCode>0643</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0643</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>00</TransSupportTransLog>
+		<TransSupportRandomTransSelection>00</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>01</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+	<!-- VS -->
+	<Parameters AID="A0000000031010">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0096</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>123456789100</AcquirerID>
+		<MerchantCategoryCode>1234</MerchantCategoryCode>
+		<MerchantID>000000000000000</MerchantID>
+		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
+		<TerminalID>Front123</TerminalID>
+		<TransCurrencyCode>0784</TransCurrencyCode>
+		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>00</TransSupportTransLog>
+		<TransSupportRandomTransSelection>00</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>01</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+	<Parameters AID="A0000000032010">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0096</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>123456789100</AcquirerID>
+		<MerchantCategoryCode>1234</MerchantCategoryCode>
+		<MerchantID>000000000000000</MerchantID>
+		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
+		<TerminalID>Front123</TerminalID>
+		<TransCurrencyCode>0784</TransCurrencyCode>
+		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>00</TransSupportTransLog>
+		<TransSupportRandomTransSelection>00</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>01</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+	<!-- MS -->
+	<Parameters AID="A0000000041010">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0002</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>122556633400</AcquirerID>
+		<MerchantCategoryCode>1342</MerchantCategoryCode>
+		<MerchantID>660000000000011</MerchantID>
+		<MerchantNameLocation>SHOP 2</MerchantNameLocation>
+		<TerminalID>Back1234</TerminalID>
+		<TransCurrencyCode>0784</TransCurrencyCode>
+		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>01</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+	<Parameters AID="A0000000043060">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0002</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>122556633400</AcquirerID>
+		<MerchantCategoryCode>1342</MerchantCategoryCode>
+		<MerchantID>660000000000011</MerchantID>
+		<MerchantNameLocation>SHOP 2</MerchantNameLocation>
+		<TerminalID>Back1234</TerminalID>
+		<TransCurrencyCode>0784</TransCurrencyCode>
+		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>01</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+	<!-- CUP -->
+	<Parameters AID="A0000003330101">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0030</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000000000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>99</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>99</TargetPercentBiasedRandSelection>
+		<DefaultTDOL>9F3704</DefaultTDOL>
+		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>DC4004F800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>D84000A800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>123456789012</AcquirerID>
+		<MerchantCategoryCode>1879</MerchantCategoryCode>
+		<MerchantID>000000000000078</MerchantID>
+		<MerchantNameLocation>SHOP 6</MerchantNameLocation>
+		<TerminalID>Back9612</TerminalID>
+		<TransCurrencyCode>0784</TransCurrencyCode>
+		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>00</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+	</Parameters>
+	<!-- AMEX-->
+	<Parameters AID="A00000002501">
+		<ASI>00</ASI>
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0001</AppVersionNumber>
+		<TerminalFloorLimit>000000015000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000000000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>DE00FC9800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>DC50FC9800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>122396678900</AcquirerID>
+		<MerchantCategoryCode>1872</MerchantCategoryCode>
+		<MerchantID>9425821733</MerchantID>
+		<MerchantNameLocation>SHOP 5</MerchantNameLocation>
+		<TerminalID>Back1512</TerminalID>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>00</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+	</Parameters>
+
+	<Parameters AID="A000000025010801">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0001</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000000000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>DE00FC9800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>DC50FC9800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>122396678900</AcquirerID>
+		<MerchantCategoryCode>1872</MerchantCategoryCode>
+		<MerchantID>9425821733</MerchantID>
+		<MerchantNameLocation>SHOP 5</MerchantNameLocation>
+		<TerminalID>Back1512</TerminalID>
+		<TransCurrencyCode>0784</TransCurrencyCode>
+		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>00</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+	</Parameters>
+	<Parameters AID="A000000025010802">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0001</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000000000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>DE00FC9800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>DC50FC9800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>122396678900</AcquirerID>
+		<MerchantCategoryCode>1872</MerchantCategoryCode>
+		<MerchantID>9425821733</MerchantID>
+		<MerchantNameLocation>SHOP 5</MerchantNameLocation>
+		<TerminalID>Back1512</TerminalID>
+		<TransCurrencyCode>0784</TransCurrencyCode>
+		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>00</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+	</Parameters>
+	<!-- JCB-->
+	<Parameters AID="A0000000651010">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0200</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000000000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>0000000000</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>0000000000</AdditionalTerminalCapabilities>
+		<AcquirerID>122556633410</AcquirerID>
+		<MerchantCategoryCode>1662</MerchantCategoryCode>
+		<MerchantID>660000000000022</MerchantID>
+		<MerchantNameLocation>SHOP 3</MerchantNameLocation>
+		<TerminalID>Back1123</TerminalID>
+		<TransCurrencyCode>0784</TransCurrencyCode>
+		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>01</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+	<!-- DINNERS-->
+	<Parameters AID="A0000001523010">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0001</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>    <!--E0D0C8-->
+		<AdditionalTerminalCapabilities>0000000000</AdditionalTerminalCapabilities>
+		<AcquirerID>128756678900</AcquirerID>
+		<MerchantCategoryCode>1644</MerchantCategoryCode>
+		<MerchantID>000000000000088</MerchantID>
+		<MerchantNameLocation>SHOP 4</MerchantNameLocation>
+		<TerminalID>Back1712</TerminalID>
+		<TransCurrencyCode>0784</TransCurrencyCode>
+		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>01</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+	<Parameters AID="A0000001524010">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0001</AppVersionNumber>
+		<TerminalFloorLimit>00000000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>584000A800</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>    <!--E0D0C8-->
+		<AdditionalTerminalCapabilities>0000000000</AdditionalTerminalCapabilities>
+		<AcquirerID>128756678900</AcquirerID>
+		<MerchantCategoryCode>1644</MerchantCategoryCode>
+		<MerchantID>000000000000088</MerchantID>
+		<MerchantNameLocation>SHOP 4</MerchantNameLocation>
+		<TerminalID>Back1712</TerminalID>
+		<TransCurrencyCode>0784</TransCurrencyCode>
+		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>01</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+
+
+
+	<!--Test -->
+	<Parameters AID="A0000002281010">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0096</AppVersionNumber>
+		<TerminalFloorLimit>000000005000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>90</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>0000000000</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>123456789100</AcquirerID>
+		<MerchantCategoryCode>1234</MerchantCategoryCode>
+		<MerchantID>000000000000000</MerchantID>
+		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
+		<TerminalID>Front123</TerminalID>
+		<TransCurrencyCode>0682</TransCurrencyCode>
+		<TerminalCountryCode>0682</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode></TransRefCurrencyCode>
+		<TransRefCurrencyExponent></TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>00</TransSupportTransLog>
+		<TransSupportRandomTransSelection>00</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>01</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+
+	<Parameters AID="A0000002282010">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0096</AppVersionNumber>
+		<TerminalFloorLimit>000000005000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>90</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>0000000000</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
+		<AcquirerID>123456789100</AcquirerID>
+		<MerchantCategoryCode>1234</MerchantCategoryCode>
+		<MerchantID>000000000000000</MerchantID>
+		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
+		<TerminalID>Front123</TerminalID>
+		<TransCurrencyCode>0682</TransCurrencyCode>
+		<TerminalCountryCode>0682</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode></TransRefCurrencyCode>
+		<TransRefCurrencyExponent></TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>00</TransSupportTransLog>
+		<TransSupportRandomTransSelection>00</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>01</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+
+	<Parameters AID="A0000000999090">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>0009</AppVersionNumber>
+		<TerminalFloorLimit>000000005000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>0000000000</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>0000000000</AdditionalTerminalCapabilities>
+		<AcquirerID>012345678910</AcquirerID>
+		<MerchantCategoryCode>1234</MerchantCategoryCode>
+		<MerchantID>000000000000000</MerchantID>
+		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
+		<TerminalID>Front   </TerminalID>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode></TransRefCurrencyCode>
+		<TransRefCurrencyExponent></TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>01</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+
+	<Parameters AID="A00000999901">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>9999</AppVersionNumber>
+		<TerminalFloorLimit>000000005000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>0000000000</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+		<TerminalCapabilities>E0D0C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>0000000000</AdditionalTerminalCapabilities>
+		<AcquirerID>012345678910</AcquirerID>
+		<MerchantCategoryCode>1234</MerchantCategoryCode>
+		<MerchantID>000000000000000</MerchantID>
+		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
+		<TerminalID>Front   </TerminalID>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode></TransRefCurrencyCode>
+		<TransRefCurrencyExponent></TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>01</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+
+	<Parameters AID="A0000003710001">
+		<ASI>00</ASI><!--data must to be configured -->
+		<DefaultDDOL>9F3704</DefaultDDOL>
+		<AppVersionNumber>9999</AppVersionNumber>
+		<TerminalFloorLimit>000000005000</TerminalFloorLimit>
+		<ThresholdValueBiasedRandSelection>000000005000</ThresholdValueBiasedRandSelection>
+		<MaxTargetPercentBiasedRandSelection>00</MaxTargetPercentBiasedRandSelection>
+		<TargetPercentBiasedRandSelection>00</TargetPercentBiasedRandSelection>
+		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
+		<TerminalActionCodeOnline>0000000000</TerminalActionCodeOnline>
+		<TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
+		<TerminalCapabilities>E040C8</TerminalCapabilities>
+		<AdditionalTerminalCapabilities>0000000000</AdditionalTerminalCapabilities>
+		<AcquirerID>012345678910</AcquirerID>
+		<MerchantCategoryCode>1234</MerchantCategoryCode>
+		<MerchantID>000000000000000</MerchantID>
+		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
+		<TerminalID>Front   </TerminalID>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
+		<TransCurrencyExponent>02</TransCurrencyExponent>
+		<TransRefCurrencyCode></TransRefCurrencyCode>
+		<TransRefCurrencyExponent></TransRefCurrencyExponent>
+		<TerminalRiskManageData></TerminalRiskManageData>
+		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
+		<TransSupportTransLog>01</TransSupportTransLog>
+		<TransSupportRandomTransSelection>01</TransSupportRandomTransSelection>
+		<TransSupportVelocityCheck>01</TransSupportVelocityCheck>
+		<TransForceOnline>00</TransForceOnline>
+		<DefaultTDOL>9F02069F0306</DefaultTDOL>
+	</Parameters>
+
+
+</Body>

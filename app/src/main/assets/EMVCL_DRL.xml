@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Body>
+	<DRL ProgramID="0B" KernelID="04">
+    <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
+    <CVMRequiredLimit>000000000200</CVMRequiredLimit>
+    <NoOndeviceCVMTransactionLimit>000000000300</NoOndeviceCVMTransactionLimit>
+	</DRL>
+	
+	<DRL ProgramID="06" KernelID="04">
+    <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
+    <CVMRequiredLimit>000000000200</CVMRequiredLimit>
+    <NoOndeviceCVMTransactionLimit>000000000700</NoOndeviceCVMTransactionLimit>
+	</DRL>
+	<DRL ProgramID="0001440144" KernelID="03">
+		<StatusCheck>00</StatusCheck>
+		<ZeroAmountAllowed>00</ZeroAmountAllowed>
+		<OnlineOptionOnZeroAmount>01</OnlineOptionOnZeroAmount>
+    <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
+    <CVMRequiredLimit>000000000000</CVMRequiredLimit>
+    <NoOndeviceCVMTransactionLimit>000000200000</NoOndeviceCVMTransactionLimit>
+	</DRL>
+	<DRL ProgramID="02" KernelID="03">
+		<StatusCheck>00</StatusCheck>
+		<ZeroAmountAllowed>01</ZeroAmountAllowed> 
+		<OnlineOptionOnZeroAmount>00</OnlineOptionOnZeroAmount>
+    <ReaderContactlessFloorLimit>000000001000</ReaderContactlessFloorLimit>
+    <CVMRequiredLimit>000000000500</CVMRequiredLimit>
+    <NoOndeviceCVMTransactionLimit>000000002000</NoOndeviceCVMTransactionLimit> 
+	</DRL>
+	<DRL ProgramID="03" KernelID="03">
+		<StatusCheck>00</StatusCheck>
+		<ZeroAmountAllowed>01</ZeroAmountAllowed> 
+		<OnlineOptionOnZeroAmount>00</OnlineOptionOnZeroAmount>
+    <ReaderContactlessFloorLimit>000000001000</ReaderContactlessFloorLimit>
+    <CVMRequiredLimit>000000001000</CVMRequiredLimit>
+    <NoOndeviceCVMTransactionLimit>000000010000</NoOndeviceCVMTransactionLimit>  
+	</DRL>
+	<DRL ProgramID="04" KernelID="03">
+		<StatusCheck>00</StatusCheck>
+		<ZeroAmountAllowed>01</ZeroAmountAllowed> 
+		<OnlineOptionOnZeroAmount>00</OnlineOptionOnZeroAmount>
+    <ReaderContactlessFloorLimit>000000005000</ReaderContactlessFloorLimit>
+    <CVMRequiredLimit>000000001000</CVMRequiredLimit>
+    <NoOndeviceCVMTransactionLimit>000000010000</NoOndeviceCVMTransactionLimit>  
+	</DRL>
+</Body>
