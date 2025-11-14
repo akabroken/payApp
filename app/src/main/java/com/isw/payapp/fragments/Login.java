@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
+import com.isw.payapp.BuildConfig;
 import com.isw.payapp.R;
 import com.isw.payapp.databinding.FragmentLoginBinding;
 import com.isw.payapp.devices.services.NetworkService;
@@ -62,7 +63,7 @@ public class Login extends Fragment {
         // Load logo with error handling
         try {
             Glide.with(this)
-                    .load(R.drawable.sidian_bank_logo)
+                    .load(BuildConfig.APP_LOGO)
                     .into(binding.imageLogo);
         } catch (Exception e) {
             Log.e(TAG, "Error loading logo", e);
@@ -206,6 +207,10 @@ public class Login extends Fragment {
         UserModel userModel = new UserModel();
         userModel.setUsername(username);
         userModel.setPassword(password);
+        if(getSelectedRole().isEmpty()){
+            showError("Invalid User");
+            return null;
+        }
         userModel.setRole(getSelectedRole());
 
         try {
@@ -223,16 +228,17 @@ public class Login extends Fragment {
     private String getSelectedRole() {
         if (binding.checkBoxAdmin.isChecked()) {
             return "ADMIN";
-        } else if (binding.checkBoxSuper.isChecked()) {
-            return "SUPERVISOR";
         }
-        return "TELLER";
+        else if (binding.checkBoxSuper.isChecked()) {
+            return "SUPERVISOR";
+       }
+        return null;
     }
 
     private String getRequestType() {
         return (binding.checkBoxAdmin.isChecked() || binding.checkBoxSuper.isChecked())
                 ? "Admin"
-                : "LOGIN";
+                : "SUPERVISOR";
     }
 
     private void handleLoginResponse(String response, String username) throws Exception {
@@ -247,7 +253,7 @@ public class Login extends Fragment {
 
         if ("00".equals(responseCode)) {
             String names = getValue(doc, "names");
-            sessionManager.createSession(username, names);
+            sessionManager.createSession(username, names, getSelectedRole());
             showToast("Login successful!");
             navigateToHome();
         } else {

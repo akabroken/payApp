@@ -101,7 +101,7 @@ public class TelpoPrinter implements IPrinterProcessor {
 
 // Resize the bitmap using Bitmap.createScaledBitmap
             Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap1, scaledWidth, scaledHeight, true);
-            usbThermalPrinter.printLogo(bitmap2, true);
+            //usbThermalPrinter.printLogo(bitmap2, true);
 
             usbThermalPrinter.setTextSize(30);
             usbThermalPrinter.addString("PIN CHANGE\n");
@@ -135,6 +135,10 @@ public class TelpoPrinter implements IPrinterProcessor {
 
         } catch (TelpoException e) {
             e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         } finally {
             usbThermalPrinter.stop();
         }

@@ -50,9 +50,32 @@ android {
     signingConfigs {
         telpo {
             // Commented out - no signing config for telpo
+            storeFile file("keystores/PAXKeystore.jks")
+            storePassword keystoreProperties.getProperty('telpoStorePassword', '')
+            keyAlias keystoreProperties.getProperty('telpoKeyAlias', '')
+            keyPassword keystoreProperties.getProperty('telpoKeyPassword', '')
+
+            // Debug logging
+            println "TELPO Signing Config:"
+            println "  Store File: ${storeFile.exists() ? 'EXISTS' : 'MISSING'} at ${storeFile.path}"
+            println "  Store Password: ${storePassword ? 'SET' : 'MISSING'}"
+            println "  Key Alias: ${keyAlias ?: 'MISSING'}"
+            println "  Key Password: ${keyPassword ? 'SET' : 'MISSING'}"
         }
         pax {
             // Commented out - no signing config for pax
+            storeFile file("keystores/PAXKeystore.jks")
+            storePassword keystoreProperties.getProperty('paxStorePassword', '')
+            keyAlias keystoreProperties.getProperty('paxKeyAlias', '')
+            keyPassword keystoreProperties.getProperty('paxKeyPassword', '')
+
+
+            // Debug logging
+            println "DSPREAD Signing Config:"
+            println "  Store File: ${storeFile.exists() ? 'EXISTS' : 'MISSING'} at ${storeFile.path}"
+            println "  Store Password: ${storePassword ? 'SET' : 'MISSING'}"
+            println "  Key Alias: ${keyAlias ?: 'MISSING'}"
+            println "  Key Password: ${keyPassword ? 'SET' : 'MISSING'}"
         }
         dspread {
             storeFile file("keystores/mpos.keystore")
@@ -93,6 +116,7 @@ android {
             buildConfigField "String", "SDK_VERSION", "\"1.0.0\""
             manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.telpo.TelpoApplication"]
             // No signing config - will use debug/release default
+            signingConfig = signingConfigs.telpo
         }
         pax {
             dimension "pos"
@@ -106,12 +130,14 @@ android {
             buildConfigField "String", "SDK_VERSION", "\"7.4.8\""
             manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.dspread.Activity.DeviceApplication"]
             signingConfig = signingConfigs.dspread  // Explicitly set signing config
+            buildConfigField "int", "APP_LOGO", "R.drawable.sidian_bank_logo"
         }
         feitian {
             dimension "pos"
             buildConfigField "String", "POS_BRAND", "\"FEITIAN\""
             manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.feitian.FeitianApplication"]
             signingConfig = signingConfigs.feitian  // Explicitly set signing config
+            buildConfigField "int", "APP_LOGO", "R.drawable.caritas_logo_1"
         }
         castles {
             dimension "pos"
@@ -126,10 +152,17 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.telpo
+            //Caritas
+            //buildConfigField "int", "APP_LOGO", "R.drawable.caritas_logo_1"
+            //Sidian
+//            buildConfigField "int", "APP_LOGO", "R.drawable.sidian_bank_logo"
             // Signing config is handled by individual flavors
         }
         debug {
             // Signing config is handled by individual flavors
+           // signingConfig signingConfigs.telpo
+           // buildConfigField "int", "APP_LOGO", "R.drawable.sidian_bank_logo"
         }
     }
 

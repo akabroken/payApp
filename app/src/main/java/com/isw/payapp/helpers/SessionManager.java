@@ -10,6 +10,8 @@ public class SessionManager {
     private static final String KEY_FULLNAME = "fullNames";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_LAST_ACTIVITY_TIME = "lastActivityTime";
+    private static final String KEY_ROLE_TYPE = "roleType";
+
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -22,10 +24,11 @@ public class SessionManager {
     }
 
     // Save user session details
-    public void createSession(String username, String fullNames) {
+    public void createSession(String username, String fullNames, String roleType) {
         editor.putString(KEY_USERNAME, username);
         editor.putString(KEY_FULLNAME, fullNames);
         editor.putBoolean(KEY_IS_LOGGED_IN, true);
+        editor.putString(KEY_ROLE_TYPE, roleType);
         updateLastActivityTime(); // Set initial activity time
         editor.apply();
     }
@@ -59,6 +62,7 @@ public class SessionManager {
         return sharedPreferences.getString(KEY_FULLNAME, null);
     }
 
+    public String getKeyRoleType(){ return sharedPreferences.getString(KEY_ROLE_TYPE, null); }
     // Check if the user is logged in
     public boolean isLoggedIn() {
         return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false) && !isSessionExpired();

@@ -133,10 +133,6 @@ public class FeitianPinpadService implements IPinPadProcessor {
                 Log.e(TAG, "Failed to load DUKPT IPEK: " + ErrCode.toString(ret));
                 return ret;
             }
-
-
-
-
             Log.d(TAG, "DUKPT key injected successfully");
             return ErrCode.ERR_SUCCESS;
 

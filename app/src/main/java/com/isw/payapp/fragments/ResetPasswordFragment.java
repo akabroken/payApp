@@ -18,6 +18,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.isw.payapp.BuildConfig;
 import com.isw.payapp.R;
 import com.isw.payapp.databinding.FragmentResetPasswordBinding;
 import com.isw.payapp.terminal.config.TerminalConfig;
@@ -57,6 +59,9 @@ public class ResetPasswordFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentResetPasswordBinding.inflate(inflater,container,false);
 
+        Glide.with(this)
+                .load(BuildConfig.APP_LOGO)
+                .into(binding.imageLogo);
         return binding.getRoot();
     }
 

@@ -56,24 +56,34 @@ public class TelpoPinpad implements IPinPadProcessor {
     @Override
     public int injectDukptKey(String key, String iKsn, String kcv) {
         Log.i("BDK KEY",key);
+        try {
+            String bdk_key = "";
+            if(key.length()>32){
+                key = key.substring(8,40);
+            }
+            byte[] ipekBytes = DUKPK2009_CBC.GenerateIPEK(
+                    ThreeDES.hexStringToByteArray(iKsn),
+                    ThreeDES.hexStringToByteArray(key)
+            );
+            String ipek = ThreeDES.byteArrayToHexString(ipekBytes).toUpperCase();
+            Log.i("IPEK: " , ipek+"===="+iKsn);
+
+            ret = PinpadService.TP_PinpadCheckKey(PinpadService.KEY_TYPE_DUKPT, 0);
+            Log.i("IPEK", "PinpadService.TP_PinpadCheckKey(PinpadService.KEY_TYPE_DUKPT, 0) Value is "+ ret);
+
+            if (ret == -9||0==ret) {
+                ret = PinpadService.TP_PinpadWriteDukptIPEK(StringUtil.toBytes(ipek), StringUtil.toBytes(iKsn), 0, PinpadService.KEY_WRITE_DIRECT, 0);
+                Log.i("RKI", "PinpadService.TP_PinpadWriteDukptIPEK:"+ret);
+            } else {
+                ret = 100;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
 
         //301C0410B30D16EAE5372C9457326464E62C5E610408103BAA944EBBD1FE
-        byte[] ipekBytes = DUKPK2009_CBC.GenerateIPEK(
-                ThreeDES.hexStringToByteArray(iKsn),
-                ThreeDES.hexStringToByteArray(key.substring(8,40))
-        );
-        String ipek = ThreeDES.byteArrayToHexString(ipekBytes).toUpperCase();
-        Log.i("IPEK: " , ipek+"===="+iKsn);
 
-        ret = PinpadService.TP_PinpadCheckKey(PinpadService.KEY_TYPE_DUKPT, 0);
-        Log.i("IPEK", "PinpadService.TP_PinpadCheckKey(PinpadService.KEY_TYPE_DUKPT, 0) Value is "+ ret);
-
-        if (ret == -9||0==ret) {
-            ret = PinpadService.TP_PinpadWriteDukptIPEK(StringUtil.toBytes(ipek), StringUtil.toBytes(iKsn), 0, PinpadService.KEY_WRITE_DIRECT, 0);
-            Log.i("RKI", "PinpadService.TP_PinpadWriteDukptIPEK:"+ret);
-        } else {
-            ret = 100;
-        }
         return  ret;
     }
 

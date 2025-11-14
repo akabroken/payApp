@@ -130,7 +130,7 @@ public class KsmgRequest {
         parent.appendChild(icd);
 
         createElement(doc, icd, "isfallback", "false");
-        createElement(doc, icd, "aa", "000000000000");
+        createElement(doc, icd, "aa", "000000000100");
         createElement(doc, icd, "ao", "000000000000");
         createElement(doc, icd, "aip", emvModel.getApplicationInterchangeProfile());
         createElement(doc, icd, "atc", emvModel.getAtc());

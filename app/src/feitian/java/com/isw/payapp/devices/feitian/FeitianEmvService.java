@@ -357,6 +357,7 @@ public class FeitianEmvService implements IEmvProcessor {
                 "Amt:" + formatAmount, "in trading ...");
         Log.d(TAG, "Amount: " + amount.getmAmount() + " " + amount.getmOtherAmount());
 
+
         startEMV(amount, transRequest);
         Log.d(TAG, "Starting EMV process");
         classEmvCallBacks.onLoading("Starting EMV process");
@@ -412,6 +413,8 @@ public class FeitianEmvService implements IEmvProcessor {
 
         this.amount = amount;
         this.transRequest = transRequest;
+
+        transRequest.setmCurrencyCode("0404");
 
         try {
             Logger.i("Starting EMV process");
@@ -953,10 +956,6 @@ public class FeitianEmvService implements IEmvProcessor {
                 cardModel.setKsn(ksnValue);
                 cardModel.setPinBlock("T"+pinBlockValue);
 
-                String clearPinData = DUKPK2009_CBC.getData(ksnValue, pinBlockValue,
-                        DUKPK2009_CBC.Enum_key.PIN, DUKPK2009_CBC.Enum_mode.CBC);
-                Log.i(TAG,"PIN CLEAR :"+ clearPinData);
-
                 // EMV tag 57 (Track 2 Equivalent data)
                 emvModel.setTrack2data(tagMap.get("57"));
                 // EMV tag 5A (Application Primary Account Number (PAN))
@@ -1043,6 +1042,7 @@ public class FeitianEmvService implements IEmvProcessor {
 
                 String response = networkService.postPayLoadSync(pinchangeRequest.generatePayload());
 
+
                 mainHandler.post(() -> handleNetworkResponse(response, emvModel));
 
             } catch (Exception e) {
@@ -1059,7 +1059,8 @@ public class FeitianEmvService implements IEmvProcessor {
         try {
             classEmvCallBacks.onStopLoading();
 
-            String respMessage = XMLUtils.isErrorResponse(response);
+            String respMessage = XMLUtils.getTransactionResult(response);   //isErrorResponse(response);
+
 
             showPrinterPreviewDialog(respMessage, emvModel);
 
@@ -1090,6 +1091,7 @@ public class FeitianEmvService implements IEmvProcessor {
                     @Override
                     public void onCancelClick() {
                         Log.d(TAG,"Printing cancelled by user");
+                        classEmvCallBacks.onTransactionSuccess(respMessage);
                     }
                 }
         );
@@ -1105,9 +1107,12 @@ public class FeitianEmvService implements IEmvProcessor {
         receipt.setBank(TerminalConfig.loadTerminalDataFromJson(getActivity(), "__bank"));
         receipt.setMerchant(TerminalConfig.loadTerminalDataFromJson(getActivity(), "__merchantloc"));
         receipt.setTerminalId(TerminalConfig.loadTerminalDataFromJson(getActivity(), "__tid"));
-
-
-        receipt.setAmount(classTransactionData.getAmount());
+        receipt.setTransactionType(classTransactionData.getTransactionType());
+        if (classTransactionData.getPaymentApp().equals("selectpin")){
+            receipt.setAmount("0.00");
+        }else {
+            receipt.setAmount(classTransactionData.getAmount());
+        }
         receipt.setCurrency("KES");
         receipt.setDateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         receipt.setTransactionType(classTransactionData.getTransactionType());

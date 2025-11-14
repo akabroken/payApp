@@ -83,10 +83,10 @@
 		<MerchantID>000000000000000</MerchantID>
 		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
 		<TerminalID>Front123</TerminalID>
-		<TransCurrencyCode>0784</TransCurrencyCode>
-		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
-		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyCode>0404</TransRefCurrencyCode>
 		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
 		<TerminalRiskManageData></TerminalRiskManageData>
 		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
@@ -114,10 +114,10 @@
 		<MerchantID>000000000000000</MerchantID>
 		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
 		<TerminalID>Front123</TerminalID>
-		<TransCurrencyCode>0784</TransCurrencyCode>
-		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
-		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyCode>0404</TransRefCurrencyCode>
 		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
 		<TerminalRiskManageData></TerminalRiskManageData>
 		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
@@ -146,10 +146,10 @@
 		<MerchantID>660000000000011</MerchantID>
 		<MerchantNameLocation>SHOP 2</MerchantNameLocation>
 		<TerminalID>Back1234</TerminalID>
-		<TransCurrencyCode>0784</TransCurrencyCode>
-		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
-		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyCode>0404</TransRefCurrencyCode>
 		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
 		<TerminalRiskManageData></TerminalRiskManageData>
 		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
@@ -177,10 +177,10 @@
 		<MerchantID>660000000000011</MerchantID>
 		<MerchantNameLocation>SHOP 2</MerchantNameLocation>
 		<TerminalID>Back1234</TerminalID>
-		<TransCurrencyCode>0784</TransCurrencyCode>
-		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
-		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyCode>0404</TransRefCurrencyCode>
 		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
 		<TerminalRiskManageData></TerminalRiskManageData>
 		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
@@ -210,10 +210,10 @@
 		<MerchantID>000000000000078</MerchantID>
 		<MerchantNameLocation>SHOP 6</MerchantNameLocation>
 		<TerminalID>Back9612</TerminalID>
-		<TransCurrencyCode>0784</TransCurrencyCode>
-		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
-		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyCode>0404</TransRefCurrencyCode>
 		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
 		<TerminalRiskManageData></TerminalRiskManageData>
 		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
@@ -268,10 +268,10 @@
 		<MerchantID>9425821733</MerchantID>
 		<MerchantNameLocation>SHOP 5</MerchantNameLocation>
 		<TerminalID>Back1512</TerminalID>
-		<TransCurrencyCode>0784</TransCurrencyCode>
-		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
-		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyCode>0404</TransRefCurrencyCode>
 		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
 		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
 		<TransSupportTransLog>00</TransSupportTransLog>
@@ -297,10 +297,10 @@
 		<MerchantID>9425821733</MerchantID>
 		<MerchantNameLocation>SHOP 5</MerchantNameLocation>
 		<TerminalID>Back1512</TerminalID>
-		<TransCurrencyCode>0784</TransCurrencyCode>
-		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
-		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyCode>0404</TransRefCurrencyCode>
 		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
 		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
 		<TransSupportTransLog>00</TransSupportTransLog>
@@ -327,10 +327,10 @@
 		<MerchantID>660000000000022</MerchantID>
 		<MerchantNameLocation>SHOP 3</MerchantNameLocation>
 		<TerminalID>Back1123</TerminalID>
-		<TransCurrencyCode>0784</TransCurrencyCode>
-		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
-		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyCode>0404</TransRefCurrencyCode>
 		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
 		<TerminalRiskManageData></TerminalRiskManageData>
 		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
@@ -359,10 +359,10 @@
 		<MerchantID>000000000000088</MerchantID>
 		<MerchantNameLocation>SHOP 4</MerchantNameLocation>
 		<TerminalID>Back1712</TerminalID>
-		<TransCurrencyCode>0784</TransCurrencyCode>
-		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
-		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyCode>0404</TransRefCurrencyCode>
 		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
 		<TerminalRiskManageData></TerminalRiskManageData>
 		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
@@ -390,10 +390,10 @@
 		<MerchantID>000000000000088</MerchantID>
 		<MerchantNameLocation>SHOP 4</MerchantNameLocation>
 		<TerminalID>Back1712</TerminalID>
-		<TransCurrencyCode>0784</TransCurrencyCode>
-		<TerminalCountryCode>0784</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
-		<TransRefCurrencyCode>0784</TransRefCurrencyCode>
+		<TransRefCurrencyCode>0404</TransRefCurrencyCode>
 		<TransRefCurrencyExponent>02</TransRefCurrencyExponent>
 		<TerminalRiskManageData></TerminalRiskManageData>
 		<TransSupportFloorlimitCheck>01</TransSupportFloorlimitCheck>
@@ -425,8 +425,8 @@
 		<MerchantID>000000000000000</MerchantID>
 		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
 		<TerminalID>Front123</TerminalID>
-		<TransCurrencyCode>0682</TransCurrencyCode>
-		<TerminalCountryCode>0682</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
 		<TransRefCurrencyCode></TransRefCurrencyCode>
 		<TransRefCurrencyExponent></TransRefCurrencyExponent>
@@ -457,8 +457,8 @@
 		<MerchantID>000000000000000</MerchantID>
 		<MerchantNameLocation>SHOP 1</MerchantNameLocation>
 		<TerminalID>Front123</TerminalID>
-		<TransCurrencyCode>0682</TransCurrencyCode>
-		<TerminalCountryCode>0682</TerminalCountryCode>
+		<TransCurrencyCode>0404</TransCurrencyCode>
+		<TerminalCountryCode>0404</TerminalCountryCode>
 		<TransCurrencyExponent>02</TransCurrencyExponent>
 		<TransRefCurrencyCode></TransRefCurrencyCode>
 		<TransRefCurrencyExponent></TransRefCurrencyExponent>
@@ -546,7 +546,7 @@
 		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
 		<TerminalActionCodeOnline>0000000000</TerminalActionCodeOnline>
 		<TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
-		<TerminalCapabilities>E040C8</TerminalCapabilities>
+		<TerminalCapabilities>E0F0C8</TerminalCapabilities>
 		<AdditionalTerminalCapabilities>0000000000</AdditionalTerminalCapabilities>
 		<AcquirerID>012345678910</AcquirerID>
 		<MerchantCategoryCode>1234</MerchantCategoryCode>

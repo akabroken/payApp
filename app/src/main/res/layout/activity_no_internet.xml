@@ -6,7 +6,7 @@
     android:gravity="center"
     android:padding="16dp">
 
-    <!-- ImageView at the top #f2f3f8-->
+    <!-- ImageView at the top #f2f3f8 android.widget.ImageView-->
     <ImageView
         android:id="@+id/imageLogo"
         android:layout_width="340dp"
@@ -16,7 +16,7 @@
         android:layout_marginTop="10dp"
         android:contentDescription="vcb"
         android:scaleType="fitXY"
-        android:src="@drawable/sidian_bank_logo" />
+         />
 
     <!-- TextView centered vertically -->
     <TextView

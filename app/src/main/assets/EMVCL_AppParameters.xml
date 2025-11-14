@@ -29,13 +29,13 @@
         <MerchantCategoryCode>9999</MerchantCategoryCode>
         <AcquirerID></AcquirerID>
         <MerchantID></MerchantID>
-        <TerminalCountryCode>0356</TerminalCountryCode>
+        <TerminalCountryCode>0404</TerminalCountryCode>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E060C8</TerminalCapabilities>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0356</TransCurrencyCode>
+        <TransCurrencyCode>0404</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000010000</CVMRequiredLimit>

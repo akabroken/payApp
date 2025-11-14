@@ -89,6 +89,10 @@ public class PrinterPreviewDialog extends Dialog {
                 "Terminal ID: " + TerminalConfig.loadTerminalDataFromJson(context, "__tid");
         tvMerchantInfo.setText(merchantInfo);
 
+        if (transactionData.getPaymentApp().equals("selectpin")){
+            transactionData.setAmount("0.00");
+        }
+
         // Transaction Details
         String transactionDetails = "Amount: " + transactionData.getAmount() + "\n" +
                 "Currency: " + transactionData.getCurrency() + "\n" +

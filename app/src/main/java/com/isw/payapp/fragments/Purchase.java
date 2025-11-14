@@ -161,9 +161,6 @@ public class Purchase extends Fragment {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-
-
             }
         });
 

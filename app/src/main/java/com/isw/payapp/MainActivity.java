@@ -58,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void showNoInternetLayout() {
         setContentView(R.layout.activity_no_internet);
+        ImageView logoImage = findViewById(R.id.imageLogo);
+        Glide.with(this)
+                .load(BuildConfig.APP_LOGO)
+                .into(logoImage);
         findViewById(R.id.retryButton).setOnClickListener(v -> {
             if (NetworkUtils.isNetworkAvailable(this)) {
                 Log.d("Device", "Current POS brand:------->>>>>>> ");
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView logo = findViewById(R.id.main_activity_imageView);
         if (logo != null && logo.getParent() == binding.getRoot()) {
             Glide.with(this)
-                    .load(R.drawable.sidian_bank_logo)
+                    .load(BuildConfig.APP_LOGO)
                     .into(logo); // Using the binding reference
         }
     }

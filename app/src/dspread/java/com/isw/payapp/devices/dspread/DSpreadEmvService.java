@@ -944,8 +944,7 @@ public class DSpreadEmvService implements IEmvProcessor {
                     cardModel = new CardModel();
                     cardModel.setPan(decodedMap.get(EmvTLVTags.PAN));
                     cardModel.setKsn(emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC1));
-                   // clearPinData = emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC7);
-                    cardModel.setPinBlock("T"+pinBlock);// clearPinData//emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC7)
+                    cardModel.setPinBlock("T"+pinBlock);
 
                     EmvModel emvModel = new EmvModel();
                     emvModel.setTrack2data(decodedMap.get(EmvTLVTags.Track2EquivalentData));

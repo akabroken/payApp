@@ -1,5 +1,6 @@
 package com.isw.payapp.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -7,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +27,8 @@ import com.isw.payapp.databinding.FragmentKeyDownloadBinding;
 import com.isw.payapp.devices.DeviceFactory;
 import com.isw.payapp.devices.interfaces.IPinPadProcessor;
 import com.isw.payapp.devices.services.NetworkService;
+import com.isw.payapp.helpers.LogoHelper;
+import com.isw.payapp.helpers.SessionManager;
 import com.isw.payapp.model.ItemData;
 
 // Import the refactored Processor and its callback
@@ -39,6 +43,7 @@ import com.isw.payapp.utils.UnsafeOkHttpClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,6 +58,8 @@ public class KeyDownload extends Fragment {
     private List<ItemData> itemDataList;
 
     private IPinPadProcessor posPinPad;
+
+    private SessionManager sessionManager;
     int ret;
 
     // Executor for background tasks (replacement for AsyncTask)
@@ -60,11 +67,11 @@ public class KeyDownload extends Fragment {
 
     // Live data (should ideally come from a secure configuration)
     private final String ipektwLive = "33707E4927C4A0D51282944D541770D4";
-    private final String iksnLive ="FFFF000006DDDDE00000";//"09110000020705E00000";// "FFFF000002DDDDE00000";
+    private final String iksnLive ="FFFF000002DDDDE00000";//"09110000020705E00000";// "FFFF000002DDDDE00000";
     private final String kcvLive = "10B9824432E458DD";
 
 
-    private final String ipektwTest = "D6D8291E53A7BF2B"; //D6D8291E53A7BF2B67973ADF78E9B882 D6D8291E53A7BF2B
+    private final String ipektwTest = "D6D8291E53A7BF2B67973ADF78E9B882"; //D6D8291E53A7BF2B67973ADF78E9B882 D6D8291E53A7BF2B
     private final String iksnTest = "FFFF000006DDDDE00000";
     private final String kcvTest = "10B9824432E458DD";
 
@@ -77,9 +84,10 @@ public class KeyDownload extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentKeyDownloadBinding.inflate(inflater, container, false);
-        Glide.with(this)
-                .load(R.drawable.sidian_bank_logo)
-                .into(binding.imageView);
+//        Glide.with(this)
+//                .load(R.drawable.sidian_bank_logo)
+//                .into(binding.imageView);
+        LogoHelper.setupLogo(binding.getRoot());
         return binding.getRoot();
     }
 
@@ -88,7 +96,7 @@ public class KeyDownload extends Fragment {
 
         recyclerView = binding.recyclerView;
         recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
-
+        sessionManager = new SessionManager(requireContext());
         itemDataList = generateItemData();
         imageAdapter = new ImageAdapter(requireContext(), itemDataList);
         recyclerView.setAdapter(imageAdapter);
@@ -96,6 +104,12 @@ public class KeyDownload extends Fragment {
         // Initialize the PIN pad
         posPinPad = DeviceFactory.createPinPad(requireContext());
         posPinPad.initPinPad();
+
+        Set<String> allowedRoles = Set.of("SUPERVISOR", "ADMIN");
+        if (!allowedRoles.contains(sessionManager.getKeyRoleType())) {
+            showUserNotAllowedDialog();
+            return;
+        }
 
         imageAdapter.setOnItemClickListener(new ImageAdapter.OnItemClickListener() {
             @Override
@@ -174,6 +188,15 @@ public class KeyDownload extends Fragment {
                 progressDialog.show();
             }
         });
+    }
+
+    private void showUserNotAllowedDialog(){
+        new AlertDialog.Builder(requireActivity())
+                .setTitle(R.string.userNotAllowed)
+                .setMessage(R.string.onlySupervisorAllowed)
+                .setPositiveButton(R.string.bn_confirm, (dialog, which) -> navigateBack())
+                .setCancelable(false)
+                .show();
     }
 
     private void hideProgressDialog() {
@@ -281,7 +304,7 @@ public class KeyDownload extends Fragment {
         showProgressDialog("Loading initial PIN key...");
 
         executor.execute(() -> {
-            final int result = posPinPad.injectDukptKey(ipektwLive, iksnLive, kcvLive);
+            final int result = posPinPad.injectDukptKey(ipektwTest, iksnTest, kcvLive);
 
             requireActivity().runOnUiThread(() -> {
                 hideProgressDialog();
@@ -375,4 +398,24 @@ public class KeyDownload extends Fragment {
         }
         return itemDataList;
     }
+
+    private void navigateBack() {
+       // cleanupResources();
+        //NavHostFragment.findNavController(this).navigateUp();
+        if (!isAdded() || isStateSaved()) {
+            Log.w("TAG", "Fragment detached or state already saved. Skipping navigation.");
+            return;
+        }
+
+        try {
+            NavHostFragment.findNavController(this).navigateUp();
+        } catch (IllegalStateException e) {
+            Log.e("TAG", "NavController not available.", e);
+            Activity activity = getActivity();
+            if (activity != null && !activity.isFinishing()) {
+                activity.onBackPressed();
+            }
+        }
+    }
+
 }

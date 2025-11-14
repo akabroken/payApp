@@ -160,7 +160,7 @@ public class IccCardReaderCallBack extends EmvServiceListener {
             updateProgress("Setting transaction amount...");
 
             long amount = convertAmountToMinorUnits(transactionData.getAmount());
-            emvAmountData.Amount = amount;
+            emvAmountData.Amount =  100;//amount;
             emvAmountData.TransCurrCode = CURRENCY_CODE;
             emvAmountData.ReferCurrCode = CURRENCY_CODE;
             emvAmountData.TransCurrExp = CURRENCY_EXPONENT;
@@ -444,12 +444,13 @@ public class IccCardReaderCallBack extends EmvServiceListener {
             if (SUCCESS_RESPONSE_CODE.equals(responseCode)) {
                 updateProgress("Transaction approved");
                 configureApprovedTransaction(emvOnlineData, document);
-                showPrinterPreviewDialog(gatewayResponse, emvData, responseMessage);
+                //
+                showPrinterPreviewDialog(gatewayResponse, emvData, "Transaction approved");
                 completeTransaction(true, gatewayResponse);
                 return true;
             } else {
                 updateProgress("Transaction declined");
-                showPrinterPreviewDialog(gatewayResponse, emvData, responseMessage);
+                showPrinterPreviewDialog(gatewayResponse, emvData, "Transaction declined");
                 Log.w(TAG, "Transaction declined - Response code: " + responseCode);
                 completeTransaction(false, "Transaction declined: " + responseMessage);
                 return false;
@@ -540,8 +541,11 @@ public class IccCardReaderCallBack extends EmvServiceListener {
             receipt.setMerchant(TerminalConfig.loadTerminalDataFromJson(activity, "__merchantloc"));
             receipt.setTerminalId(TerminalConfig.loadTerminalDataFromJson(activity, "__tid"));
         }
-
-        receipt.setAmount(transactionData.getAmount());
+        if(transactionData.getPaymentApp().equals("selectpin")){
+            receipt.setAmount("0.00");
+        }else {
+            receipt.setAmount(transactionData.getAmount());
+        }
         receipt.setCurrency("KES");
         receipt.setDateTime(DATE_TIME_FORMATTER.format(new Date()));
         receipt.setTransactionType(transactionData.getTransactionType());

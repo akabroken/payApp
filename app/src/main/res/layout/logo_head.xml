@@ -10,7 +10,7 @@
         android:layout_centerHorizontal="true"
         android:src="@drawable/sidian_bank_logo"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft ="20dp"
+        android:layout_marginLeft ="0dp"
         android:scaleType="fitXY"
         android:contentDescription="vcb" />
 

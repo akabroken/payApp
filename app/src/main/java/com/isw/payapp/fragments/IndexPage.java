@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.isw.payapp.Adapters.IndexAdapter;
+import com.isw.payapp.BuildConfig;
 import com.isw.payapp.R;
 import com.isw.payapp.databinding.FragmentIndexPageBinding;
 import com.isw.payapp.helpers.SessionManager;
@@ -35,7 +36,7 @@ public class IndexPage extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentIndexPageBinding.inflate(inflater, container, false);
         Glide.with(this)
-                .load(R.drawable.sidian_bank_logo)
+                .load(BuildConfig.APP_LOGO)
                 .into(binding.imageView);
         return binding.getRoot();
     }

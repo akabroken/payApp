@@ -280,6 +280,7 @@
     <string name="oneKey">One key operation</string>
 
     <string name="overTime">Operate over time!</string>
+    <string name="userNotAllowed">User not allowed</string>
     <string name="dealing">Dealing</string>
     <string name="bn_confirm">OK</string>
     <string name="bn_cancel">cancel</string>
@@ -875,6 +876,8 @@
     <string name="please_input_pin">Please enter pin</string>
     <string name="input_pin_for_change">Change Pin</string>
     <string name="transaction_timeout">Timeout</string>
+    <string name="onlyTellerAllowed">Only Teller Allowed to Authorize Transaction</string>
+    <string name="onlySupervisorAllowed">Only Supervisor Allowed to Authorize Transaction</string>
     <string name="cancel_transaction_confirmation">Canceled</string>
     <string name="confirm_cancel">Confirmed</string>
     <string name="transaction_cancelled">Confirmed</string>
