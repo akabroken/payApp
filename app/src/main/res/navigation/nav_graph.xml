@@ -25,7 +25,7 @@
         tools:layout="@layout/fragment_index_page">
         <action android:id="@+id/index_to_home" app:destination="@+id/HomeFragment"/>
         <action android:id="@+id/index_to_transaction" app:destination="@id/transactions"/>
-        <action android:id="@+id/index_to_settings" app:destination="@+id/keyDownloadFragment"/>
+        <action android:id="@+id/index_to_settings" app:destination="@+id/LocalSettings"/>
         <action android:id="@+id/index_to_login" app:destination="@id/Login"/>
         <action android:id="@+id/index_to_report" app:destination="@+id/Reports"/>
         <action android:id="@+id/index_to_pinselect" app:destination="@+id/PinSelect"/>
@@ -54,7 +54,7 @@
             app:destination="@id/PaymentFragment" />
         <action
             android:id="@+id/homeFragment_to_keydownloadFragement"
-            app:destination="@+id/keyDownloadFragment" />
+            app:destination="@+id/LocalSettings" />
 
         <action
             android:id="@+id/homeFragment_to_reversal"
@@ -95,13 +95,14 @@
     </fragment>
 
     <fragment
-        android:id="@+id/keyDownloadFragment"
-        android:name="com.isw.payapp.fragments.KeyDownload"
-        android:label="Key Management"
-        tools:layout="@layout/fragment_key_download">
+        android:id="@+id/LocalSettings"
+        android:name="com.isw.payapp.fragments.LocalSettings"
+        android:label="Settings"
+        tools:layout="@layout/fragment_local_settings">
         <action android:id="@+id/fragment_keydownload_to_homefragment"
             app:destination="@id/HomeFragment"/>
         <action android:id="@+id/keydownload_to_setting" app:destination="@id/settings"/>
+        <action android:id="@+id/local_settings_to_terminal" app:destination="@id/Terminal"/>
     </fragment>
 
     <fragment
@@ -142,14 +143,15 @@
 
     <fragment android:id="@+id/settings" android:name="com.isw.payapp.fragments.Settings" tools:layout="@layout/fragment_settings" android:label="Settings">
         <action android:id="@+id/settings_to_index" app:destination="@+id/indexpage"/>
-        <action android:id="@+id/settings_to_keydownload" app:destination="@id/keyDownloadFragment"/>
+        <action android:id="@+id/settings_to_keydownload" app:destination="@id/LocalSettings"/>
         <action android:id="@+id/settings_to_terminal" app:destination="@id/Terminal"/>
         <action android:id="@+id/setting_to_network" app:destination="@+id/Network"/>
 
     </fragment>
 
     <fragment android:id="@+id/Terminal" android:name="com.isw.payapp.fragments.Terminal" android:label="Terminal Settings" tools:layout="@layout/fragment_terminal">
-        <action android:id="@+id/terminal_to_settings" app:destination="@+id/settings"/>
+        <action android:id="@+id/terminal_to_local_settings" app:destination="@+id/LocalSettings"/>
+        <action android:id="@+id/terminal_to_login" app:destination="@+id/Login"/>
     </fragment>
 
     <fragment android:id="@+id/Network" android:name="com.isw.payapp.fragments.Network" tools:layout="@layout/fragment_network" android:label="Network Settings">

@@ -33,4 +33,6 @@
     <dimen name="sp_26">26sp</dimen>
     <dimen name="sp_42">42sp</dimen>
     <dimen name="sp_9">9sp</dimen>
+
+    <dimen name="dialog_padding">16dp</dimen>
 </resources>

@@ -9,15 +9,16 @@ import com.isw.payapp.devices.services.NetworkService;
 import com.isw.payapp.devices.telpo.TelpoEmvService;
 import com.isw.payapp.devices.telpo.TelpoPrinter;
 import com.isw.payapp.dialog.PrinterPreviewDialog;
+import com.isw.payapp.helpers.ConfigManager;
 import com.isw.payapp.model.EmvModel;
 import com.isw.payapp.model.Receipt;
+import com.isw.payapp.model.TerminalConfigModel;
 import com.isw.payapp.paymentsRequests.KsmgRequest;
 import com.isw.payapp.paymentsRequests.KxmlRequest;
 import com.isw.payapp.tasks.EmvTLVExtractor;
 import com.isw.payapp.tasks.PinPadTasks;
 import com.isw.payapp.model.CardModel;
 import com.isw.payapp.model.TransactionData;
-import com.isw.payapp.terminal.config.TerminalConfig;
 import com.isw.payapp.utils.NetworkExecutor;
 import com.isw.payapp.utils.StringUtils;
 import com.telpo.emv.EmvAmountData;
@@ -70,7 +71,7 @@ public class IccCardReaderCallBack extends EmvServiceListener {
     private EmvModel emvData;
     private final TransactionData transactionData;
     private final int eventType;
-    private final EmvServiceCallback emvCallback; // Add this field
+    private final EmvServiceCallback emvCallback;
 
     private CardModel cardModel;
     private String kimonoData;
@@ -79,19 +80,10 @@ public class IccCardReaderCallBack extends EmvServiceListener {
     private String responseMessage;
 
     private final AtomicBoolean isUiThreadRunning = new AtomicBoolean(false);
+    private final AtomicBoolean isTransactionCompleted = new AtomicBoolean(false);
     private CountDownLatch transactionLatch;
-    private TelpoEmvService cardReader; // Reference to parent card reader
+    private TelpoEmvService cardReader;
 
-    public IccCardReaderCallBack(Context context, EmvService emvService,
-                                 TransactionData transactionData, int eventType) {
-        this.context = context;
-        this.emvService = emvService;
-        this.transactionData = transactionData;
-        this.eventType = eventType;
-        this.emvCallback = null; // Will be set via setter
-    }
-
-    // Add this constructor to accept EmvServiceCallback
     public IccCardReaderCallBack(Context context, EmvService emvService,
                                  TransactionData transactionData, int eventType,
                                  EmvServiceCallback emvCallback) {
@@ -100,6 +92,7 @@ public class IccCardReaderCallBack extends EmvServiceListener {
         this.transactionData = transactionData;
         this.eventType = eventType;
         this.emvCallback = emvCallback;
+        //Log.i(TAG,"XXX----"+ transactionData.getTellerdetail());
     }
 
     public void setCardReader(TelpoEmvService cardReader) {
@@ -124,14 +117,18 @@ public class IccCardReaderCallBack extends EmvServiceListener {
      * Helper method to update progress through callback
      */
     private void updateProgress(String message) {
+        Log.d(TAG, "Progress: " + message);
         if (emvCallback != null) {
-            emvCallback.onLoading(message);
-        } else if (cardReader != null) {
-            // Fallback: try to access the callback through card reader
-            // This might require adding a getter in TelpoEmvService
-            Log.d(TAG, "Progress update: " + message);
-        } else {
-            Log.d(TAG, "Progress update (no callback): " + message);
+            Activity activity = getActivity();
+            if (activity != null && !activity.isFinishing()) {
+                activity.runOnUiThread(() -> {
+                    try {
+                        emvCallback.onLoading(message);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error updating progress", e);
+                    }
+                });
+            }
         }
     }
 
@@ -139,8 +136,18 @@ public class IccCardReaderCallBack extends EmvServiceListener {
      * Helper method to stop loading progress
      */
     private void stopProgress() {
+        Log.d(TAG, "Stopping progress");
         if (emvCallback != null) {
-            emvCallback.onStopLoading();
+            Activity activity = getActivity();
+            if (activity != null && !activity.isFinishing()) {
+                activity.runOnUiThread(() -> {
+                    try {
+                        emvCallback.onStopLoading();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error stopping progress", e);
+                    }
+                });
+            }
         }
     }
 
@@ -148,9 +155,21 @@ public class IccCardReaderCallBack extends EmvServiceListener {
      * Helper method to handle errors
      */
     private void handleError(String error) {
+        Log.e(TAG, "Error: " + error);
         if (emvCallback != null) {
-            emvCallback.onError(error);
+            Activity activity = getActivity();
+            if (activity != null && !activity.isFinishing()) {
+                activity.runOnUiThread(() -> {
+                    try {
+                        emvCallback.onError(error);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error handling error callback", e);
+                    }
+                });
+            }
         }
+        // Ensure latch is released on error
+        releaseLatch();
     }
 
     @Override
@@ -160,7 +179,7 @@ public class IccCardReaderCallBack extends EmvServiceListener {
             updateProgress("Setting transaction amount...");
 
             long amount = convertAmountToMinorUnits(transactionData.getAmount());
-            emvAmountData.Amount =  100;//amount;
+            emvAmountData.Amount = 100;
             emvAmountData.TransCurrCode = CURRENCY_CODE;
             emvAmountData.ReferCurrCode = CURRENCY_CODE;
             emvAmountData.TransCurrExp = CURRENCY_EXPONENT;
@@ -209,7 +228,6 @@ public class IccCardReaderCallBack extends EmvServiceListener {
         try {
             updateProgress("Initializing PIN pad...");
 
-            // Ensure PIN pad is open
             int ret = PinpadService.Open(context);
             if (ret != 0) {
                 Log.e(TAG, "Failed to open PIN pad: " + ret);
@@ -266,7 +284,11 @@ public class IccCardReaderCallBack extends EmvServiceListener {
     @Override
     public int onOnlineProcess(EmvOnlineData emvOnlineData) {
         Log.d(TAG, "onOnlineProcess called");
-        updateProgress("Processing online transaction...");
+
+        if (isTransactionCompleted.get()) {
+            Log.w(TAG, "Transaction already completed, ignoring onOnlineProcess");
+            return EmvService.ONLINE_APPROVE;
+        }
 
         if (eventType != INTEGRATED_CIRCUIT) {
             Log.w(TAG, "Online process skipped - not an ICC transaction");
@@ -275,6 +297,7 @@ public class IccCardReaderCallBack extends EmvServiceListener {
         }
 
         try {
+            // Start async processing but return immediately
             processOnlineTransactionAsync(emvOnlineData);
             return EmvService.ONLINE_APPROVE;
         } catch (Exception e) {
@@ -348,8 +371,10 @@ public class IccCardReaderCallBack extends EmvServiceListener {
     }
 
     private String buildBaseUrl() {
-        String ip = TerminalConfig.loadTerminalDataFromJson(context, "__transip");
-        String port = TerminalConfig.loadTerminalDataFromJson(context, "__transport");
+        ConfigManager.refreshConfig(context);
+        TerminalConfigModel config = ConfigManager.getConfig(context);
+        String ip = config.getTransip();
+        String port = config.getTransport();
 
         if (ip == null || ip.isEmpty() || port == null || port.isEmpty()) {
             throw new IllegalArgumentException("Invalid terminal configuration: IP or Port is missing");
@@ -439,18 +464,23 @@ public class IccCardReaderCallBack extends EmvServiceListener {
             String responseCode = getAttributeValue(document, "var", "name", "responsecode");
             String responseMessage = getAttributeValue(document, "var", "name", "responsemessage");
 
+            if (responseCode == null || responseMessage == null) {
+                responseCode = "96";
+                responseMessage = getValue(document, "label");
+                if (responseMessage == null) {
+                    responseMessage = "Unknown response from gateway";
+                }
+            }
+
             Log.d(TAG, "Gateway response - Code: " + responseCode + ", Message: " + responseMessage);
 
             if (SUCCESS_RESPONSE_CODE.equals(responseCode)) {
                 updateProgress("Transaction approved");
                 configureApprovedTransaction(emvOnlineData, document);
-                //
                 showPrinterPreviewDialog(gatewayResponse, emvData, "Transaction approved");
-                completeTransaction(true, gatewayResponse);
                 return true;
             } else {
-                updateProgress("Transaction declined");
-                showPrinterPreviewDialog(gatewayResponse, emvData, "Transaction declined");
+                updateProgress("Transaction declined: " + responseMessage);
                 Log.w(TAG, "Transaction declined - Response code: " + responseCode);
                 completeTransaction(false, "Transaction declined: " + responseMessage);
                 return false;
@@ -464,17 +494,21 @@ public class IccCardReaderCallBack extends EmvServiceListener {
     }
 
     private void handleOnlineTransactionResult(boolean success, EmvOnlineData emvOnlineData) {
-        if (success) {
-            Log.i(TAG, "Online transaction processed successfully");
-            stopProgress();
-        } else {
-            Log.w(TAG, "Online transaction processing failed");
+        Log.d(TAG, "Online transaction result - Success: " + success);
+        // Don't stop progress here - let completeTransaction handle it
+        if (!success) {
             stopProgress();
         }
+        // Success case: progress will be stopped after printing dialog
     }
 
     private void completeTransaction(boolean success, String responseData) {
-        Log.d(TAG, "Completing transaction - Success: " + success);
+        if (isTransactionCompleted.getAndSet(true)) {
+            Log.w(TAG, "Transaction already completed, ignoring duplicate call");
+            return;
+        }
+
+        Log.d(TAG, "Completing transaction - Success: " + success + ", Data: " + responseData);
         stopProgress();
 
         // Notify parent card reader
@@ -482,9 +516,17 @@ public class IccCardReaderCallBack extends EmvServiceListener {
             cardReader.onTransactionCompleted(success, responseData);
         }
 
-        // Count down the latch if it exists
+        // Release the latch
+        releaseLatch();
+    }
+
+    private void releaseLatch() {
         if (transactionLatch != null && transactionLatch.getCount() > 0) {
+            Log.d(TAG, "Releasing transaction latch, count before: " + transactionLatch.getCount());
             transactionLatch.countDown();
+            Log.d(TAG, "Latch released, count after: " + transactionLatch.getCount());
+        } else {
+            Log.d(TAG, "Latch already released or not set");
         }
     }
 
@@ -492,10 +534,10 @@ public class IccCardReaderCallBack extends EmvServiceListener {
         Activity activity = getActivity();
         if (activity == null || activity.isFinishing()) {
             Log.w(TAG, "Cannot show printer preview - activity not available");
+            completeTransaction(true, "Transaction approved (print skipped)");
             return;
         }
 
-        // Run on UI thread
         activity.runOnUiThread(() -> {
             try {
                 PrinterPreviewDialog previewDialog = new PrinterPreviewDialog(
@@ -511,41 +553,48 @@ public class IccCardReaderCallBack extends EmvServiceListener {
                                 printReceipt(createReceipt(gatewayResponse, emvModel, message));
                                 setKimonoData("00");
                                 completeTransaction(true, "Print Successful");
-                                stopProgress();
                             }
 
                             @Override
                             public void onCancelClick() {
                                 Log.d(TAG, "Printing cancelled by user");
                                 setKimonoData("01");
-                                completeTransaction(true, "Canceled Printing");
-                                stopProgress();
+                                completeTransaction(true, "Print Cancelled");
                             }
                         }
                 );
 
+                // Add dialog dismiss listener to ensure completion
+                previewDialog.setOnDismissListener(dialog -> {
+                    if (!isTransactionCompleted.get()) {
+                        Log.w(TAG, "Dialog dismissed without completion");
+                        completeTransaction(true, "Dialog dismissed");
+                    }
+                });
+
                 previewDialog.show();
             } catch (Exception e) {
                 Log.e(TAG, "Error showing printer preview dialog", e);
-                stopProgress();
+                completeTransaction(true, "Transaction approved (dialog error)");
             }
         });
     }
 
     private Receipt createReceipt(String gatewayResponse, EmvModel emvModel, String theMessage) {
-        Activity activity = getActivity();
         Receipt receipt = new Receipt();
+        ConfigManager.refreshConfig(context);
+        TerminalConfigModel config = ConfigManager.getConfig(context);
 
-        if (activity != null) {
-            receipt.setBank(TerminalConfig.loadTerminalDataFromJson(activity, "__bank"));
-            receipt.setMerchant(TerminalConfig.loadTerminalDataFromJson(activity, "__merchantloc"));
-            receipt.setTerminalId(TerminalConfig.loadTerminalDataFromJson(activity, "__tid"));
-        }
-        if(transactionData.getPaymentApp().equals("selectpin")){
+        receipt.setBank(config.getBank());
+        receipt.setMerchant(config.getMid());
+        receipt.setTerminalId(config.getTid());
+
+        if ("selectpin".equals(transactionData.getPaymentApp())) {
             receipt.setAmount("0.00");
-        }else {
+        } else {
             receipt.setAmount(transactionData.getAmount());
         }
+
         receipt.setCurrency("KES");
         receipt.setDateTime(DATE_TIME_FORMATTER.format(new Date()));
         receipt.setTransactionType(transactionData.getTransactionType());
@@ -555,6 +604,7 @@ public class IccCardReaderCallBack extends EmvServiceListener {
         receipt.setTvr(emvModel.getTerminalVerificationResult());
         receipt.setResponse(theMessage);
         receipt.setCardNumber(pan != null ? maskPan(pan) : "N/A");
+        receipt.setTeller(transactionData.getTellerdetail());
 
         return receipt;
     }
@@ -573,7 +623,7 @@ public class IccCardReaderCallBack extends EmvServiceListener {
             Log.i(TAG, "Receipt printed successfully");
         } catch (Exception e) {
             Log.e(TAG, "Printing error: " + e.getMessage(), e);
-            handleError("Printing failed: " + e.getMessage());
+            // Don't handle error here - transaction is already complete
         }
     }
 
@@ -604,7 +654,7 @@ public class IccCardReaderCallBack extends EmvServiceListener {
             Log.d(TAG, "Approved transaction configured successfully");
         } catch (Exception e) {
             Log.e(TAG, "Error configuring approved transaction", e);
-            handleError("Transaction finalization failed");
+            // Don't fail the transaction - just log the error
         }
     }
 
@@ -630,7 +680,7 @@ public class IccCardReaderCallBack extends EmvServiceListener {
         }
     }
 
-    // Other required overrides with proper logging and progress updates
+    // Other required overrides with proper logging
     @Override
     public int onSelectAppFail(int reason) {
         Log.d(TAG, "onSelectAppFail: " + reason);
@@ -668,14 +718,12 @@ public class IccCardReaderCallBack extends EmvServiceListener {
     @Override
     public int OnCheckException(String data) {
         Log.d(TAG, "OnCheckException: " + data);
-        //handleError("Transaction exception: " + data.substring(0,6)+"**"+data.substring(data.length()-4));
         return EmvService.EMV_TRUE;
     }
 
     @Override
     public int OnCheckException_qvsdc(int type, String data) {
         Log.d(TAG, "OnCheckException_qvsdc - type: " + type + ", data: " + data);
-        //handleError("Transaction exception: " + data);
         return EmvService.EMV_TRUE;
     }
 

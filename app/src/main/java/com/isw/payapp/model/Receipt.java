@@ -20,4 +20,5 @@ public class Receipt{
     private String atc;
     private String tvr;
     private String response;
+    private String teller;
 }

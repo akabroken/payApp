@@ -57,7 +57,7 @@ public class DUKPK2009_CBC {
         byte[] ipek = null;
         byte[] byte_ksn = parseHexStr2Byte(ksn);
         if (clearIpek == null || clearIpek.length() == 0) {
-            String bdk = "B30D16EAE5372C9457326464E62C5E61";//"6276A16D9B8C9BDA382A9BADA4AD2F9B" "B30D16EAE5372C9457326464E62C5E61";
+            String bdk = "6276A16D9B8C9BDA382A9BADA4AD2F9B";//"6276A16D9B8C9BDA382A9BADA4AD2F9B" "B30D16EAE5372C9457326464E62C5E61";
             byte[] byte_bdk = parseHexStr2Byte(bdk);
             ipek = GenerateIPEK(byte_ksn, byte_bdk);
 

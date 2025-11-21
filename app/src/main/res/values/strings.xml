@@ -1299,4 +1299,13 @@
     <string name="send_receipt">Print Receipt</string>
     <string name="connect_warnning">Pls connect your devices first!</string>
     <string name="no_device">No device</string>
+
+    <string name="edit_item_title">Edit %s</string>
+<!--    <string name="save">Save</string>-->
+<!--    <string name="cancel">Cancel</string>-->
+    <string name="item_updated">%s updated</string>
+    <string name="empty_value_warning">Value cannot be empty</string>
+    <string name="config_saved_success">Configuration saved successfully</string>
+    <string name="config_saved_error">Error saving configuration</string>
+
 </resources>

@@ -30,8 +30,10 @@ import com.isw.payapp.devices.callbacks.EmvServiceCallback;
 import com.isw.payapp.devices.interfaces.IEmvProcessor;
 import com.isw.payapp.devices.services.NetworkService;
 import com.isw.payapp.dialog.MyProgressDialog;
+import com.isw.payapp.helpers.ConfigManager;
 import com.isw.payapp.helpers.LogoHelper;
 import com.isw.payapp.helpers.SessionManager;
+import com.isw.payapp.model.TerminalConfigModel;
 import com.isw.payapp.model.UserModel;
 import com.isw.payapp.terminal.config.TerminalConfig;
 import com.isw.payapp.model.TransactionData;
@@ -83,7 +85,7 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
     private static final String LOGIN_URL = "https://smarttrans.interswitch-ke.com:81/";
     private AlertDialog loginDialog;
 
-    private String tellerNames;
+    private String tellerNames ="";
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -347,6 +349,8 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
 
             if ("00".equals(responseCode)) {
                 tellerNames = getValue(doc, "names");
+
+                payData.setTellerdetail(getValue(doc, "names"));
                 // Store teller session information
 
                 showToast("Login successful!");
@@ -487,6 +491,8 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
 
     private UserModel createUserModel(String username, String password) {
         UserModel userModel = new UserModel();
+        ConfigManager.refreshConfig(getActivity());
+        TerminalConfigModel config = ConfigManager.getConfig(getActivity());
         userModel.setUsername(username);
         userModel.setPassword(password);
         userModel.setRole("TELLER");
@@ -495,8 +501,8 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
             if (terminalConfig == null) {
                 terminalConfig = new TerminalConfig();
             }
-            userModel.setTid(terminalConfig.loadTerminalDataFromJson(requireContext(), "__tid"));
-            userModel.setMid(terminalConfig.loadTerminalDataFromJson(requireContext(), "__mid"));
+            userModel.setTid(config.getTid());
+            userModel.setMid(config.getMid());
         } catch (Exception e) {
             Log.e(TAG, "Error loading terminal data", e);
             throw new RuntimeException("Failed to load terminal configuration");
@@ -859,6 +865,8 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
 
     private TransactionData createPayData() {
         TerminalConfig terminalConfig = new TerminalConfig();
+        ConfigManager.refreshConfig(getActivity());
+        TerminalConfigModel config = ConfigManager.getConfig(getActivity());
         String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
                 .format(new Date());
 
@@ -868,20 +876,20 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
         payData.setAmount("100");
         payData.setPaymentApp(ConstValues.PAY_APP_PINCHANGE);
         payData.setPaymentReqTag(ConstValues.POST_PAY_PINCHANGE);
-        payData.setMid(terminalConfig.loadTerminalDataFromJson(requireContext(), "__mid"));
+        payData.setMid(config.getMid());
         payData.setTtype("POS");
         payData.setTmanu(manufacturer.toUpperCase());
-        payData.setTid(terminalConfig.loadTerminalDataFromJson(requireContext(), "__tid"));
+        payData.setTid(config.getTid());
         payData.setUid("2331903647");
-        payData.setMloc(terminalConfig.loadTerminalDataFromJson(requireContext(), "__merchantloc"));
+        payData.setMloc(config.getMerchantloc());
         payData.setBatt("100");
         payData.setTim(timeStamp.replace("T", " "));
         payData.setCsid("SS:100");
         payData.setPstat("1");
         payData.setLang("EN");
-        payData.setPoscondcode(terminalConfig.loadTerminalDataFromJson(requireContext(), "__posCode"));
-        payData.setPosgeocode(terminalConfig.loadTerminalDataFromJson(requireContext(), "__posgeocode"));
-        payData.setCurrencycode(terminalConfig.loadTerminalDataFromJson(requireContext(), "__currencycode"));
+        payData.setPoscondcode(config.getPosCode());
+        payData.setPosgeocode( "00254000000000404");
+        payData.setCurrencycode(config.getCurrencycode());
         payData.setTmodel(android.os.Build.MODEL);
         payData.setComms("WiFi");
         payData.setCstat("806868");
@@ -893,12 +901,13 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
         payData.setHook("C:selHook.kxml");
         payData.setSelacctype("default");
         payData.setChvm("OnlinePin");
-        payData.setPosdatacode(terminalConfig.loadTerminalDataFromJson(requireContext(), "__posDataCodeEmv"));
+        payData.setPosdatacode("510101511344101");
         payData.setPosEntryMode("051");
         payData.setCurrency("KES");
         payData.setTransactionType("Pin Select");
         //payData.setTellerdetail(sessionManager.getKeyFullname());
-        payData.setTellerdetail(tellerNames);
+
+
         payData.setTranType("PIN_CHANGE");
 
         return payData;

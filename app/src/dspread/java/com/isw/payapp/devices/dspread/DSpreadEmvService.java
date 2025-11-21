@@ -29,6 +29,8 @@ import com.isw.payapp.devices.callbacks.EmvServiceCallback;
 import com.isw.payapp.devices.dspread.callbacks.IConnectionServiceCallback;
 import com.isw.payapp.devices.dspread.callbacks.IPaymentServiceCallback;
 import com.isw.payapp.devices.dspread.callbacks.PaymentResult;
+import com.isw.payapp.helpers.ConfigManager;
+import com.isw.payapp.model.TerminalConfigModel;
 import com.isw.payapp.utils.DUKPK2009_CBC;
 import com.isw.payapp.devices.dspread.utils.EMVTLVParser;
 import com.isw.payapp.devices.dspread.utils.EmvTLVTags;
@@ -999,8 +1001,10 @@ public class DSpreadEmvService implements IEmvProcessor {
                     Activity activity = getActivity();
                     if (activity == null) return;
 
-                    String baseUrl = "https://" + TerminalConfig.loadTerminalDataFromJson(activity, "__transip") + ":"
-                            + TerminalConfig.loadTerminalDataFromJson(activity, "__transport") + "/";
+                    ConfigManager.refreshConfig(getActivity());
+                    TerminalConfigModel config = ConfigManager.getConfig(getActivity());
+
+                    String baseUrl = "https://" + config.getTransip() + ":"+ config.getTransport() + "/";
                     OkHttpClient unsafeClient = UnsafeOkHttpClient.getUnsafeOkHttpClient();
                     NetworkService.initialize(activity, baseUrl);
                     NetworkService networkService = NetworkService.getInstance();
@@ -1065,9 +1069,9 @@ public class DSpreadEmvService implements IEmvProcessor {
             Receipt receipt = new Receipt();
 
             if (activity != null) {
-                receipt.setBank(TerminalConfig.loadTerminalDataFromJson(activity, "__bank"));
-                receipt.setMerchant(TerminalConfig.loadTerminalDataFromJson(activity, "__merchantloc"));
-                receipt.setTerminalId(TerminalConfig.loadTerminalDataFromJson(activity, "__tid"));
+                receipt.setBank(TerminalConfig.loadTerminalDataFromJson(activity, "bank"));
+                receipt.setMerchant(TerminalConfig.loadTerminalDataFromJson(activity, "merchantloc"));
+                receipt.setTerminalId(TerminalConfig.loadTerminalDataFromJson(activity, "tid"));
             }
 
             receipt.setAmount(classTransactionData.getAmount());

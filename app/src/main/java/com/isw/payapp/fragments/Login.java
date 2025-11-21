@@ -20,7 +20,9 @@ import com.isw.payapp.BuildConfig;
 import com.isw.payapp.R;
 import com.isw.payapp.databinding.FragmentLoginBinding;
 import com.isw.payapp.devices.services.NetworkService;
+import com.isw.payapp.helpers.ConfigManager;
 import com.isw.payapp.helpers.SessionManager;
+import com.isw.payapp.model.TerminalConfigModel;
 import com.isw.payapp.terminal.config.TerminalConfig;
 import com.isw.payapp.terminal.controllers.LoginController;
 import com.isw.payapp.model.UserModel;
@@ -141,6 +143,8 @@ public class Login extends Fragment {
         showLoading(true);
 
         try {
+            ConfigManager.refreshConfig(getActivity());
+            TerminalConfigModel config = ConfigManager.getConfig(getActivity());
             UserModel userModel = createUserModel(username, password);
             String requestXml = generateTerminalUsersRequest(userModel);
             Log.i(TAG, "Login request: " + requestXml);
@@ -148,7 +152,8 @@ public class Login extends Fragment {
             networkExecutor.execute(() -> {
                 try {
                     OkHttpClient unsafeClient = UnsafeOkHttpClient.getUnsafeOkHttpClient();
-                    NetworkService.initialize(requireContext(), LOGIN_URL);
+                    String login_URL = "https://"+config.getLoginurl()+":"+config.getLoginport()+"/";
+                    NetworkService.initialize(requireContext(), login_URL);
                     NetworkService networkService = NetworkService.getInstance();
                     String response = networkService.postPayLoadSyncLogin(requestXml);
                     Log.i(TAG, "Login response: " + response);
@@ -205,6 +210,8 @@ public class Login extends Fragment {
 
     private UserModel createUserModel(String username, String password) {
         UserModel userModel = new UserModel();
+        ConfigManager.refreshConfig(getActivity());
+        TerminalConfigModel config = ConfigManager.getConfig(getActivity());
         userModel.setUsername(username);
         userModel.setPassword(password);
         if(getSelectedRole().isEmpty()){
@@ -214,8 +221,8 @@ public class Login extends Fragment {
         userModel.setRole(getSelectedRole());
 
         try {
-            userModel.setTid(terminalConfig.loadTerminalDataFromJson(requireContext(), "__tid"));
-            userModel.setMid(terminalConfig.loadTerminalDataFromJson(requireContext(), "__mid"));
+            userModel.setTid(config.getTid());
+            userModel.setMid(config.getMid());
         } catch (Exception e) {
             Log.e(TAG, "Error loading terminal data", e);
             throw new RuntimeException("Failed to load terminal configuration");

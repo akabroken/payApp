@@ -9,6 +9,7 @@ public class SessionManager {
     private static final String KEY_USERNAME = "username";
     private static final String KEY_FULLNAME = "fullNames";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
+    private static final String KEY_TELLERNAMES = "tellerNames";
     private static final String KEY_LAST_ACTIVITY_TIME = "lastActivityTime";
     private static final String KEY_ROLE_TYPE = "roleType";
 

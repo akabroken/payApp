@@ -5,9 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.isw.payapp.BuildConfig;
 import com.isw.payapp.R;
 import com.isw.payapp.devices.interfaces.IPrinterProcessor;
+import com.isw.payapp.helpers.ConfigManager;
 import com.isw.payapp.model.Receipt;
+import com.isw.payapp.model.TerminalConfigModel;
 import com.isw.payapp.terminal.config.TerminalConfig;
 import com.telpo.tps550.api.DeviceNotFoundException;
 import com.telpo.tps550.api.DeviceNotOpenException;
@@ -70,12 +73,14 @@ public class TelpoPrinter implements IPrinterProcessor {
         try {
             usbThermalPrinter = new UsbThermalPrinter(context);
             TerminalConfig terminalConfig = new TerminalConfig();
+            ConfigManager.refreshConfig(context);
+            TerminalConfigModel config = ConfigManager.getConfig(context);
             usbThermalPrinter.start(1);
             usbThermalPrinter.reset();
             usbThermalPrinter.setMonoSpace(true);
             usbThermalPrinter.setGray(7);
             usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
-            Bitmap bitmap1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.vcblogo);
+            Bitmap bitmap1 = BitmapFactory.decodeResource(context.getResources(), BuildConfig.APP_LOGO);
 //           Bitmap bitmap2 = ThumbnailUtils.extractThumbnail(bitmap1, 244, 116);
 //            usbThermalPrinter.printLogo(bitmap2, true);
             // Calculate the scaled dimensions while maintaining the aspect ratio
@@ -101,16 +106,16 @@ public class TelpoPrinter implements IPrinterProcessor {
 
 // Resize the bitmap using Bitmap.createScaledBitmap
             Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap1, scaledWidth, scaledHeight, true);
-            //usbThermalPrinter.printLogo(bitmap2, true);
+            usbThermalPrinter.printLogo(bitmap2, true);
 
             usbThermalPrinter.setTextSize(30);
             usbThermalPrinter.addString("PIN CHANGE\n");
             usbThermalPrinter.addString("CUSTOMER RECEIPT");
             usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_LEFT);
             usbThermalPrinter.setTextSize(24);
-            usbThermalPrinter.addString("MERCHANT NAME:  " + terminalConfig.loadTerminalDataFromJson(context, "__merchantloc"));
-            usbThermalPrinter.addString("MERCHANT ID:    " + terminalConfig.loadTerminalDataFromJson(context, "__mid"));
-            usbThermalPrinter.addString("TERMINAL ID:    " + terminalConfig.loadTerminalDataFromJson(context, "__tid"));
+            usbThermalPrinter.addString("MERCHANT NAME:  " + config.getMerchantloc());
+            usbThermalPrinter.addString("MERCHANT ID:    " + config.getMid());
+            usbThermalPrinter.addString("TERMINAL ID:    " + config.getTid());
             int i = usbThermalPrinter.measureText("CARD NO :" + receipt.getCardNumber());
             int i1 = usbThermalPrinter.measureText(" ");
             int SpaceNumber = (384 - i) / i1;
@@ -126,6 +131,8 @@ public class TelpoPrinter implements IPrinterProcessor {
             Date curDate = new Date(System.currentTimeMillis());//Get current time
             String str = formatter.format(curDate);
             usbThermalPrinter.addString("DATE/TIME:   " + str);
+            usbThermalPrinter.addString("Served by:      " + receipt.getTeller());
+
 //            usbThermalPrinter.addString("STAN NO:     " + receipt.getTransactionData().getStan());
 //            usbThermalPrinter.addString("AUTH NO:     " + receipt.getTransactionData().getAuthCode());
 //            usbThermalPrinter.addString("REFER NO:    " + receipt.getTransactionData().getRefferanceNo());

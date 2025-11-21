@@ -58,6 +58,16 @@
             android:padding="8dp"
             android:scrollbars="vertical" />
 
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_margin="16dp"
+            android:text="Save Configuration"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white" />
+
     </androidx.cardview.widget.CardView>
 
 </FrameLayout>

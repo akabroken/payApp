@@ -8,8 +8,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.isw.payapp.R;
+import com.isw.payapp.helpers.ConfigManager;
 import com.isw.payapp.model.CardModel;
 import com.isw.payapp.model.EmvModel;
+import com.isw.payapp.model.TerminalConfigModel;
 import com.isw.payapp.model.TransactionData;
 import com.isw.payapp.terminal.config.TerminalConfig;
 
@@ -84,9 +86,12 @@ public class PrinterPreviewDialog extends Dialog {
         TextView tvResponseMessage = findViewById(R.id.tvResponseMessage);
 
         // Merchant Info
-        String merchantInfo = "Bank: "+  TerminalConfig.loadTerminalDataFromJson(context,"__bank")+"\n"+
-        "\nMerchant: " + TerminalConfig.loadTerminalDataFromJson(context,"__merchantloc") + "\n" +
-                "Terminal ID: " + TerminalConfig.loadTerminalDataFromJson(context, "__tid");
+        ConfigManager.refreshConfig(context);
+        TerminalConfigModel config = ConfigManager.getConfig(context);
+
+        String merchantInfo = "Bank: "+ config.getBank() + "\n" +
+                "\nMerchant: " + config.getMerchantloc() + "\n" +
+                "Terminal ID: " + config.getTid();
         tvMerchantInfo.setText(merchantInfo);
 
         if (transactionData.getPaymentApp().equals("selectpin")){
@@ -116,7 +121,7 @@ public class PrinterPreviewDialog extends Dialog {
         tvEmvData.setText(emvData);
 
         // Response Message
-        tvResponseMessage.setText("Response: " + responseMessage);
+        tvResponseMessage.setText("Response: " + responseMessage + "\n"+"Served by: "+transactionData.getTellerdetail());
     }
 
     private String generatePrintContent() {
@@ -126,9 +131,9 @@ public class PrinterPreviewDialog extends Dialog {
         content.append("        TRANSACTION RECEIPT\n");
         content.append("================================\n\n");
 
-        content.append("Bank: ").append(TerminalConfig.loadTerminalDataFromJson(context,"__bank")).append("\n");
-        content.append("Branch: ").append(TerminalConfig.loadTerminalDataFromJson(context,"__merchantloc")).append("\n");
-        content.append("Terminal ID: ").append(TerminalConfig.loadTerminalDataFromJson(context,"__tid")).append("\n");
+        content.append("Bank: ").append(TerminalConfig.loadTerminalDataFromJson(context,"bank")).append("\n");
+        content.append("Branch: ").append(TerminalConfig.loadTerminalDataFromJson(context,"merchantloc")).append("\n");
+        content.append("Terminal ID: ").append(TerminalConfig.loadTerminalDataFromJson(context,"tid")).append("\n");
         content.append("Date: ").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())).append("\n");
         content.append("--------------------------------\n");
 
