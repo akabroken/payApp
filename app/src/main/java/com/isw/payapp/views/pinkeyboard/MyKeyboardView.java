@@ -122,6 +122,7 @@ public class MyKeyboardView extends KeyboardView{
 
         @Override
         public void onPress(int primaryCode) {
+
 //            List<Keyboard.Key> keys = keyboardOnlyNumPwd.getKeys();
 //            for(int i = 0 ; i < keys.size(); i++){
 //                Keyboard.Key key = keys.get(i);

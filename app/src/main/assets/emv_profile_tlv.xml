@@ -191,7 +191,7 @@
 	</app>
 
 
-<app><!--13:A0000003330101-->
+<app><!--13:A0000003710001-->
 <9F06>A0000003710001</9F06> <!--Application Identifier(AID)–terminal-->
 <DF01>00</DF01> <!--Application Selection Indicator-->
 <9F09>0096</9F09> <!--Terminal Application Version Number-->

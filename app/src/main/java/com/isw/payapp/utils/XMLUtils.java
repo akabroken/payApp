@@ -83,6 +83,9 @@ public class XMLUtils {
 
             // Check response code first
             NodeList varNodes = doc.getElementsByTagName("var");
+            if(varNodes.getLength() == 0){
+                return isErrorResponse(xmlResponse);
+            }
             String responseCode = null;
             String responseMessage = null;
 

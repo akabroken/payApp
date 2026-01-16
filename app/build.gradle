@@ -17,7 +17,7 @@ android {
     namespace = "com.isw.payapp"
     defaultConfig {
         applicationId "com.isw.payapp"
-        minSdk 22
+        minSdk 26
         targetSdk 35
         versionCode 1
         versionName "1.0"
@@ -62,6 +62,21 @@ android {
             println "  Key Alias: ${keyAlias ?: 'MISSING'}"
             println "  Key Password: ${keyPassword ? 'SET' : 'MISSING'}"
         }
+
+        newtelpo {
+            // Commented out - no signing config for telpo
+            storeFile file("keystores/PAXKeystore.jks")
+            storePassword keystoreProperties.getProperty('telpoStorePassword', '')
+            keyAlias keystoreProperties.getProperty('telpoKeyAlias', '')
+            keyPassword keystoreProperties.getProperty('telpoKeyPassword', '')
+
+            // Debug logging
+            println "TELPO Signing Config:"
+            println "  Store File: ${storeFile.exists() ? 'EXISTS' : 'MISSING'} at ${storeFile.path}"
+            println "  Store Password: ${storePassword ? 'SET' : 'MISSING'}"
+            println "  Key Alias: ${keyAlias ?: 'MISSING'}"
+            println "  Key Password: ${keyPassword ? 'SET' : 'MISSING'}"
+        }
         pax {
             // Commented out - no signing config for pax
             storeFile file("keystores/PAXKeystore.jks")
@@ -78,10 +93,16 @@ android {
             println "  Key Password: ${keyPassword ? 'SET' : 'MISSING'}"
         }
         dspread {
-            storeFile file("keystores/mpos.keystore")
-            storePassword keystoreProperties.getProperty('dspreadStorePassword', '')
-            keyAlias keystoreProperties.getProperty('dspreadKeyAlias', '')
-            keyPassword keystoreProperties.getProperty('dspreadKeyPassword', '')
+            //Test signing config
+//            storeFile file("keystores/mpos.keystore")
+//            storePassword keystoreProperties.getProperty('dspreadStorePassword', '')
+//            keyAlias keystoreProperties.getProperty('dspreadKeyAlias', '')
+//            keyPassword keystoreProperties.getProperty('dspreadKeyPassword', '')
+            //Production signing config
+            storeFile file("keystores/mpos.jks")
+            storePassword keystoreProperties.getProperty('mposStorePassword', '')
+            keyAlias keystoreProperties.getProperty('mposKeyAlias', '')
+            keyPassword keystoreProperties.getProperty('mposKeyPassword', '')
 
             // Debug logging
             println "DSPREAD Signing Config:"
@@ -116,10 +137,22 @@ android {
             buildConfigField "String", "SDK_VERSION", "\"1.0.0\""
             manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.telpo.TelpoApplication"]
             // No signing config - will use debug/release default
-            buildConfigField "int", "APP_LOGO", "R.drawable.bank_of_baroda"
+//            buildConfigField "int", "APP_LOGO", "R.drawable.bank_of_baroda"
+            buildConfigField "int", "APP_LOGO", "R.drawable.sidian_bank_logo"
+            signingConfig = signingConfigs.telpo
+        }
+        newtelpo {
+            dimension "pos"
+            buildConfigField "String", "POS_BRAND", "\"NEW_TELPO\""
+            buildConfigField "String", "SDK_VERSION", "\"1.0.0\""
+            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.newtelpo.NewTelpoApplication"]
+            // No signing config - will use debug/release default
+            buildConfigField "int", "APP_LOGO", "R.drawable.consolidated_bank_logo"
+//            buildConfigField "String", "APP_VERSION", "\"${versionName}\""
 //            buildConfigField "int", "APP_LOGO", "R.drawable.sidian_bank_logo"
             signingConfig = signingConfigs.telpo
         }
+
         pax {
             dimension "pos"
             buildConfigField "String", "POS_BRAND", "\"PAX\""
@@ -155,23 +188,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.telpo
-            //Caritas
-            //buildConfigField "int", "APP_LOGO", "R.drawable.caritas_logo_1"
-            //Sidian
-//            buildConfigField "int", "APP_LOGO", "R.drawable.sidian_bank_logo"
-            // Signing config is handled by individual flavors
         }
         debug {
             // Signing config is handled by individual flavors
             signingConfig signingConfigs.dspread
-           buildConfigField "int", "APP_LOGO", "R.drawable.sidian_bank_logo"
         }
     }
-
-    // Remove this block - it's causing conflicts with explicit flavor signing config
-    // android.productFlavors.all { flavor ->
-    //     flavor.signingConfig = android.signingConfigs.findByName(flavor.name)
-    // }
 
     packagingOptions {
         resources {
@@ -208,11 +230,16 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp-tls:4.11.0'
 
     // Device-specific implementations
     telpoImplementation files('libs/telpo/telpo_api.jar')
     telpoImplementation files('libs/telpo/emv_pro4.0.jar')
     telpoImplementation files('libs/telpo/core-3.1.0.jar')
+
+    newtelpoImplementation files('libs/newtelpo/core-3.1.0.jar')
+    newtelpoImplementation files('libs/newtelpo/emvsdk_20240106.aar')
+    newtelpoImplementation files('libs/newtelpo/telpoLib_v2.14.20231218.aar')
 
     dspreadImplementation files('libs/d60/dspread_pos_sdk_7.6.4.aar')
     dspreadImplementation files('libs/d60/dspread_print_sdk-1.7.2-beta.aar')
@@ -230,6 +257,7 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    implementation "androidx.core:core-splashscreen:1.0.0"
 
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'

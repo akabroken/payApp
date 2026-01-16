@@ -276,17 +276,6 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
         });
     }
 
-//    @Override
-//    public void onDeviceConnected(String res) {
-//        // showProgress(getString(R.string.device_connected));
-//        Context context = getContext();
-//        if (context != null) {
-//            showProgress(context.getString(R.string.device_connected));
-//        } else {
-//            // Fallback to application context if needed
-//            showProgress(getResources().getString(R.string.device_connected));
-//        }
-//    }
 
     @Override
     public void onDeviceConnected(String res) {
@@ -443,11 +432,6 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
 
     private Document parseXmlResponse(String xml) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
-        // Security: disable external entities to prevent XXE attacks
-//        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-//        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-//        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
         DocumentBuilder builder = factory.newDocumentBuilder();
         ByteArrayInputStream input = new ByteArrayInputStream(xml.getBytes("UTF-8"));
@@ -864,7 +848,6 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
     }
 
     private TransactionData createPayData() {
-        TerminalConfig terminalConfig = new TerminalConfig();
         ConfigManager.refreshConfig(getActivity());
         TerminalConfigModel config = ConfigManager.getConfig(getActivity());
         String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
@@ -873,7 +856,7 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
         String manufacturer = android.os.Build.MANUFACTURER;
 
         TransactionData payData = new TransactionData();
-        payData.setAmount("100");
+        payData.setAmount("1.00");
         payData.setPaymentApp(ConstValues.PAY_APP_PINCHANGE);
         payData.setPaymentReqTag(ConstValues.POST_PAY_PINCHANGE);
         payData.setMid(config.getMid());

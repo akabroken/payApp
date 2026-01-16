@@ -2,6 +2,7 @@ package com.isw.payapp.views.pinkeyboard;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -32,6 +33,8 @@ public class KeyboardUtil {
     private List<String> dataList;
     public static EditText pinpadEditText;
     public KeyboardUtil(Activity context, View parent, List<String> dataList) {
+
+        Log.d("initKeyboard", "keyboardUtil datalist :"+dataList);
         this.dataList = dataList;
         this.mActivity = context;
         this.mParent = parent;
@@ -85,6 +88,7 @@ public class KeyboardUtil {
     @SuppressWarnings("all")
     public void initKeyboard(final int keyBoardType, EditText... editTexts) {
         for (final EditText editText : editTexts) {
+            Log.d("initKeyboard", "keyboardUtil initKeyboard");
             hideSystemSofeKeyboard(editText);
             show(keyBoardType, editText);
 
@@ -122,6 +126,7 @@ public class KeyboardUtil {
     }
 
     public void show(int keyBoardType, EditText editText) {
+        Log.d("initKeyboard", "keyboardUtil Show");
         //hide system
         KeyboardTool.hideInputForce(mActivity, editText);
         //init keyboard
@@ -148,6 +153,7 @@ public class KeyboardUtil {
             mParent.setLayoutParams(lp);
             mScrollTo = true;
         }
+        Log.d("initKeyboard", "keyboardUtil end show");
 
 //        getLocation(mKeyboardView);
     }
@@ -168,6 +174,7 @@ public class KeyboardUtil {
      * @param editText
      */
     private static void hideSystemSofeKeyboard(EditText editText) {
+        Log.d("initKeyboard", "keyboardUtil hideSystemSofeKeyboard");
         //SDK_INT >= 11
         try {
             Class<EditText> cls = EditText.class;

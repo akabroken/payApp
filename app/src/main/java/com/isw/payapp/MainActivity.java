@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Initial network check
+        // Show splash screen first
+        setContentView(R.layout.activity_splash);
 
         checkPermissions();
         checkNetworkAndInitialize();
@@ -82,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
                 +" _"+ Build.MODEL +" _" + Build.DEVICE+"_ "+Build.PRODUCT
                 +"_"+Build.MODEL;
         Log.d("Device", "Current POS brand: " + brand);
+
+        setContentView(R.layout.activity_splash);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 

@@ -297,6 +297,8 @@ public class EmvTlvParser {
                 try {
                     parseAllTags(value, tags, 0);
                 } catch (Exception e) {
+                    e.printStackTrace();
+                    throw  new RuntimeException(e.getMessage());
                     // Continue with next tag even if nested parsing fails
                 }
             }

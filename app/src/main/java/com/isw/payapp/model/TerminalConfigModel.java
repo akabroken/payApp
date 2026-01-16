@@ -58,6 +58,10 @@ public class TerminalConfigModel {
 
     @SerializedName("loginport")
     private String loginport;
+
+    @SerializedName("deskey")
+    private String deskey;
+
     // Default constructor
     public TerminalConfigModel() {}
 }

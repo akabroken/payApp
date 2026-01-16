@@ -66,4 +66,6 @@
     <color name="colorLlBg">#D5E2EB</color>
     <color name="colorCancelBg">#F3683C</color>
     <color name="colorCancelPressBg">#711F04</color>
+
+    <color name="lcd_blue">#FF0000FF</color>
 </resources>

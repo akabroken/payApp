@@ -13,6 +13,10 @@
     <string name="fuel_pay">Fuel Pay</string>
     <string name="logout">Logout</string>
 
+    <string name="confirm_logout_title">Logout Confirmation</string>
+    <string name="confirm_logout_message">Are you sure you want to log out?</string>
+
+
     <string name="logged_out_successfully">Logged out successfully</string>
     <string name="navigation_error">Action not available</string>
 

@@ -50,7 +50,7 @@ public class LocalSettings extends Fragment {
     private static final Set<String> ALLOWED_ROLES = Set.of("SUPERVISOR", "ADMIN");
 
     // Key configuration
-    private static final String IKSK_LIVE = "FFFF000006DDDDE00000";
+    private static final String IKSK_LIVE = "FFFF000002DDDDE00000";
     private static final String KCV_LIVE = "10B9824432E458DD";
     private static final String IPEKTW_TEST = "D6D8291E53A7BF2B67973ADF78E9B882";
     private static final String IKSK_TEST = "FFFF000006DDDDE00000";
@@ -252,6 +252,9 @@ public class LocalSettings extends Fragment {
     }
 
     private void performKeyDownload(String keyDownloadUrl) throws Exception {
+
+        ConfigManager.refreshConfig(getActivity());
+        TerminalConfigModel config = ConfigManager.getConfig(getActivity());
         OkHttpClient unsafeClient = UnsafeOkHttpClient.getUnsafeOkHttpClient();
         NetworkService.initialize(requireContext(), keyDownloadUrl);
         NetworkService networkService = NetworkService.getInstance();
@@ -279,8 +282,11 @@ public class LocalSettings extends Fragment {
 
         Log.i(TAG, "Decrypted PIN key: " + clearKey);
 
+        Log.d(TAG,"KSN:-"+"FFFF"+config.getKeysetid()+"DDDDE00000");
+        String IKSN_LIVE = "FFFF"+config.getKeysetid()+"DDDDE00000";
+
         executePinPadOperation(() ->
-                        posPinPad.injectDukptKey(clearKey, IKSK_LIVE, ""),
+                        posPinPad.injectDukptKey(clearKey, IKSN_LIVE, ""),
                 "Key download"
         );
     }

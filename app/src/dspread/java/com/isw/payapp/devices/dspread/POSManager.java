@@ -68,30 +68,12 @@ public final class POSManager {
         Utils.init(context);
     }
 
-    /**
-     * Initialize POSManager with application context
-     * @param context Application context
-     */
-//    public static void init(Context context) {
-//        getInstance(context);
-//        Utils.init(context);
-//    }
 
     /**
      * Initialize POSManager with application context
      * @param context Application context
      */
     public static synchronized  void init(Context context) {
-//        if (instance == null) {
-//            instance = new POSManager(context);
-//            Log.d("POSManager", "POSManager initialized successfully");
-//        } else {
-//            Log.d("POSManager", "POSManager already initialized");
-//            // Update context if needed, but don't create new instance
-//            if (instance.context == null) {
-//                instance.context = context.getApplicationContext();
-//            }
-//        }
         if (instance == null) {
             // Check if this is being called from the Application class
             boolean isFromApplication = isCalledFromApplicationClass();
@@ -106,6 +88,10 @@ public final class POSManager {
             Utils.init(context);
             Log.d("POSManager", "POSManager initialized by: " + getCallerClassName());
         } else {
+            ///reset();
+            instance = new POSManager(context);
+            Utils.init(context);
+            Log.w("POSManager", "POSManager reset");
             Log.d("POSManager", "POSManager already initialized by: " + getCallerClassName());
         }
     }
@@ -157,12 +143,10 @@ public final class POSManager {
                 }
             }
         }
+
         return instance;
     }
 
-//    public QPOSService getQPOSService(){
-//        return this.pos;
-//    }
     /**
      * Check if POSManager is already initialized
      */
@@ -231,7 +215,7 @@ public final class POSManager {
 
             initMode(QPOSService.CommunicationMode.UART);
             pos.forceOpenUart(30);
-         //  pos.openUart();
+            //pos.openUart();
             pos.openLog(true);
 
         }
@@ -277,6 +261,8 @@ public final class POSManager {
     public boolean isDeviceReady() {
         return pos != null;
     }
+
+
 
     public void setDeviceAddress(String address){
         pos.setDeviceAddress(address);
@@ -329,9 +315,9 @@ public final class POSManager {
         Log.i("POSManager", "Amount "+amount);
         pos.setCardTradeMode(getCardTradeMode());
         pos.setAmount(amount,"0",String.valueOf(currencyCode),getTransType());
-       // pos.doTrade(60);
-        pos.doCheckCard(60);
-
+        pos.doTrade(60);
+//        pos.doCheckCard(60);
+//
     }
 
     public void getDeviceId(){
@@ -451,46 +437,12 @@ public final class POSManager {
         pos.updateWorkKey(new String(FileUtils.readAssetsLine(fileName,context)));
     }
 
+    public void doScriptUpdate(String tlv){
+        pos.sendOnlineProcessResult(tlv);
+    }
+
     public void doUpdateIpekKey(String key, String iKsn, String kcv) throws InterruptedException {
 
-        pos.resetQPOS();
-        updateWorkKey("debug_certificate.pem");
-       // pos.wait(99);
-        String tmk = "0123456789ABCDEFFEDCBA9876543210";
-//        threeDES = new ThreeDES();
-//        String demoTrackKsn = iKsn;
-//        String demoTrackIpek = key;
-//        // Calculate KCV (encrypt zero data)
-//        String demoIpekKcv = threeDES.tdesECBEncrypt(demoTrackIpek, "0000000000000000");
-//        String kcvOut = threeDES.extractKcv(demoIpekKcv);
-//        System.out.println("Track IPEK KCV: " + kcvOut); // Should be: 377EE0
-//
-//        // Encrypt IPEK with TMK
-//        String encDemoTrackIpek = threeDES.tdesECBEncrypt(tmk, demoTrackIpek);
-//        System.out.println("Encrypted Track IPEK: " + encDemoTrackIpek);
-//
-//        // Similar operations for EMV and PIN keys
-//        String demoEmvKsn = iKsn;
-//        String demoEmvIpek = key;
-//        String demoEmvIpekKcv = threeDES.tdesECBEncrypt(demoEmvIpek, "0000000000000000");
-//        String emvKcv = threeDES.extractKcv(demoEmvIpekKcv);
-//        System.out.println("EMV IPEK KCV: " + emvKcv); // Should be: AE8F91
-//
-//        String encDemoEmvIpek = threeDES.tdesECBEncrypt(tmk, demoEmvIpek);
-//        System.out.println("Encrypted EMV IPEK: " + encDemoEmvIpek);
-//
-//        String demoPinKsn = iKsn;
-//        String demoPinIpek = key;
-//        String demoPinIpekKcv = threeDES.tdesECBEncrypt(demoPinIpek, "0000000000000000");
-//        String pinKcv = threeDES.extractKcv(demoPinIpekKcv);
-//        System.out.println("PIN IPEK KCV: " + pinKcv); // Should be: 7DD75C
-//
-//        String encDemoPinIpek = threeDES.tdesECBEncrypt(tmk, demoPinIpek);
-//        System.out.println("Encrypted PIN IPEK: " + encDemoPinIpek);
-//
-//       // pos.updateWorkKey("");
-//        pos.doUpdateIPEKOperation("1", demoTrackKsn, encDemoTrackIpek, kcvOut,
-//                demoEmvKsn, encDemoEmvIpek, emvKcv, demoPinKsn, encDemoPinIpek, pinKcv);
 
     }
 
@@ -623,20 +575,7 @@ public final class POSManager {
         public void onRequestTransactionResult(QPOSService.TransactionResult transactionResult) {
             String msg = HandleTxnsResultUtils.getTransactionResultMessage(transactionResult, context);
             TRACE.d("onRequestTransactionResult: "+msg);
-            String ipektw = "33707E4927C4A0D5"; //live
-            String iksn_live = "FFFF000002DDDDE00000";
-            String kcv_live = "10B9824432E458DD";
-            paymentResult.setStatus(msg);
-            if(msg.equals("trans fallback")){
-                updateEMVConfig("emv_profile_tlv.xml");
-            }else if(msg.equals("TRANSACTION_TERMINATED")){
-                pos.doUpdateIPEKOperation("0", "", "", "", "", "", "", iksn_live, ipektw, kcv_live);
-            }
-            if (!msg.isEmpty()) {
-                notifyTransactionCallbacks(cb -> cb.onTransactionFailed(msg,null));
-            }else {
-                notifyTransactionCallbacks(cb -> cb.onTransactionCompleted(paymentResult));
-            }
+
 
         }
 
@@ -686,6 +625,8 @@ public final class POSManager {
 
         @Override
         public void onError(QPOSService.Error errorState) {
+            TRACE.i("parent onError::"+errorState.name() );
+            reset();
             notifyTransactionCallbacks(cb -> cb.onTransactionFailed(errorState.name(),null));
         }
 
@@ -718,7 +659,7 @@ public final class POSManager {
 
         @Override
         public void onQposRequestPinResult(List<String> dataList, int offlineTime) {
-            TRACE.d("onQposRequestPinResult()"+dataList.toString()+" offlineTime:"+offlineTime);
+            TRACE.d("onQposRequestPinResult()"+dataList.toString()+" offlineTime--:"+offlineTime);
             notifyTransactionCallbacks(cb -> cb.onQposRequestPinResult(dataList,offlineTime));
         }
 

@@ -1,5 +1,11 @@
 package com.isw.payapp.utils;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.isw.payapp.helpers.ConfigManager;
+import com.isw.payapp.model.TerminalConfigModel;
+
 import java.math.BigInteger;
 import java.security.Key;
 
@@ -19,6 +25,7 @@ public class DUKPK2009_CBC {
         ECB, CBC;
     }
 
+    private static String globalIpek;
     private static String getPinKey;
 
     private static String clearIpek;
@@ -45,19 +52,23 @@ public class DUKPK2009_CBC {
      * Enum_mode
      *
      * */
-    public static String getData(String ksnV, String datastrV, Enum_key key, Enum_mode mode) {
+    public static String getData(Context context,String ksnV, String datastrV, Enum_key key, Enum_mode mode) {
 
-        return getData(ksnV, datastrV, key, mode, null);
+        return getData(context,ksnV, datastrV, key, mode, null);
     }
 
-    public static String getData(String ksnV, String datastrV, Enum_key key, Enum_mode mode, String clearIpek) {
+    public static String getData(Context context, String ksnV, String datastrV, Enum_key key, Enum_mode mode, String clearIpek) {
         //		// TODO Auto-generated method stub
+
+        ConfigManager.refreshConfig(context);
+        TerminalConfigModel config = ConfigManager.getConfig(context);
         String ksn = ksnV;
         String datastr = datastrV;
         byte[] ipek = null;
         byte[] byte_ksn = parseHexStr2Byte(ksn);
         if (clearIpek == null || clearIpek.length() == 0) {
-            String bdk = "6276A16D9B8C9BDA382A9BADA4AD2F9B";//"6276A16D9B8C9BDA382A9BADA4AD2F9B" "B30D16EAE5372C9457326464E62C5E61";
+            String bdk = config.getDeskey();//"6276A16D9B8C9BDA382A9BADA4AD2F9B";//"6276A16D9B8C9BDA382A9BADA4AD2F9B" "B30D16EAE5372C9457326464E62C5E61";
+            Log.d("BDKDD", bdk);
             byte[] byte_bdk = parseHexStr2Byte(bdk);
             ipek = GenerateIPEK(byte_ksn, byte_bdk);
 
@@ -65,8 +76,10 @@ public class DUKPK2009_CBC {
             ipek = parseHexStr2Byte(clearIpek);
         }
         String ipekStr = parseByte2HexStr(ipek);// after testing, ipek is the same
-        setClearIpek(ipekStr);
+        //setClearIpek(ipekStr);
         System.out.println("ipekStr=" + ipekStr);
+        globalIpek = ipekStr;
+
 
         byte[] dataKey = GetDataKey(byte_ksn,ipek);
         String dataKeyStr = parseByte2HexStr(dataKey);
@@ -78,6 +91,7 @@ public class DUKPK2009_CBC {
 
         byte[] pinKey = GetPinKeyVariant(byte_ksn, ipek);
         String pinKeyStr = parseByte2HexStr(pinKey);
+        setClearIpek(pinKeyStr);
         System.out.println("pinKeyStr=" + pinKeyStr);
 
         byte[] macKey = GetMacKeyVariant(byte_ksn, ipek);
@@ -138,6 +152,355 @@ public class DUKPK2009_CBC {
         System.out.println("data: " + deResultStr);
         return deResultStr;
     }
+
+    /**
+     * Extract clear PIN from formatted PIN data (decrypted PINBLOCK) and PAN according to ANSI X9.8
+     *
+     * @param formattedPinData The decrypted PINBLOCK (formatted PIN data), e.g., "041127ADEDAFEFFF"
+     * @param pan The full PAN number, e.g., "6210003652125010004"
+     * @return The clear PIN value, e.g., "1111"
+     */
+    public static String extractClearPIN(String formattedPinData, String pan) {
+        try {
+            // Step 1: Extract 12 rightmost PAN digits without checksum
+            String cleanPan = pan.replaceAll("[^0-9]", "");
+            String twelveDigits;
+
+            if (cleanPan.length() == 19) {
+                // For 19-digit PAN: get digits 7-18 (excluding last checksum)
+                twelveDigits = cleanPan.substring(7, 19); // Should be "365212501000"
+            } else if (cleanPan.length() == 16) {
+                // For 16-digit PAN: get digits 4-15 (excluding last checksum)
+                twelveDigits = cleanPan.substring(4, 16);
+            } else {
+                // Handle other PAN lengths by taking 12 rightmost digits excluding last digit
+                if (cleanPan.length() > 12) {
+                    twelveDigits = cleanPan.substring(cleanPan.length() - 13, cleanPan.length() - 1);
+                } else {
+                    throw new IllegalArgumentException("PAN too short");
+                }
+            }
+
+            System.out.println("12 right most PAN digits without checksum: " + twelveDigits);
+
+            // Step 2: Add "0000" to the left
+            String formattedPAN = "0000" + twelveDigits;
+            System.out.println("Add 0000 to the left: " + formattedPAN);
+
+            // Step 3: XOR formatted PAN with formatted PIN data
+            String xorResult = xor(formattedPAN, formattedPinData);
+            System.out.println("XOR (" + formattedPAN + ", " + formattedPinData + ") = " + xorResult);
+
+            // Step 4: Extract PIN from XOR result
+            // The format is: First nibble (0) + PIN length (4) + PIN digits + F padding
+            // Example: "041111FFFFFFFFFF" -> PIN length=4, PIN="1111"
+
+            // Get the PIN length from the second nibble (first byte)
+            String firstByte = xorResult.substring(0, 2);
+            int pinLength = Integer.parseInt(firstByte.substring(1, 2), 16);
+
+            System.out.println("PIN length from formatted data: " + pinLength);
+
+            // Extract PIN digits
+            StringBuilder pinBuilder = new StringBuilder();
+            int pinDigitsExtracted = 0;
+
+            // Start from position 2 (after the length byte)
+            for (int i = 2; i < xorResult.length() && pinDigitsExtracted < pinLength; i += 2) {
+                String byteStr = xorResult.substring(i, i + 2);
+
+                // Check if we've reached padding
+                if (byteStr.equals("FF") || byteStr.equals("F0")) {
+                    break;
+                }
+
+                // Each byte contains 2 PIN digits in BCD format
+                // First digit is high nibble, second digit is low nibble
+                int byteValue = Integer.parseInt(byteStr, 16);
+
+                // Extract first digit (high nibble)
+                int firstDigit = (byteValue >> 4) & 0x0F;
+                if (firstDigit <= 9 && pinDigitsExtracted < pinLength) {
+                    pinBuilder.append(firstDigit);
+                    pinDigitsExtracted++;
+                }
+
+                // Extract second digit (low nibble)
+                int secondDigit = byteValue & 0x0F;
+                if (secondDigit <= 9 && pinDigitsExtracted < pinLength) {
+                    pinBuilder.append(secondDigit);
+                    pinDigitsExtracted++;
+                }
+            }
+
+            String clearPIN = pinBuilder.toString();
+
+            // Validate PIN length
+            if (clearPIN.length() != pinLength) {
+                System.out.println("Warning: Extracted PIN length (" + clearPIN.length() +
+                        ") doesn't match expected length (" + pinLength + ")");
+            }
+
+            System.out.println("The clear PIN is: " + clearPIN);
+            return clearPIN;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Alternative simpler method that matches your example exactly
+     */
+    public static String getClearPINFromFormattedData(String formattedPinData, String pan) {
+        try {
+            // Format PAN as described in your example
+            String cleanPan = pan.replaceAll("[^0-9]", "");
+            String twelveDigits;
+
+            if (cleanPan.length() == 19) {
+                twelveDigits = cleanPan.substring(7, 19); // "365212501000"
+            } else if (cleanPan.length() == 16) {
+                twelveDigits = cleanPan.substring(3, 15);
+            } else {
+                // Take 12 rightmost digits excluding last checksum
+                twelveDigits = cleanPan.substring(cleanPan.length() - 13, cleanPan.length() - 1);
+            }
+
+            String formattedPAN = "0000" + twelveDigits;
+
+            // XOR operation
+            String xorResult = xor(formattedPinData,formattedPAN);
+
+            // Extract PIN - simplified version for standard format
+            // Find first non-F character after the length nibble
+            String pinDigits = "";
+            boolean collecting = false;
+
+            for (int i = 2; i < xorResult.length(); i += 2) {
+                String byteStr = xorResult.substring(i, i + 2);
+
+                if (byteStr.equals("FF") || byteStr.equals("F0")) {
+                    break;
+                }
+
+                // Convert byte to two digits
+                int byteValue = Integer.parseInt(byteStr, 16);
+
+                // First digit (high nibble)
+                int firstDigit = (byteValue >> 4) & 0x0F;
+                if (firstDigit <= 9) {
+                    pinDigits += firstDigit;
+                }
+
+                // Second digit (low nibble)
+                int secondDigit = byteValue & 0x0F;
+                if (secondDigit <= 9) {
+                    pinDigits += secondDigit;
+                }
+            }
+
+            return pinDigits;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Extract clear PIN from encrypted PIN block using PAN and PEK (Pin Encryption Key)
+     *
+     * @param encryptedPinBlock The encrypted PIN block (hex string)
+     * @param pan The full PAN number
+     * @param pek The Pin Encryption Key (hex string)
+     * @return The clear PIN value
+     */
+    public static String extractPINFromPINBlock(String encryptedPinBlock, String pan, String pek) {
+        try {
+            System.out.println("=== Starting PIN Extraction ===");
+            System.out.println("Encrypted PIN Block: " + encryptedPinBlock);
+            System.out.println("PAN: " + pan);
+            System.out.println("PEK: " + pek);
+
+            // Step 1: Decrypt the PIN block using PEK (ECB mode for PIN blocks)
+            byte[] decryptedBlock = TriDesDecryptionCBC(parseHexStr2Byte(pek),
+                    parseHexStr2Byte(encryptedPinBlock));
+            String formattedPinData = parseByte2HexStr(decryptedBlock);
+            System.out.println("Decrypted PINBLOCK (formatted PIN data): " + formattedPinData);
+
+            // Step 2: Extract 12 rightmost PAN digits without checksum
+            String cleanPan = pan.replaceAll("[^0-9]", "");
+            String twelveDigits;
+
+            if (cleanPan.length() == 19) {
+                // For 19-digit PAN (like your example): get digits 7-18 (excluding last checksum)
+                twelveDigits = cleanPan.substring(7, 19); // "365212501000"
+            } else if (cleanPan.length() == 16) {
+                // For standard 16-digit PAN: get digits 4-15 (excluding last checksum)
+                twelveDigits = cleanPan.substring(3, 15);
+            } else if (cleanPan.length() > 12) {
+                // Generic: take 12 rightmost digits excluding the last checksum digit
+                twelveDigits = cleanPan.substring(cleanPan.length() - 13, cleanPan.length() - 1);
+            } else {
+                throw new IllegalArgumentException("PAN too short: " + cleanPan);
+            }
+
+            System.out.println("12 rightmost PAN digits without checksum: " + twelveDigits);
+
+            // Step 3: Add "0000" to the left as per ANSI X9.8
+            String formattedPAN = "0000" + twelveDigits;
+            System.out.println("Add 0000 to the left: " + formattedPAN);
+
+            // Step 4: XOR formatted PAN with formatted PIN data
+            String xorResult = xor(formattedPAN, formattedPinData);
+            System.out.println("XOR (" + formattedPAN + ", " + formattedPinData + ") = " + xorResult);
+            System.out.println("globalIpek :"+globalIpek);
+            byte[] decryptedXorBlock = TriDesDecryptionCBC(parseHexStr2Byte(globalIpek),
+                    parseHexStr2Byte(xorResult));
+            String formattedXorData = parseByte2HexStr(decryptedXorBlock);
+            System.out.println("Decrypted formattedXorData (formatted PIN data): " + formattedXorData);
+
+
+            // Step 5: Extract PIN length from the second nibble
+
+
+            String firstByte = xorResult.substring(0, 2);
+            int pinLength = Integer.parseInt(firstByte.substring(1, 2), 16);
+            System.out.println("PIN length from formatted data: " + pinLength);
+
+            // Step 6: Extract PIN digits
+            StringBuilder pinBuilder = new StringBuilder();
+            int pinDigitsExtracted = 0;
+
+            // Start from position 2 (after the length byte)
+            for (int i = 2; i < xorResult.length() && pinDigitsExtracted < pinLength; i += 2) {
+                String byteStr = xorResult.substring(i, i + 2);
+
+                // Check if we've reached padding (F or 0F)
+                if (byteStr.equals("FF") || byteStr.equals("F0") ||
+                        byteStr.equals("0F") || byteStr.equals("00")) {
+                    break;
+                }
+
+                // Each byte contains 2 PIN digits in BCD format
+                int byteValue = Integer.parseInt(byteStr, 16);
+
+                // Extract first digit (high nibble)
+                int firstDigit = (byteValue >> 4) & 0x0F;
+                if (firstDigit >= 0 && firstDigit <= 9 && pinDigitsExtracted < pinLength) {
+                    pinBuilder.append(firstDigit);
+                    pinDigitsExtracted++;
+                }
+
+                // Extract second digit (low nibble)
+                int secondDigit = byteValue & 0x0F;
+                if (secondDigit >= 0 && secondDigit <= 9 && pinDigitsExtracted < pinLength) {
+                    pinBuilder.append(secondDigit);
+                    pinDigitsExtracted++;
+                }
+            }
+
+            String clearPIN = pinBuilder.toString();
+
+            // Validate the extracted PIN
+            if (clearPIN.length() == 0) {
+                System.out.println("Warning: No PIN digits extracted, trying alternative parsing...");
+
+                // Alternative parsing: look for continuous digits
+                clearPIN = "";
+                for (int i = 2; i < xorResult.length(); i += 2) {
+                    String byteStr = xorResult.substring(i, i + 2);
+                    if (!byteStr.equals("FF") && !byteStr.equals("F0")) {
+                        // Try to extract digits
+                        int byteValue = Integer.parseInt(byteStr, 16);
+                        int firstDigit = (byteValue >> 4) & 0x0F;
+                        int secondDigit = byteValue & 0x0F;
+
+                        if (firstDigit >= 0 && firstDigit <= 9) {
+                            clearPIN += firstDigit;
+                        }
+                        if (secondDigit >= 0 && secondDigit <= 9) {
+                            clearPIN += secondDigit;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                // Trim to PIN length if we extracted too many digits
+                if (clearPIN.length() > pinLength) {
+                    clearPIN = clearPIN.substring(0, pinLength);
+                }
+            }
+
+            System.out.println("=== PIN Extraction Complete ===");
+            System.out.println("Extracted clear PIN: " + clearPIN);
+
+            return clearPIN;
+
+        } catch (Exception e) {
+            System.err.println("Error extracting PIN: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Simplified version of the method that follows your example format exactly
+     */
+    public static String getPINFromPINBlock(String encryptedPinBlock, String pan, String pek) {
+        try {
+            // 1. Decrypt PIN block
+            byte[] pekBytes = parseHexStr2Byte(pek);
+            byte[] encryptedBytes = parseHexStr2Byte(encryptedPinBlock);
+            byte[] decryptedBytes = TriDesDecryptionECB(pekBytes, encryptedBytes);
+            String formattedPinData = parseByte2HexStr(decryptedBytes);
+
+            // 2. Format PAN as per example
+            String cleanPan = pan.replaceAll("[^0-9]", "");
+            String twelveDigits;
+
+            if (cleanPan.length() == 19) {
+                twelveDigits = cleanPan.substring(7, 19);
+            } else if (cleanPan.length() == 16) {
+                twelveDigits = cleanPan.substring(4, 16);
+            } else {
+                twelveDigits = cleanPan.substring(cleanPan.length() - 13, cleanPan.length() - 1);
+            }
+
+            String formattedPAN = "0000" + twelveDigits;
+
+            // 3. XOR operation
+            String xorResult = xor(formattedPAN, formattedPinData);
+
+            // 4. Extract PIN (simplified logic)
+            String pin = "";
+            // Start from position 4 (skipping the "04" length indicator)
+            for (int i = 2; i < xorResult.length(); i += 2) {
+                String byteStr = xorResult.substring(i, i + 2);
+                if (byteStr.equals("FF") || byteStr.equals("F0")) {
+                    break;
+                }
+
+                // Convert hex byte to two digits
+                for (int j = 0; j < 2; j++) {
+                    char digitChar = byteStr.charAt(j);
+                    if (digitChar >= '0' && digitChar <= '9') {
+                        pin += digitChar;
+                    }
+                }
+            }
+
+            return pin;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     public static byte[] GenerateIPEK(byte[] ksn, byte[] bdk) {
         byte[] result;

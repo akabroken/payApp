@@ -62,6 +62,7 @@ public class Login extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
 
+
         // Load logo with error handling
         try {
             Glide.with(this)

@@ -57,6 +57,10 @@ public class BasePinPadView extends RelativeLayout {
         mPayClickListener = listener;
     }
 
+    public void setPayClickListener(Object o,OnPayClickListener listener) {
+        mPayClickListener = listener;
+    }
+
     public BasePinPadView(Context context) {
         super(context);
         init((Activity) context);

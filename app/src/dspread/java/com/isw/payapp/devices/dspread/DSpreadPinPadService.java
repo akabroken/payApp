@@ -14,8 +14,10 @@ import com.dspread.print.util.TRACE;
 import com.dspread.xpos.MPOSService;
 import com.dspread.xpos.QPOSService;
 
+import com.isw.payapp.BuildConfig;
 import com.isw.payapp.devices.dspread.Activity.DeviceApplication;
 import com.isw.payapp.devices.dspread.serviceListeners.KeyInjection;
+import com.isw.payapp.helpers.ConfigManager;
 import com.isw.payapp.utils.DUKPK2009_CBC;
 import com.isw.payapp.devices.dspread.utils.DukptKeys;
 import com.isw.payapp.devices.dspread.utils.Envelope;
@@ -78,6 +80,7 @@ public class DSpreadPinPadService implements IPinPadProcessor {
         this.callback = new QPOSCallback();
         this.pos = QPOSService.getInstance(this.context, QPOSService.CommunicationMode.UART);
         this.pos.initListener(callback);
+        this.keyInjection = new KeyInjection(context,pos);
     }
 
     @Override
@@ -97,10 +100,12 @@ public class DSpreadPinPadService implements IPinPadProcessor {
     public int injectDukptKey(String key, String ksn, String kcv) {
         Log.i(TAG, "Injecting DUKPT key: KSN=" + ksn);
         Log.i(TAG, "Injecting DUKPT clear full key:=" + key);
-        key = key.substring(8,40);
+        if(key.length()>32){
+            key = key.substring(8,40);
+        }
         Log.i(TAG, "Injecting DUKPT clear key:=" + key);
         try {
-           // validateInputParameters(key, ksn);
+            validateInputParameters(key, ksn);
             resetOperationState();
 
             return executeDukptInjection(key, ksn);
@@ -131,35 +136,27 @@ public class DSpreadPinPadService implements IPinPadProcessor {
     }
 
     private int executeDukptInjection(String key, String ksn) throws InterruptedException {
-        injectDukptKeys(key, ksn);
 
-       if (!isKeyInjectionSuccessful) {
+        isKeyInjectionSuccessful = false;
+        lastOperationSuccess.set(false);
+        injectDukptKeys(key, ksn);
         if (!operationLatch.await(OPERATION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
             Log.e(TAG, "DUKPT injection timeout");
             return ErrorCode.OPERATION_TIMEOUT;
         }
-
-        if (!lastOperationSuccess.get()) {
+       if (!isKeyInjectionSuccessful) {
             Log.e(TAG, "DUKPT injection failed");
             return ErrorCode.OPERATION_FAILED;
-        }
-       }else{
-           loadEmvConfigs();
-           Log.i(TAG, "DUKPT key injection completed successfully");
-           return ErrorCode.SUCCESS;
+
        }
-        return 100;
+        loadEmvConfigs();
+       return ErrorCode.SUCCESS;
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void injectDukptKeys(String key, String ksn) {
         try {
-            String defaultMasterKey ="D8DE53632DE273D3EF3D2AA35253F2DC";//key ;//"D8DE53632DE273D3EF3D2AA35253F2DC";//"0123456789ABCDEFFEDCBA9876543210";
-
-            DukptKeySet dbkEncrypt = createDukptKeySet(key, ksn, defaultMasterKey, "BDK");
-            TRACE.i("dbkEncrypt: " + dbkEncrypt.encryptedIpek);
-            // Generate IPEK and BDK for debugging
             byte[] ipekBytes = DUKPK2009_CBC.GenerateIPEK(
                     ThreeDES.hexStringToByteArray(ksn),
                     ThreeDES.hexStringToByteArray(key)
@@ -167,13 +164,7 @@ public class DSpreadPinPadService implements IPinPadProcessor {
             String ipek = ThreeDES.byteArrayToHexString(ipekBytes).toUpperCase();
             TRACE.i("IPEK: " + ipek+"===="+ksn);
 
-            byte[] bdkBytes = DUKPK2009_CBC.GetDUKPTKey(
-                    ThreeDES.hexStringToByteArray(ksn),
-                    ThreeDES.hexStringToByteArray(key)
-            );
-            String bdk = ThreeDES.byteArrayToHexString(bdkBytes);
-            TRACE.i("BDK: " + bdk);
-
+            ConfigManager.updateDesKey(context, key);
 
             // Load configuration
             String configPem = loadConfiguration();
@@ -187,7 +178,7 @@ public class DSpreadPinPadService implements IPinPadProcessor {
             encIpek = trackKeys.encryptedIpek;
             clearBdk = key;//dbkEncrypt.encryptedIpek;
             encBdk = key;//key;//dbkEncrypt.encryptedIpek;
-            bdkKcv = dbkEncrypt.kcv;
+          //  bdkKcv = dbkEncrypt.kcv;
             l_ksn = ksn;
 
             logKeyDetails(trackKeys, emvKeys, pinKeys);
@@ -195,6 +186,8 @@ public class DSpreadPinPadService implements IPinPadProcessor {
             // Initialize POS service connection
             QPOSService posService = getPosService();
             connectService(posService, false);
+
+
 
         } catch (Exception e) {
             Log.e(TAG, "Error in DUKPT injection process", e);
@@ -222,6 +215,7 @@ public class DSpreadPinPadService implements IPinPadProcessor {
             if (posService != null) {
                 Log.w("UPDATE TMK", "Getting device TMK check value");
                 posService.getKeyCheckValue(getKeyIndex(), QPOSService.CHECKVALUE_KEYTYPE.MKSK_TMK);
+                Log.w("UPDATE TMK", "Getting device TMK check value completed");
             } else {
                 Log.w("connectService", "POS service is null");
             }
@@ -255,9 +249,9 @@ public class DSpreadPinPadService implements IPinPadProcessor {
             throw new IllegalArgumentException("All DUKPT key set parameters must be non-null");
         }
         Log.i(TAG, "Key Length::"+ key.length());
-//        if (key.length() != KEY_LENGTH_HEX) {
-//            throw new IllegalArgumentException("Key must be " + KEY_LENGTH_HEX + " hex characters");
-//        }
+        if (key.length() != KEY_LENGTH_HEX) {
+            throw new IllegalArgumentException("Key must be " + KEY_LENGTH_HEX + " hex characters");
+        }
     }
 
     private void validateEncryptedIpekLength(String encryptedIpek) {
@@ -288,6 +282,7 @@ public class DSpreadPinPadService implements IPinPadProcessor {
 
     private static void completeOperation(boolean success) {
         lastOperationSuccess.set(success);
+        isKeyInjectionSuccessful= true;
         if (operationLatch != null) {
             operationLatch.countDown();
         }
@@ -327,6 +322,7 @@ public class DSpreadPinPadService implements IPinPadProcessor {
         Log.i(TAG, "Closing device connection");
         try {
             if (pos != null) {
+                pos.cancelTrade();
                 pos.closeUart();
                 Log.i(TAG, "Device connection closed successfully");
             }
@@ -888,6 +884,7 @@ public class DSpreadPinPadService implements IPinPadProcessor {
             if (mkskTmkKcv == null) {
                 prevKey = "NO_PREVIOUS_KEY";
             } else if (DEFAULT_KCV.equals(mkskTmkKcv)) {
+                Log.d(TAG,"Device Has Default Key: "+mkskTmkKcv);
                 handleDefaultKey(mkskTmkKcv);
             } else {
                 handleNonDefaultKey();
@@ -897,14 +894,29 @@ public class DSpreadPinPadService implements IPinPadProcessor {
         private void handleDefaultKey(String mkskTmkKcv) {
             System.out.println("Device Has Default Key");
             TRACE.i("Default TMK KCV found: " + mkskTmkKcv);
-            /*
-            * encBdk = dbkEncrypt.encryptedIpek;
-            bdkKcv = dbkEncrypt.kcv;
-            * */
+            QPOSService posService = DeviceApplication.getPos();
+
+            if (posService != null ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    String tmk = "5ADCAEF2E33CCDCC605934C77E06073C";//"5ADCAEF2E33CCDCC605934C77E06073C";
+                    String kvc = "C0B7927925177313";//"C0B7927925177313";
+                    Log.d(TAG,"POS INFO GET POS:: "+DeviceApplication.getPos());
+
+                    KeyState.isTmkLoaded = keyInjection.loadD60MasterKey(
+                            DeviceApplication.getPos(), tmk, kvc);
+                } else {
+                    TRACE.i("Unsupported SDK Version");
+                }
+            } else {
+                Log.e(TAG, "Cannot update MasterKey " +
+                        "- POS service or digital envelope is null");
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 String tmk = "5ADCAEF2E33CCDCC605934C77E06073C";//"5ADCAEF2E33CCDCC605934C77E06073C";
                 String kvc = "C0B7927925177313";//"C0B7927925177313";
+                Log.d(TAG,"POS INFO GET POS:: "+DeviceApplication.getPos());
+
                 KeyState.isTmkLoaded = keyInjection.loadD60MasterKey(
                         DeviceApplication.getPos(), tmk, kvc);
             } else {
@@ -1055,10 +1067,7 @@ public class DSpreadPinPadService implements IPinPadProcessor {
 
             try {
                 Log.d(TAG, "=== Starting digital envelope process ===");
-                /*
-                *  encIpek = trackKeys.encryptedIpek;
-            clearBdk = dbkEncrypt.encryptedIpek;
-                * */
+
                 Log.d(TAG, "TESTT"+encIpek+"\n"+clearBdk);
 
                 // FIX: Use the corrected static method
@@ -1084,16 +1093,6 @@ public class DSpreadPinPadService implements IPinPadProcessor {
                 }
                 Log.d(TAG, "✅ Application context and AssetManager: OK");
 
-                // Continue with your existing code...
-               //  l_ksn ="FFFF000002DDDDE00000";
-                 /*
-                 *  public DukptKeys(String tmk,String trackipek, String emvipek ,String pinipek,  String trackksn,
-                     String emvksn , String pinksn)
-                     *  encIpek = trackKeys.encryptedIpek;
-            clearBdk = key;//dbkEncrypt.encryptedIpek;
-            encBdk = dbkEncrypt.encryptedIpek;
-            bdkKcv = dbkEncrypt.kcv;
-                 * */
                 Poskeys posKeys = new DukptKeys(encBdk,encIpek,encIpek,encIpek,l_ksn,l_ksn,l_ksn);
 
                 if (pubModel == null) {
@@ -1106,10 +1105,22 @@ public class DSpreadPinPadService implements IPinPadProcessor {
                 String[] files = assetManager.list("");
                 boolean fileExists = false;
                 for (String file : files) {
-                    if (file.equals("rsa_private_pkcs8_1024.pem")) {
-                        fileExists = true;
-                        break;
+                    if(BuildConfig.DEBUG){
+                        if (file.equals("rsa_private_pkcs8_1024.pem")) {
+                            //Production - peru_mastercard_rsa_pcks8.pem
+                            //Debug - rsa_private_pkcs8_1024.pem
+                            fileExists = true;
+                            break;
+                        }
+                    }else{
+                        if (file.equals("peru_mastercard_rsa_pcks8.pem")) {
+                            //Production - peru_mastercard_rsa_pcks8.pem
+                            //Debug - rsa_private_pkcs8_1024.pem
+                            fileExists = true;
+                            break;
+                        }
                     }
+
                 }
 
                 if (!fileExists) {
@@ -1158,8 +1169,11 @@ public class DSpreadPinPadService implements IPinPadProcessor {
             if (posService != null && digEnvelopStr != null) {
                 posService.updateWorkKey(digEnvelopStr);
             } else {
-                Log.e(TAG, "Cannot update work key - POS service or digital envelope is null");
+                Log.e(TAG, "Cannot update work key " +
+                        "- POS service or digital envelope is null");
             }
+            //posService.cancelTrade();
+           /// posService.closeUart();
         }
 
         // Essential callback implementations
@@ -1175,27 +1189,29 @@ public class DSpreadPinPadService implements IPinPadProcessor {
 
         @Override
         public void onRequestUpdateKey(String s) {
-
+            Log.d(TAG, "onRequestUpdateKey: " + s);
         }
 
         @Override
         public void onRequestUpdateWorkKeyResult(QPOSService.UpdateInformationResult result) {
-            if (result.equals("UPDATE_SUCCESS")){
+            if (result == QPOSService.UpdateInformationResult.UPDATE_SUCCESS){
                 Log.i(TAG, "Work key update result: " + result);
                 isKeyInjectionSuccessful = true;
-                return;
+                lastOperationSuccess.set(true);
+
             }else {
                 Log.i(TAG, "Work key update result: " + result);
                 isKeyInjectionSuccessful = false;
-                return;
+                lastOperationSuccess.set(false);
             }
-
-
+            if (operationLatch != null) {
+                operationLatch.countDown();
+            }
         }
 
         @Override
         public void onRequestUpdateWorkKeyResult(QPOSService.UpdateInformationResult updateInformationResult, Hashtable<String, String> hashtable) {
-
+            Log.i(TAG, "onRequestUpdateWorkKeyResult: " + updateInformationResult.toString()+"\n"+hashtable.keys());
         }
 
         @Override

@@ -1,5 +1,7 @@
 package com.isw.payapp.helpers;
 
+
+
 import android.content.Context;
 import android.util.Log;
 
@@ -9,10 +11,14 @@ import com.isw.payapp.model.TerminalConfigModel;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 public class ConfigManager {
     private static final String TAG = "ConfigManager";
     private static TerminalConfigModel cachedConfig;
+
+    private static final String CONFIG_FILE = "config.json";
 
     public static TerminalConfigModel getConfig(Context context) {
         if (cachedConfig == null) {
@@ -96,6 +102,44 @@ public class ConfigManager {
         config.setLoginurl("smarttrans.interswitch-ke.com");
         config.setLoginport("81");
         config.setKeysetid("000006");
+        config.setDeskey("11111111111111111111111111111111");
         return config;
+    }
+
+    /**
+     * Save the configuration to internal storage
+     */
+    public static boolean saveConfig(Context context, TerminalConfigModel config) {
+        try (OutputStream outputStream = context.openFileOutput(CONFIG_FILE, Context.MODE_PRIVATE);
+             OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+
+            Gson gson = new Gson();
+            String json = gson.toJson(config);
+            writer.write(json);
+
+            // Update cache
+            cachedConfig = config;
+
+            Log.d(TAG, "Configuration saved successfully");
+            return true;
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving configuration", e);
+            return false;
+        }
+    }
+
+    /**
+     * Update only the deskey field
+     */
+    public static boolean updateDesKey(Context context, String newDesKey) {
+        try {
+            TerminalConfigModel config = getConfig(context);
+            config.setDeskey(newDesKey);
+            return saveConfig(context, config);
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating deskey", e);
+            return false;
+        }
     }
 }

@@ -32,6 +32,9 @@ public class DeviceFactory {
                 case "TELPO":
                     printerClass = Class.forName("com.isw.payapp.devices.telpo.TelpoPrinter");
                     break;
+                case "NEW_TELPO":
+                    printerClass = Class.forName("com.isw.payapp.devices.telpo.TelpoPrinter");
+                    break;
                 case "DSPREAD":
                     printerClass = Class.forName("com.isw.payapp.devices.dspread.DSpreadPrinterService");
                     break;
@@ -62,6 +65,10 @@ public class DeviceFactory {
                 case "TELPO":
                     cardReaderClass = Class.forName("com.isw.payapp.devices.telpo.TelpoEmvService");
                     break;
+
+                case "NEW_TELPO":
+                    cardReaderClass = Class.forName("com.isw.payapp.devices.newtelpo.NewTelpoEmvService");
+                    break;
                 case"DSPREAD":
                     cardReaderClass = Class.forName("com.isw.payapp.devices.dspread.DSpreadEmvService");
                     break;
@@ -90,6 +97,9 @@ public class DeviceFactory {
             switch (posBrand){
                 case "TELPO":
                     pinpadClass = Class.forName("com.isw.payapp.devices.telpo.TelpoPinpad");
+                    break;
+                case "NEW_TELPO":
+                    pinpadClass = Class.forName("com.isw.payapp.devices.newtelpo.NewTelpoPinPadService");
                     break;
                 case"DSPREAD":
                     pinpadClass = Class.forName("com.isw.payapp.devices.dspread.DSpreadPinPadService");

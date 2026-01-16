@@ -1,0 +1,60 @@
+//        private void showPinPadDialog(Object obj) {
+//            Activity activity = getActivity();
+//            if (activity == null) return;
+//
+//            try {
+//                classEmvCallBacks.onTitleTextChanged(activity.getString(R.string.input_pin));
+//
+//                // Ensure PINPAD is initialized
+//                if (pinPadDialog == null) {
+//                    initializePinPad();
+//                }
+//
+//                if (pinPadDialog == null) {
+//                    throw new IllegalStateException("PINPAD dialog not initialized");
+//                }
+//
+//                pinPadDialog.getPayViewPass()
+//                        .setRandomNumber(true)
+//                        .setPayClickListener(POSManager.getInstance().getQPOSService(),
+//                                new PinPadView.OnPayClickListener() {
+//                                    @Override
+//                                    public void onCencel() {
+//                                        try {
+//                                            POSManager.getInstance().cancelPin();
+//                                        } catch (Exception e) {
+//                                            Log.e(TAG, "Error cancelling PIN: " + e.getMessage());
+//                                        }
+//                                        pinPadDialog.dismiss();
+//                                    }
+//
+//                                    @Override
+//                                    public void onPaypass() {
+//                                        try {
+//                                            //POSManager.getInstance().bypassPin();
+//                                        } catch (Exception e) {
+//                                            Log.e(TAG, "Error bypassing PIN: " + e.getMessage());
+//                                        }
+//                                        pinPadDialog.dismiss();
+//                                    }
+//
+//                                    @Override
+//                                    public void onConfirm(String password) {
+//                                        try {
+//                                            String pinBlock = QPOSUtil.buildCvmPinBlock(
+//                                                    POSManager.getInstance().getEncryptData(), password);
+//                                            TRACE.d("PIN BLOCK-->" + pinBlock);
+//                                            POSManager.getInstance().sendCvmPin(pinBlock, true);
+//                                        } catch (Exception e) {
+//                                            Log.e(TAG, "Error processing PIN: " + e.getMessage());
+//                                        }
+//                                        pinPadDialog.dismiss();
+//                                    }
+//                                });
+//
+//                pinPadDialog.show();
+//            } catch (Exception e) {
+//                Log.e(TAG, "Error showing PIN pad dialog: " + e.getMessage());
+//                notifyError("PIN input failed: " + e.getMessage());
+//            }
+//        }

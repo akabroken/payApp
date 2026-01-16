@@ -7,6 +7,7 @@ import android.util.Log;
 import com.isw.payapp.BuildConfig;
 import com.isw.payapp.utils.XMLUtils;
 
+import okhttp3.tls.HandshakeCertificates;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,14 +22,21 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.security.KeyStore;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 public class NetworkService {
@@ -60,20 +68,8 @@ public class NetworkService {
             Log.w(TAG, "Using UNSAFE SSL configuration for debugging. DO NOT USE IN PRODUCTION.");
         } else {
             // Use safe client for production
-            OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .addInterceptor(new ResponseDebugInterceptor());
+            httpClient = getCustomCertOkHttpClient(context);
 
-            // Add logging interceptor for debug builds only
-            if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-                logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-                httpClientBuilder.addInterceptor(logging);
-            }
-
-            httpClient = httpClientBuilder.build();
         }
 
         // Build the Retrofit instance with the chosen client
@@ -84,6 +80,133 @@ public class NetworkService {
                 .build();
 
         apiService = retrofit.create(IApiServices.class);
+    }
+
+    private OkHttpClient getCustomCertOkHttpClient(Context context) {
+        try {
+            // 1. Load your PEM certificate
+            InputStream certInputStream = context.getAssets().open("kimono.pem");
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate customCertificate = (X509Certificate) cf.generateCertificate(certInputStream);
+            certInputStream.close();
+
+            // 2. Create a KeyStore with your certificate
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null); // Initialize empty
+            keyStore.setCertificateEntry("kimono", customCertificate);
+
+            // 3. Get system default TrustManager
+            TrustManagerFactory systemTmf = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
+            systemTmf.init((KeyStore) null); // Initialize with system defaults
+
+            // 4. Create TrustManager for custom certificate
+            TrustManagerFactory customTmf = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
+            customTmf.init(keyStore);
+
+            // 5. Create composite TrustManager
+            X509TrustManager systemTrustManager = (X509TrustManager) systemTmf.getTrustManagers()[0];
+            X509TrustManager customTrustManager = (X509TrustManager) customTmf.getTrustManagers()[0];
+
+            X509TrustManager compositeTrustManager = new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(X509Certificate[] chain, String authType)
+                        throws CertificateException {
+                    systemTrustManager.checkClientTrusted(chain, authType);
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] chain, String authType)
+                        throws CertificateException {
+                    try {
+                        // First try system trust manager
+                        systemTrustManager.checkServerTrusted(chain, authType);
+                    } catch (CertificateException systemException) {
+                        try {
+                            // If system fails, try custom certificate
+                            customTrustManager.checkServerTrusted(chain, authType);
+                        } catch (CertificateException customException) {
+                            // Combine error messages
+                            throw new CertificateException(
+                                    "Server certificate not trusted by system or custom certificate. " +
+                                            "System error: " + systemException.getMessage() +
+                                            ", Custom error: " + customException.getMessage()
+                            );
+                        }
+                    }
+                }
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    // Combine issuers from both trust managers
+                    List<X509Certificate> issuers = new ArrayList<>();
+                    issuers.addAll(Arrays.asList(systemTrustManager.getAcceptedIssuers()));
+                    issuers.addAll(Arrays.asList(customTrustManager.getAcceptedIssuers()));
+                    return issuers.toArray(new X509Certificate[0]);
+                }
+            };
+
+            // 6. Create SSLContext
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, new javax.net.ssl.TrustManager[]{compositeTrustManager}, null);
+
+            // 7. Build OkHttpClient
+            return new OkHttpClient.Builder()
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .sslSocketFactory(sslContext.getSocketFactory(), compositeTrustManager)
+                    .addInterceptor(new ResponseDebugInterceptor())
+                    .build();
+
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to create custom certificate client. Falling back to standard trust.", e);
+            // Fallback to standard client (will NOT trust your custom certificate)
+            return new OkHttpClient.Builder()
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .build();
+        }
+    }
+    private OkHttpClient getCustomCertOkHttpClient(Context context, Object obj) {
+        try {
+            // 1. Load your PEM certificate from the raw resources
+            InputStream certInputStream = context.getAssets().open("kimono.pem");
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate customCertificate = (X509Certificate) cf.generateCertificate(certInputStream);
+            certInputStream.close();
+
+            // 2. Build the HandshakeCertificates object
+            //    This adds your certificate AND keeps the platform's trusted CAs [citation:4]
+            HandshakeCertificates handshakeCertificates = new HandshakeCertificates.Builder()
+                    .addPlatformTrustedCertificates() // Trust standard CAs
+                    .addTrustedCertificate(customCertificate) // Also trust your specific cert
+                    .build();
+
+            // 3. Build and return the OkHttpClient
+            return new OkHttpClient.Builder()
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .sslSocketFactory(
+                            handshakeCertificates.sslSocketFactory(),
+                            handshakeCertificates.trustManager()
+                    )
+                    // Hostname verification remains ENABLED and secure
+                    .addInterceptor(new ResponseDebugInterceptor())
+                    .build();
+
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to create custom certificate client. Falling back to standard trust.", e);
+            // Fallback: return a client that only trusts platform CAs
+            return new OkHttpClient.Builder()
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .build();
+        }
     }
 
     // Initialize the singleton instance

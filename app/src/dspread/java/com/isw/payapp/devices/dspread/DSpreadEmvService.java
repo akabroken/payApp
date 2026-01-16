@@ -36,10 +36,13 @@ import com.isw.payapp.devices.dspread.utils.EMVTLVParser;
 import com.isw.payapp.devices.dspread.utils.EmvTLVTags;
 import com.isw.payapp.devices.dspread.utils.IccTLVDataDecoder;
 import com.isw.payapp.devices.dspread.utils.QPOSUtil;
-import com.isw.payapp.devices.dspread.utils.XMLUtils;
+//import com.isw.payapp.devices.dspread.utils.XMLUtils;
 import com.isw.payapp.devices.interfaces.IEmvProcessor;
+import com.isw.payapp.utils.EMVScriptProcessor;
 import com.isw.payapp.utils.EmvTlvParser;
+import com.isw.payapp.utils.PaddingUtils;
 import com.isw.payapp.utils.UnsafeOkHttpClient;
+import com.isw.payapp.utils.XMLUtils;
 import com.isw.payapp.views.pinkeyboard.BasePinPadView;
 import com.isw.payapp.views.pinkeyboard.PinPadDialog;
 import com.isw.payapp.views.pinkeyboard.KeyboardUtil;
@@ -56,7 +59,13 @@ import com.isw.payapp.paymentsRequests.KsmgRequest;
 import com.isw.payapp.terminal.config.TerminalConfig;
 import com.isw.payapp.utils.NetworkExecutor;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.io.ByteArrayInputStream;
 import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,6 +76,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import me.goldze.mvvmhabit.utils.ToastUtils;
 import okhttp3.OkHttpClient;
@@ -293,13 +304,9 @@ public class DSpreadEmvService implements IEmvProcessor {
         transactionExecutor.execute(() -> {
             try {
                 connectDevice();
-//                if (!POSManager.getInstance().isDeviceReady()) {
-//                    connectDevice();
-//                } else {
-//                    executeTransaction();
-//                }
             } catch (Exception e) {
                 notifyError("Transaction start failed: " + e.getMessage());
+                e.printStackTrace();
             }
         });
     }
@@ -326,6 +333,7 @@ public class DSpreadEmvService implements IEmvProcessor {
                     }
                     POSManager.getInstance().close();
                     POSManager.getInstance().unregisterCallbacks();
+                    POSManager.getInstance().reset();
                 } catch (Exception e) {
                     Log.e(TAG, "Error during disconnect cleanup: " + e.getMessage());
                 }
@@ -350,6 +358,7 @@ public class DSpreadEmvService implements IEmvProcessor {
             );
         } catch (Exception e) {
             notifyError("Transaction execution failed: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -363,7 +372,7 @@ public class DSpreadEmvService implements IEmvProcessor {
     private void notifyDeviceDisconnected() {
         mainHandler.post(() -> {
             ToastUtils.showLong("Device disconnected");
-            classEmvCallBacks.onDeviceDisconnected("Device disconnected");
+           // classEmvCallBacks.onDeviceDisconnected("Device disconnected");
         });
     }
 
@@ -386,6 +395,7 @@ public class DSpreadEmvService implements IEmvProcessor {
     }
 
     private void setupPinPad(List<String> dataList) {
+        Log.d(TAG, "setupPinPad");
         mainHandler.post(() -> {
             try {
                 Activity activity = getActivity();
@@ -394,6 +404,8 @@ public class DSpreadEmvService implements IEmvProcessor {
                 if (keyboardUtil != null) {
                     keyboardUtil.hide();
                 }
+
+                Log.d(TAG, "keyboardUtil init");
 
                 EditText pinpadEditText = getPinpadEditText();
                 View scvText = getScvText();
@@ -418,12 +430,15 @@ public class DSpreadEmvService implements IEmvProcessor {
                 if (POSManager.getInstance().isDeviceReady() && scvText != null && pinpadEditText != null) {
                     keyboardUtil = new KeyboardUtil(activity, scvText, dataList);
                     keyboardUtil.initKeyboard(MyKeyboardView.KEYBOARDTYPE_Only_Num_Pwd, pinpadEditText);
+
                 } else {
                     notifyError("PIN pad initialization failed - required views not available");
+
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error setting up PIN pad: " + e.getMessage());
                 notifyError("PIN pad setup failed");
+                e.printStackTrace();
             }
         });
     }
@@ -434,7 +449,7 @@ public class DSpreadEmvService implements IEmvProcessor {
         public void onRequestWaitingUser() {
             mainHandler.post(() -> {
                 classEmvCallBacks.onWaitingStatusChanged(true);
-                classEmvCallBacks.onLoading("Waiting for user action");
+                classEmvCallBacks.onLoading("Insert Card");
             });
         }
 
@@ -514,6 +529,7 @@ public class DSpreadEmvService implements IEmvProcessor {
         private void handlePinRequest(List<String> dataList, int offlineTime) {
             TRACE.d("handlePinRequest() " + offlineTime);
             if (!POSManager.getInstance().isDeviceReady()) return;
+            if(!POSManager.getInstance().isInitialized())return;
 
             classEmvCallBacks.onStopLoading();
             setupPinPad(dataList);
@@ -558,67 +574,6 @@ public class DSpreadEmvService implements IEmvProcessor {
             mainHandler.post(this::showPinPadDialog);
         }
 
-//        private void showPinPadDialog() {
-//            Activity activity = getActivity();
-//            if (activity == null) return;
-//
-//            try {
-//                classEmvCallBacks.onTitleTextChanged(activity.getString(R.string.input_pin));
-//
-//                // Ensure PINPAD is initialized
-//                if (pinPadDialog == null) {
-//                    initializePinPad();
-//                }
-//
-//                if (pinPadDialog == null) {
-//                    throw new IllegalStateException("PINPAD dialog not initialized");
-//                }
-//
-//                pinPadDialog.getPayViewPass()
-//                        .setRandomNumber(true)
-//                        .setPayClickListener(POSManager.getInstance().getQPOSService(),
-//                                new PinPadView.OnPayClickListener() {
-//                                    @Override
-//                                    public void onCencel() {
-//                                        try {
-//                                            POSManager.getInstance().cancelPin();
-//                                        } catch (Exception e) {
-//                                            Log.e(TAG, "Error cancelling PIN: " + e.getMessage());
-//                                        }
-//                                        pinPadDialog.dismiss();
-//                                    }
-//
-//                                    @Override
-//                                    public void onPaypass() {
-//                                        try {
-//                                            //POSManager.getInstance().bypassPin();
-//                                        } catch (Exception e) {
-//                                            Log.e(TAG, "Error bypassing PIN: " + e.getMessage());
-//                                        }
-//                                        pinPadDialog.dismiss();
-//                                    }
-//
-//                                    @Override
-//                                    public void onConfirm(String password) {
-//                                        try {
-//                                            String pinBlock = QPOSUtil.buildCvmPinBlock(
-//                                                    POSManager.getInstance().getEncryptData(), password);
-//                                            TRACE.d("PIN BLOCK-->" + pinBlock);
-//                                            POSManager.getInstance().sendCvmPin(pinBlock, true);
-//                                        } catch (Exception e) {
-//                                            Log.e(TAG, "Error processing PIN: " + e.getMessage());
-//                                        }
-//                                        pinPadDialog.dismiss();
-//                                    }
-//                                });
-//
-//                pinPadDialog.show();
-//            } catch (Exception e) {
-//                Log.e(TAG, "Error showing PIN pad dialog: " + e.getMessage());
-//                notifyError("PIN input failed: " + e.getMessage());
-//            }
-//        }
-
         private void showPinPadDialog() {
             Activity activity = getActivity();
             if (activity == null) return;
@@ -643,7 +598,7 @@ public class DSpreadEmvService implements IEmvProcessor {
                     @Override
                     public void onPayPass() {
                         try {
-                            // POSManager.getInstance().bypassPin();
+                             POSManager.getInstance().bypassPin();
                         } catch (Exception e) {
                             Log.e(TAG, "Error bypassing PIN: " + e.getMessage());
                         }
@@ -670,6 +625,7 @@ public class DSpreadEmvService implements IEmvProcessor {
             } catch (Exception e) {
                 Log.e(TAG, "Error showing PIN pad dialog: " + e.getMessage());
                 notifyError("PIN input failed: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
@@ -797,31 +753,7 @@ public class DSpreadEmvService implements IEmvProcessor {
             String msg = "";
             if (transactionResult == QPOSService.TransactionResult.APPROVED) {
                 TRACE.d("TransactionResult.APPROVED");
-            } else if (transactionResult == QPOSService.TransactionResult.TERMINATED) {
-                msg = "Transaction terminated";
-            } else if (transactionResult == QPOSService.TransactionResult.DECLINED) {
-                msg = "Transaction declined";
-            } else if (transactionResult == QPOSService.TransactionResult.CANCEL) {
-                msg = "Transaction cancelled";
-            } else if (transactionResult == QPOSService.TransactionResult.CAPK_FAIL) {
-                msg = "CAPK failed";
-            } else if (transactionResult == QPOSService.TransactionResult.NOT_ICC) {
-                msg = "Not ICC card";
-            } else if (transactionResult == QPOSService.TransactionResult.SELECT_APP_FAIL) {
-                msg = "App selection failed";
-            } else if (transactionResult == QPOSService.TransactionResult.DEVICE_ERROR) {
-                msg = "Device error";
-            } else if (transactionResult == QPOSService.TransactionResult.TRADE_LOG_FULL) {
-                msg = "Trade log full";
-            } else if (transactionResult == QPOSService.TransactionResult.CARD_NOT_SUPPORTED) {
-                msg = "Card not supported";
-            } else if (transactionResult == QPOSService.TransactionResult.MISSING_MANDATORY_DATA) {
-                msg = "Missing mandatory data";
-            } else if (transactionResult == QPOSService.TransactionResult.CARD_BLOCKED_OR_NO_EMV_APPS) {
-                msg = "Card blocked or no EMV apps";
-            } else if (transactionResult == QPOSService.TransactionResult.INVALID_ICC_DATA) {
-                msg = "Invalid ICC data";
-            } else if (transactionResult == QPOSService.TransactionResult.FALLBACK) {
+            }  else if (transactionResult == QPOSService.TransactionResult.FALLBACK) {
                 msg = "Transaction fallback";
                 try {
                     POSManager.getInstance().updateEMVConfig("emv_profile_tlv.xml");
@@ -829,20 +761,10 @@ public class DSpreadEmvService implements IEmvProcessor {
                 } catch (Exception e) {
                     Log.e(TAG, "Error updating EMV config: " + e.getMessage());
                 }
-            } else if (transactionResult == QPOSService.TransactionResult.NFC_TERMINATED) {
-                msg = "NFC Terminated";
-            } else if (transactionResult == QPOSService.TransactionResult.CARD_REMOVED) {
-                msg = "Card removed";
-            } else if (transactionResult == QPOSService.TransactionResult.CONTACTLESS_TRANSACTION_NOT_ALLOW) {
-                msg = "Contactless transaction not allowed";
-            } else if (transactionResult == QPOSService.TransactionResult.CARD_BLOCKED) {
-                msg = "Card blocked";
-            } else if (transactionResult == QPOSService.TransactionResult.TRANS_TOKEN_INVALID) {
-                msg = "Token invalid";
-            } else if (transactionResult == QPOSService.TransactionResult.APP_BLOCKED) {
-                msg = "App blocked";
-            } else {
+                abortTransaction();
+            }  else {
                 msg = transactionResult.name();
+                abortTransaction();
             }
         }
 
@@ -895,6 +817,11 @@ public class DSpreadEmvService implements IEmvProcessor {
             TRACE.d("onReturnUpdateIPEKResult(boolean arg0):" + arg0);
         }
 
+        @Override
+        public  void onError(QPOSService.Error error){
+            TRACE.d("onError(QPOSService.Error error):" + error.name());
+        }
+
         private void handleOnlineProcessRequest(String tlv) {
             mainHandler.post(() -> {
                 classEmvCallBacks.onShowPinPad(false);
@@ -916,6 +843,8 @@ public class DSpreadEmvService implements IEmvProcessor {
                 String pinBlock = emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC7);
                 TRACE.d("pinBlock-C7:" + pinBlock);
 
+
+
                 String tagKSNOfOnlineMsg = emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC0);
                 TRACE.d("CO:" + tagKSNOfOnlineMsg);
                 String tagOnlineMessage = emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC2);
@@ -923,12 +852,13 @@ public class DSpreadEmvService implements IEmvProcessor {
 
                String clearIccData = null;
                 String clearPinData = null;
+                String decryptedPinBlock = null;
+                String clearPin = null;
+
                 if (!TextUtils.isEmpty(tagKSNOfOnlineMsg) && !TextUtils.isEmpty(tagOnlineMessage)) {
-                    clearIccData = DUKPK2009_CBC.getData(tagKSNOfOnlineMsg, tagOnlineMessage,
+                    clearIccData = DUKPK2009_CBC.getData(getActivity(),tagKSNOfOnlineMsg, tagOnlineMessage,
                             DUKPK2009_CBC.Enum_key.DATA, DUKPK2009_CBC.Enum_mode.CBC);
                     Log.d("clearIccData", clearIccData);
-
-
                     System.out.println("====================");
                 } else {
                     Log.d("NoClearData", "No Data Found");
@@ -1027,14 +957,35 @@ public class DSpreadEmvService implements IEmvProcessor {
             try {
                 classEmvCallBacks.onStopLoading();
 
-                String respMessage = XMLUtils.isErrorResponse(response);
+               // Log.d(TAG, response);
+                String respMessage = XMLUtils.getTransactionResult(response);
 
-                showPrinterPreviewDialog(respMessage, emvModel);
+                if(!respMessage.equals("Transaction Approved")){
+                    POSManager.getInstance().sendOnlineProcessResult("89030000008A0196");
+                    notifyError(respMessage);
+                    abortTransaction();
+
+                }else {
+                    Document document = parseXmlResponse(response);
+                    configureApprovedTransaction(document);
+
+                    showPrinterPreviewDialog(respMessage, emvModel);
+                }
+//                POSManager.getInstance().reset();
+
 
             } catch (Exception e) {
                 Log.e(TAG, "Error handling network response: " + e.getMessage());
+                e.printStackTrace();
                 classEmvCallBacks.onError("Error processing response");
             }
+        }
+
+        private void abortTransaction() {
+
+            POSManager.getInstance().cancelTransaction();
+            POSManager.getInstance().close();
+           // POSManager.getInstance().reset();
         }
 
         private void showPrinterPreviewDialog(String respMessage, EmvModel emvModel) {
@@ -1057,6 +1008,7 @@ public class DSpreadEmvService implements IEmvProcessor {
                         @Override
                         public void onCancelClick() {
                             TRACE.d("Printing cancelled by user");
+                            classEmvCallBacks.onTransactionSuccess(respMessage);
                         }
                     }
             );
@@ -1102,11 +1054,15 @@ public class DSpreadEmvService implements IEmvProcessor {
                 try {
                     if (printerService.isInitialized()) {
                         printerService.printReceipt(receipt);
+                        POSManager.getInstance().cancelTransaction();
+                        POSManager.getInstance().close();
                     } else {
                         Log.e("PRINTER", "Printer not initialized");
+                        abortTransaction();
                     }
                 } catch (RemoteException e) {
                     Log.e("PRINTER", "Print error: " + e.getMessage());
+
                 }
 
             } catch (Exception e) {
@@ -1146,5 +1102,66 @@ public class DSpreadEmvService implements IEmvProcessor {
                 Log.e(TAG, "pinpadEditText is null in handlePinInputResult");
             }
         }
+    }
+
+    private void configureApprovedTransaction(Document document){
+//        updateProgress("Finalizing transaction...");
+
+        String st1 = getValue(document, "st1");
+        String st2 = getValue(document, "st2");
+        String iad = getValue(document, "iad");
+        String rc = getValue(document, "rc");
+        String cardAuthRc = getValue(document, "cardauthrc");
+
+        //String st1 = buildScriptData("71", script);
+       // st2 = buildScriptData("72", st2);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(EMVScriptProcessor.buildScriptData("89", PaddingUtils.padCardAuthRc(cardAuthRc)));
+        sb.append(EMVScriptProcessor.buildScriptData("8A", rc));
+        sb.append(EMVScriptProcessor.buildScriptData("91", iad));
+        sb.append(EMVScriptProcessor.buildScriptData("71", st1));
+        sb.append(EMVScriptProcessor.buildScriptData("72", st2));
+        Log.d(TAG,"TLV: "+sb);
+        POSManager.getInstance().sendOnlineProcessResult(sb.toString());
+    }
+    private static String getValue(Document doc, String tagName) {
+        try {
+            NodeList nodeList = doc.getElementsByTagName(tagName);
+            if (nodeList.getLength() > 0) {
+                Node node = nodeList.item(0);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    return node.getTextContent().trim();
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting value for tag: " + tagName, e);
+        }
+        return null;
+    }
+
+    private String buildScriptData(String prefix, String data) {
+        if (data == null || data.isEmpty()) {
+            return "";
+        }
+        String length = padStart(Integer.toHexString(data.length() / 2), 2, '0');
+        return prefix + length + data;
+    }
+
+    private static String padStart(String input, int minLength, char padChar) {
+        if (input == null) {
+            input = "";
+        }
+        StringBuilder sb = new StringBuilder(input);
+        while (sb.length() < minLength) {
+            sb.insert(0, padChar);
+        }
+        return sb.toString();
+    }
+
+    private Document parseXmlResponse(String xml) throws Exception {
+        return DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
     }
 }

@@ -82,4 +82,8 @@ public interface IPaymentServiceCallback {
    default void onReturnUpdateIPEKResult(boolean b){}
 
     default void onRequestUpdateWorkKeyResult(QPOSService.UpdateInformationResult result){}
+
+    default void onError(QPOSService.Error errorState){}
+
+
 }
