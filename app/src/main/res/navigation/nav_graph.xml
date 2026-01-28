@@ -26,7 +26,7 @@
         <action android:id="@+id/index_to_home" app:destination="@+id/HomeFragment"/>
         <action android:id="@+id/index_to_transaction" app:destination="@id/transactions"/>
         <action android:id="@+id/index_to_settings" app:destination="@+id/LocalSettings"/>
-        <action android:id="@+id/index_to_login" app:destination="@id/Login"/>
+        <action android:id="@+id/index_to_login" app:destination="@id/Login" app:popUpTo="@id/Login" app:popUpToInclusive="true"/>
         <action android:id="@+id/index_to_report" app:destination="@+id/Reports"/>
         <action android:id="@+id/index_to_pinselect" app:destination="@+id/PinSelect"/>
         <action android:id="@+id/index_to_fuelpay" app:destination="@id/FuelPay"/>

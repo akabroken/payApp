@@ -39,6 +39,7 @@ import com.telpo.emv.EmvPinData;
 import com.telpo.emv.EmvService;
 import com.telpo.emv.EmvServiceListener;
 import com.telpo.emv.EmvTLV;
+import com.telpo.pinpad.PinParam;
 import com.telpo.util.ErrMsg;
 import com.telpo.util.StringUtil;
 
@@ -112,7 +113,7 @@ public class EMVHandler {
     public boolean isMkMode = false;
     private boolean isDesMode = true;
     private boolean isPanDesMode = true;
-    private boolean isPanMkMode = true;
+    private boolean isPanMkMode = false;
     private boolean isOnlineTransaction = false;
     private boolean isNFC = false;
     private boolean isMag = false;
@@ -241,7 +242,7 @@ public class EMVHandler {
             appendDisplay("Empty data for encryption");
             return "";
         }
-
+        appendDisplay("No Empty data for encryption");
         String paddedData = panPadding(data);
         String cipherText = "";
 
@@ -289,11 +290,13 @@ public class EMVHandler {
 
     private String encryptWithDukptMode(String paddedData) {
         PinpadBytesOut ksn = new PinpadBytesOut();
+        appendDisplay("encryptWithDukptMode(String paddedData)"+StringUtil.bytesToHexString(ksn.outResult));
         int startResult;
         String cipherText = "";
 
         if (isPanDesMode) {
-            startResult = pinpadService.Pinpad_DEA_DUKPT_Session_Start(0, ksn);
+            appendDisplay("isPanDesMode ="+isPanDesMode);
+            startResult = pinpadService.Pinpad_DEA_DUKPT_Session_Start(1, ksn);
             if (startResult == PinpadService.PIN_OK) {
                 cipherText = processDesDukptEncryption(paddedData, ksn);
                 pinpadService.Pinpad_DEA_DUKPT_Session_End();
@@ -314,6 +317,7 @@ public class EMVHandler {
     }
 
     private String processDesDukptEncryption(String paddedData, PinpadBytesOut ksn) {
+        appendDisplay("processDesDukptEncryption(String paddedData, PinpadBytesOut ksn)"+paddedData);
         PinpadBytesOut output = new PinpadBytesOut();
         byte[] iv = new byte[8];
 
@@ -403,7 +407,7 @@ public class EMVHandler {
         String pinBlockStr = "";
 
         if (isDesMode) {
-            startResult = pinpadService.Pinpad_DEA_DUKPT_Session_Start(0, ksn);
+            startResult = pinpadService.Pinpad_DEA_DUKPT_Session_Start(1, ksn);
             if (startResult == PinpadService.PIN_OK) {
                 pinBlockStr = processDesDukptPin(cardNumber, ksn);
                 pinpadService.Pinpad_DEA_DUKPT_Session_End();
@@ -421,10 +425,12 @@ public class EMVHandler {
 
     private String processDesDukptPin(String cardNumber, PinpadBytesOut ksn) {
         PinpadBytesOut pinBlockOut = new PinpadBytesOut();
+        appendDisplay("amount:-"+amount);
+
         int result = pinpadService.Pinpad_DEA_DUKPT_GetPin(
                 cardNumber,
                 PinpadEnum.ENUM_PIN_BLOCK_FORMAT.ISO_9564_FORMAT_0,
-                6, 0, 60, pinBlockOut);
+                12, 4, 60, pinBlockOut);
 
         if (result == PinpadService.PIN_OK) {
             currentKSN = StringUtil.bytesToHexString(ksn.outResult);
@@ -456,6 +462,7 @@ public class EMVHandler {
     private String handlePinResult(int result, PinpadBytesOut pinBlockOut, String mode) {
         switch (result) {
             case PinpadService.PIN_OK:
+
                 String pinBlockStr = StringUtil.bytesToHexString(pinBlockOut.outResult);
                 cardModel.setPinBlock("T"+pinBlockStr);
                 appendDisplay(mode + " PIN Block: " + pinBlockStr);
@@ -901,7 +908,7 @@ public class EMVHandler {
 
             amount = Double.parseDouble(transactionData.getAmount());
             appendDisplay("Amount: "+ amount);
-            emvAmountData.Amount = (long) (amount * 10000);
+            emvAmountData.Amount = (long) (amount * 100);
             emvAmountData.TransCurrCode = 404; // KES
             emvAmountData.ReferCurrCode = 404;
             emvAmountData.TransCurrExp = 2;
@@ -1222,9 +1229,9 @@ public class EMVHandler {
         Receipt receipt = new Receipt();
 
         if (activity != null) {
-            receipt.setBank(TerminalConfig.loadTerminalDataFromJson(activity, "__bank"));
-            receipt.setMerchant(TerminalConfig.loadTerminalDataFromJson(activity, "__merchantloc"));
-            receipt.setTerminalId(TerminalConfig.loadTerminalDataFromJson(activity, "__tid"));
+            receipt.setBank(TerminalConfig.loadTerminalDataFromJson(activity, "bank"));
+            receipt.setMerchant(TerminalConfig.loadTerminalDataFromJson(activity, "merchantloc"));
+            receipt.setTerminalId(TerminalConfig.loadTerminalDataFromJson(activity, "tid"));
         }
 
         receipt.setAmount(transactionData.getAmount());
@@ -1236,6 +1243,7 @@ public class EMVHandler {
         receipt.setAtc(emvModel.getAtc());
         receipt.setTvr(emvModel.getTerminalVerificationResult());
         receipt.setResponse(theMessage);
+        receipt.setTeller(transactionData.getTellerdetail());
         receipt.setCardNumber(cardNum != null ? maskPan(cardNum) : "N/A");
 
         return receipt;
@@ -1274,6 +1282,10 @@ public class EMVHandler {
                     }));
            // printerService.initializePrinter();
             printerService.printReceipt(receipt);
+
+           // printerService.printReceiptMerchant(receipt);
+
+
             Log.i(TAG, "Receipt printed successfully");
         } catch (Exception e) {
             Log.e(TAG, "Printing error: " + e.getMessage(), e);

@@ -1,126 +1,303 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@android:color/white"
     tools:context=".fragments.Reversal">
-<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    android:orientation="vertical"-->
-<!--    tools:context=".fragments.Reversal">-->
 
-    <!-- Title Bar -->
-    <include layout="@layout/titlebar" />
-    <!-- Header TextView -->
-    <TextView
+    <!-- Status Bar Spacer -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="?attr/colorPrimary" />
+
+    <!-- Header -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/menu_reversal"
-        android:textSize="30sp"
-        android:background="#15479c"
-        android:textColor="#a1a1a1"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:padding="1dp" />
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:background="?attr/colorPrimary">
 
-    <!-- Main Content -->
+        <!-- Back Button -->
+<!--        <ImageView-->
+<!--            android:id="@+id/imageViewBack"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:padding="12dp"-->
+<!--            android:contentDescription="@string/backk"-->
+<!--            android:src="@drawable/icon_bac"-->
+<!--            app:tint="@android:color/white" />-->
+
+<!--        &lt;!&ndash; Title &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:text="@string/transaction_reversal"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:textSize="20sp"-->
+<!--            android:textStyle="bold" />-->
+
+<!--        &lt;!&ndash; Cancel/Close Button &ndash;&gt;-->
+<!--        <ImageView-->
+<!--            android:id="@+id/imageViewCancel"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:padding="12dp"-->
+<!--            android:contentDescription="@string/cancell"-->
+<!--            android:src="@drawable/icon_can"-->
+<!--            app:tint="@android:color/white" />-->
+
+        <EditText
+            android:id="@+id/purchaseEditText"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <!-- Logo Section -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:paddingTop="24dp"
+        android:paddingBottom="16dp">
 
-        <!-- Original STAN -->
-        <TextView
-            android:layout_marginStart="35dp"
-            android:layout_marginEnd="35dp"
+        <include
+            layout="@layout/logo_head"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/void_ostan"
-            android:textSize="20sp"
-            android:layout_marginTop="1dp" />
+            android:layout_height="wrap_content" />
 
-        <EditText
-            android:id="@+id/ostan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="35dp"
-            android:layout_marginEnd="35dp"
-            android:gravity="center_vertical|end"
-            android:textSize="20sp"
-            android:inputType="text"
-            android:maxLength="13"
-            android:textColor="#000000"
-            android:text="" />
-
-        <!-- Original Auth ID -->
-        <TextView
-            android:layout_marginStart="35dp"
-            android:layout_marginEnd="35dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/void_oauth"
-            android:textSize="20sp"
-            android:layout_marginTop="1dp" />
-
-        <EditText
-            android:id="@+id/oauth"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="35dp"
-            android:layout_marginEnd="35dp"
-            android:gravity="center_vertical|end"
-            android:textSize="20sp"
-            android:inputType="text"
-            android:maxLength="13"
-            android:textColor="#000000"
-            android:text="" />
-
-        <!-- Sale Input Amount -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sale_inputAmount"
-            android:textSize="20sp"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="35dp"
-            android:layout_marginEnd="20dp"
-            android:gravity="center_horizontal"/>
-
-        <EditText
-            android:id="@+id/inputAmt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="35dp"
-            android:layout_marginEnd="35dp"
-            android:gravity="center_vertical|end"
-            android:textSize="20sp"
-            android:inputType="number"
-            android:maxLength="13"
-            android:textColor="#000000"
-            android:text="0.00" />
-
-        <Button
-            android:id="@+id/btn_saleStart"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/button_number_violet_shape"
-            android:text="@string/sale_click_useCard"
-            android:textAllCaps="false"
-            android:textSize="20sp" />
-
-        <!-- Button -->
     </LinearLayout>
 
+    <!-- Content Area -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/scvPayText"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvReceipt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnSendReceipt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/send_receipt"
+                android:visibility="gone" />
+
+            <!-- Original STAN -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/original_stan"
+                android:textColor="#4B5563"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#E5E7EB"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_marginBottom="24dp">
+
+                <EditText
+                    android:id="@+id/ostan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:hint="@string/enter_stan"
+                    android:maxLines="1"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:background="@android:color/transparent"
+                    android:maxLength="13" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Original Auth ID -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/original_auth_id"
+                android:textColor="#4B5563"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#E5E7EB"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_marginBottom="24dp">
+
+                <EditText
+                    android:id="@+id/oauth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:hint="@string/enter_auth_id"
+                    android:maxLines="1"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:background="@android:color/transparent"
+                    android:maxLength="13" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Amount -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/amount_to_reverse"
+                android:textColor="#4B5563"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#E5E7EB"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_marginBottom="32dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/currency_symbol"
+                        android:textColor="#000000"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="12dp"
+                        android:gravity="center_vertical" />
+
+                    <EditText
+                        android:id="@+id/inputAmt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0.00"
+                        android:maxLines="1"
+                        android:imeOptions="actionDone"
+                        android:inputType="numberDecimal"
+                        android:textColor="#000000"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:background="@android:color/transparent"
+                        android:gravity="end|center_vertical"
+                        android:maxLength="13" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Information Note -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/reversal_note"
+                android:textColor="#6B7280"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:lineSpacingExtra="4dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Action Button Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="24dp"
+        android:background="@android:color/white"
+        android:elevation="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_saleStart"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/process_reversal"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            app:cornerRadius="28dp"
+            app:icon="@drawable/ic_reverse"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="@android:color/white" />
+
+        <!-- Progress indicator -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <!-- Footer (Optional) -->
+    <!--
+    <include
+        layout="@layout/titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    -->
+
 </LinearLayout>
-<!--</FrameLayout>-->

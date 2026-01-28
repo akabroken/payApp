@@ -86,7 +86,7 @@ public class Transaction extends Fragment {
         List<Integer> imageList = new ArrayList<>();
         imageList.add(R.drawable.shopping_cart_simple);
         imageList.add(R.drawable.arrows_reversal);
-        imageList.add(R.drawable.arrows_refund);
+        //imageList.add(R.drawable.arrows_refund);
         return imageList;
     }
 
@@ -94,7 +94,7 @@ public class Transaction extends Fragment {
         List<String>title = new ArrayList<>();
         title.add("Purchase");
         title.add("Reversal");
-        title.add("Refund");
+       // title.add("Refund");
 
         return  title;
     }

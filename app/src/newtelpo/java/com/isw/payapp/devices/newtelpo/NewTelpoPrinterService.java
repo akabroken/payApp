@@ -168,7 +168,7 @@ public class NewTelpoPrinterService {
             Date curDate = new Date(System.currentTimeMillis());//Get current time
             String str = formatter.format(curDate);
             mUsbThermalPrinter.addString("DATE/TIME:   " + str);
-            mUsbThermalPrinter.addString("Served by:      " + receipt.getTeller());
+            mUsbThermalPrinter.addString("Served by:" + receipt.getTeller());
 
 //            mUsbThermalPrinter.addString("STAN NO:     " + receipt.getTransactionData().getStan());
 //            mUsbThermalPrinter.addString("AUTH NO:     " + receipt.getTransactionData().getAuthCode());
@@ -176,6 +176,7 @@ public class NewTelpoPrinterService {
 
             mUsbThermalPrinter.printString();
             mUsbThermalPrinter.walkPaper(20);
+
 
         }  catch (Exception e) {
             e.printStackTrace();
@@ -185,6 +186,89 @@ public class NewTelpoPrinterService {
         }
         }).start();
     }
+
+    public void printReceiptMerchant(Receipt receipt) {
+        new Thread(() -> {
+            try {
+                //  mUsbThermalPrinter = new UsbThermalPrinter(context);
+                TerminalConfig terminalConfig = new TerminalConfig();
+                ConfigManager.refreshConfig(mContext);
+                TerminalConfigModel config = ConfigManager.getConfig(mContext);
+                mUsbThermalPrinter.start(1);
+                mUsbThermalPrinter.reset();
+                mUsbThermalPrinter.setMonoSpace(true);
+                mUsbThermalPrinter.setGray(7);
+                mUsbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
+                Bitmap bitmap1 = BitmapFactory.decodeResource(mContext.getResources(), BuildConfig.APP_LOGO);
+//           Bitmap bitmap2 = ThumbnailUtils.extractThumbnail(bitmap1, 244, 116);
+//            mUsbThermalPrinter.printLogo(bitmap2, true);
+                // Calculate the scaled dimensions while maintaining the aspect ratio
+                int targetWidth = 244; // Desired width for the printer
+                int targetHeight = 116; // Desired height for the printer
+
+// Calculate the aspect ratio of the original bitmap
+                float originalWidth = bitmap1.getWidth();
+                float originalHeight = bitmap1.getHeight();
+                float aspectRatio = originalWidth / originalHeight;
+
+// Adjust the dimensions to fit within the target size while preserving the aspect ratio
+                int scaledWidth, scaledHeight;
+                if (targetWidth / aspectRatio <= targetHeight) {
+                    // Scale based on width
+                    scaledWidth = targetWidth;
+                    scaledHeight = Math.round(targetWidth / aspectRatio);
+                } else {
+                    // Scale based on height
+                    scaledHeight = targetHeight;
+                    scaledWidth = Math.round(targetHeight * aspectRatio);
+                }
+
+// Resize the bitmap using Bitmap.createScaledBitmap
+                Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap1, scaledWidth, scaledHeight, true);
+                mUsbThermalPrinter.printLogo(bitmap2, true);
+
+                mUsbThermalPrinter.setTextSize(30);
+                mUsbThermalPrinter.addString("PIN CHANGE\n");
+                mUsbThermalPrinter.addString("TELLER RECEIPT");
+                mUsbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_LEFT);
+                mUsbThermalPrinter.setTextSize(24);
+                mUsbThermalPrinter.addString("MERCHANT NAME:  " + config.getMerchantloc());
+                mUsbThermalPrinter.addString("MERCHANT ID:    " + config.getMid());
+                mUsbThermalPrinter.addString("TERMINAL ID:    " + config.getTid());
+                int i = mUsbThermalPrinter.measureText("CARD NO :" + receipt.getCardNumber());
+                int i1 = mUsbThermalPrinter.measureText(" ");
+                int SpaceNumber = (384 - i) / i1;
+                String spaceString = "";
+                for (int j = 0; j < SpaceNumber; j++) {
+                    spaceString += " ";
+                }
+                mUsbThermalPrinter.addString("CARD NO:" + spaceString + receipt.getCardNumber());
+                mUsbThermalPrinter.addString("TRANS TYPE:        "+receipt.getTransactionType());
+                // mUsbThermalPrinter.addString("RSP CODE:          "+ receipt.getResponse());
+                mUsbThermalPrinter.addString("   "+ receipt.getResponse());
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date curDate = new Date(System.currentTimeMillis());//Get current time
+                String str = formatter.format(curDate);
+                mUsbThermalPrinter.addString("DATE/TIME:   " + str);
+                mUsbThermalPrinter.addString("Served by:      " + receipt.getTeller());
+
+//            mUsbThermalPrinter.addString("STAN NO:     " + receipt.getTransactionData().getStan());
+//            mUsbThermalPrinter.addString("AUTH NO:     " + receipt.getTransactionData().getAuthCode());
+//            mUsbThermalPrinter.addString("REFER NO:    " + receipt.getTransactionData().getRefferanceNo());
+
+                mUsbThermalPrinter.printString();
+                mUsbThermalPrinter.walkPaper(20);
+
+
+            }  catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
+            } finally {
+                mUsbThermalPrinter.stop();
+            }
+        }).start();
+    }
+
 
 
     public Bitmap CreateCode(String str, BarcodeFormat type, int bmpWidth, int bmpHeight)

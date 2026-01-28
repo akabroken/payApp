@@ -94,29 +94,40 @@ import com.isw.payapp.devices.feitian.views.RFLogoDialog;
 import com.isw.payapp.devices.interfaces.IEmvProcessor;
 import com.isw.payapp.devices.services.NetworkService;
 import com.isw.payapp.dialog.PrinterPreviewDialog;
+import com.isw.payapp.helpers.ConfigManager;
 import com.isw.payapp.model.CardModel;
 import com.isw.payapp.model.EmvModel;
 import com.isw.payapp.model.Receipt;
+import com.isw.payapp.model.TerminalConfigModel;
 import com.isw.payapp.model.TransactionData;
 import com.isw.payapp.paymentsRequests.KsmgRequest;
+import com.isw.payapp.paymentsRequests.KxmlRequest;
 import com.isw.payapp.terminal.config.TerminalConfig;
 import com.isw.payapp.utils.BytesUtil;
 import com.isw.payapp.devices.feitian.constants.TapLampColor;
+import com.isw.payapp.utils.CommonUtil;
 import com.isw.payapp.utils.DUKPK2009_CBC;
+import com.isw.payapp.utils.EMVScriptProcessor;
 import com.isw.payapp.utils.EmvTlvParser;
 import com.isw.payapp.utils.NetworkExecutor;
+import com.isw.payapp.utils.PaddingUtils;
 import com.isw.payapp.utils.XMLUtils;
 import com.isw.payapp.utils.tlvs.EMVTag;
 import com.isw.payapp.views.pinkeyboard.BasePinPadView;
 import com.jirui.logger.Logger;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -130,6 +141,8 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 
 public class FeitianEmvService implements IEmvProcessor {
 
@@ -181,7 +194,7 @@ public class FeitianEmvService implements IEmvProcessor {
     // Application components
     private final WeakReference<Activity> classActivityRef;
     private final TransactionData classTransactionData;
-    private final EmvServiceCallback classEmvCallBacks;
+    private  final EmvServiceCallback classEmvCallBacks;
     private final Handler mainHandler;
     private final ExecutorService transactionExecutor;
     private final Context context;
@@ -249,7 +262,7 @@ public class FeitianEmvService implements IEmvProcessor {
     @Override
     public void startEmvService() throws Exception {
         transaction();
-        classEmvCallBacks.onLoading("Starting transaction process");
+        classEmvCallBacks.onLoading("Present Card,,");
     }
 
     @Override
@@ -351,6 +364,7 @@ public class FeitianEmvService implements IEmvProcessor {
 
         TransRequest transRequest = createTransRequest(cardSupport);
         String formatAmount = formatTransactionAmount(amount.getmAmount());
+        Log.d(TAG, "formatAmount: " + formatAmount);
 
         String[] titles = getActivity().getResources().getStringArray(R.array.trans_type);
         updateDockLCD(((String) Objects.requireNonNull(Array.get(titles, selectedPosition))).toUpperCase(),
@@ -360,10 +374,11 @@ public class FeitianEmvService implements IEmvProcessor {
 
         startEMV(amount, transRequest);
         Log.d(TAG, "Starting EMV process");
-        classEmvCallBacks.onLoading("Starting EMV process");
+        classEmvCallBacks.onLoading("Present card to start transaction");
     }
 
     private Amount createAmount(String amt) {
+        amt = Integer.toString((int)(Double.parseDouble(amt) * 100));
         Log.d(TAG, "createAmount: " + amt);
         if (TextUtils.isEmpty(amt) || !TextUtils.isDigitsOnly(amt)) {
             Logger.e("Please enter a valid amount");
@@ -661,18 +676,25 @@ public class FeitianEmvService implements IEmvProcessor {
         byte[] value9F34 = tlvs.getTLV("9F34").getBytesValue();
         switch (value9F34[0] & 0x3F) {
             case 0x01:
+                Logger.i("EMV_CVMFLAG_PLOFFLINE_PIN_SIGN");
                 return EMV_CVMFLAG_PLOFFLINE_PIN_SIGN;
             case 0x02:
+                Logger.i("EMV_CVMFLAG_OLPIN_SIGN");
                 return EMV_CVMFLAG_OLPIN_SIGN;
             case 0x03:
+                Logger.i("EMV_CVMFLAG_PLOFFLINE_PIN_SIGNATURE_SIGN");
                 return EMV_CVMFLAG_PLOFFLINE_PIN_SIGNATURE_SIGN;
             case 0x04:
+                Logger.i("EMV_CVMFLAG_ENOFFLINE_PIN_SIGN");
                 return EMV_CVMFLAG_ENOFFLINE_PIN_SIGN;
             case 0x05:
+                Logger.i("EMV_CVMFLAG_ENOFFLINE_PIN_SIGNATURE_SIGN");
                 return EMV_CVMFLAG_ENOFFLINE_PIN_SIGNATURE_SIGN;
             case 0x01E:
+                Logger.i("EMV_CVMFLAG_SIGNATURE");
                 return EMV_CVMFLAG_SIGNATURE;
             case 0x01F:
+                Logger.i("EMV_CVMFLAG_NO_CVM");
                 return EMV_CVMFLAG_NO_CVM;
             default:
                 return 0;
@@ -696,6 +718,8 @@ public class FeitianEmvService implements IEmvProcessor {
         updateDockLCD(null, null, "Enter pin ...");
 
         mainHandler.post(() -> {
+            int cvm = getCVM(iemv.getTlvList("9F34"));
+            Logger.d("Cardholder verify method: 0x%02X", cvm);
             FTLVList pan = FTLV.fromData(iemv.getTlvList("5A"));
             Logger.tlv(pan.toString(), EMV_TAG_MAP);
             Map<String, String >panMap = parser.extractAllTags(pan.toString());
@@ -945,7 +969,7 @@ public class FeitianEmvService implements IEmvProcessor {
                 FTLVList list = FTLV.fromData(iemv.getTlvList("1F531F609C9A9F215A579F025F2A9F34959F339F409F669F1E"));
                 Logger.tlv(list.toString(), EMV_TAG_MAP);
 
-                FTLVList emvlist = FTLV.fromData(iemv.getTlvList("575A5F34829F369F269F279F349F105F2A959F1A9F359A9C9F37849F33"));
+                FTLVList emvlist = FTLV.fromData(iemv.getTlvList("575A5F34829F369F269F279F349F105F2A959F1A9F359A9C9F37849F339F029F03"));
                 Log.d(TAG, "EMV DATA\n"+emvlist.toString());
                 parser.printAllTags(emvlist.toString());
                 Map<String , String> tagMap = parser.extractAllTags(emvlist.toString());
@@ -955,6 +979,19 @@ public class FeitianEmvService implements IEmvProcessor {
                 Log.i(TAG, "ksnValue : "+ ksnValue );
                 cardModel.setKsn(ksnValue);
                 cardModel.setPinBlock("T"+pinBlockValue);
+                cardModel.setPinType("Dukpt");
+                cardModel.setKsnd("605");
+
+                emvModel.setAmountAuthorized(tagMap.get("9F02"));
+                Logger.i("amount authorized - "+ emvModel.getAmountAuthorized());
+                emvModel.setAmountOther(tagMap.get("9F03"));
+                Logger.i("Amount other - "+ emvModel.getAmountOther());
+
+                String[]t  = CommonUtil.extractExpiryFromTrack2(tagMap.get("57"));
+
+                emvModel.setExpYear(t[1]);
+                emvModel.setExMonth(t[0]);
+                emvModel.setServiceCode(t[2]);
 
                 // EMV tag 57 (Track 2 Equivalent data)
                 emvModel.setTrack2data(tagMap.get("57"));
@@ -993,27 +1030,40 @@ public class FeitianEmvService implements IEmvProcessor {
                 // EMV tag 9F33 (Terminal Capabilities)
                 emvModel.setTerminalCapabilities(tagMap.get("9F33"));
 
-                KsmgRequest pinchangeRequest = new KsmgRequest(emvModel, classTransactionData, cardModel);
-                Log.d(TAG, "Payload \n"+ pinchangeRequest.generatePayload());
+                String paymentApp = classTransactionData.getPaymentApp();
+                Log.d(TAG, "Preparing payload for payment app: " + paymentApp);
+                if ("selectpin".equals(paymentApp)) {
+                    KsmgRequest pinchangeRequest = new KsmgRequest(emvModel, classTransactionData, cardModel);
+                    Log.d(TAG, "Payload \n"+ pinchangeRequest.generatePayload());
+                    processNetworkRequest(pinchangeRequest, emvModel);
+                }else{
+                    ConfigManager.refreshConfig(context);
+                    TerminalConfigModel config = ConfigManager.getConfig(context);
+                    cardModel.setKSNTag(config.getKeysetid());
+                    classTransactionData.setMid(config.getMid());
+                    classTransactionData.setMloc(config.getMerchantloc());
+                    classTransactionData.setPosdatacode("510101511344101");
+                    classTransactionData.setPoscondcode("00");
+                    classTransactionData.setPosgeocode("00254000000000404");
+                    classTransactionData.setTid(config.getTid());
+                    classTransactionData.setPosEntryMode("051");
+                    Log.i(TAG,"amount authorized - "+ emvModel.getAmountAuthorized());
+                    KxmlRequest purchaseRequest = new KxmlRequest(emvModel, classTransactionData, cardModel);
+                    Log.d(TAG, "Payload \n"+ purchaseRequest.generatePayload());
+                    processNetworkRequest(purchaseRequest, emvModel);
+                }
+
+
 
                 if (list.contains("95")) {
                     Logger.bit(list.getTLV("95").getBytesValue(), EMV_TAG95_MAP);
                 }
 
-                processNetworkRequest(pinchangeRequest, emvModel);
+                classEmvCallBacks.onLoading("Online Processing,,");
 
-//                if (shouldPrintReceipt(code)) {
-//                    try {
-//                        mCountDownLatch.await();
-//                    } catch (InterruptedException e) {
-//                        Thread.currentThread().interrupt();
-//                        throw new RuntimeException("Transaction interrupted", e);
-//                    }
-//
-//                    if (!isCompactDevice()) {
-//                        printReceipt(null);
-//                    }
-//                }
+
+
+
             }
 
             Logger.d("Result: [" + Integer.toHexString(code) + "] " + ErrCode.toString(code));
@@ -1026,6 +1076,56 @@ public class FeitianEmvService implements IEmvProcessor {
 
     }
 
+    private String preparePurchasePayload(EmvModel emvData) {
+        try {
+            KxmlRequest purchaseRequest = new KxmlRequest(emvData, classTransactionData, cardModel);
+            return purchaseRequest.Payload();
+        } catch (Exception e) {
+            Log.e(TAG, "Error preparing purchase payload", e);
+            Logger.i("Payment preparation failed");
+            return null;
+        }
+    }
+
+    private void processNetworkRequest(KxmlRequest purchaseRequest, EmvModel emvModel) {
+        ExecutorService networkExecutor = NetworkExecutor.getExecutor();
+
+        networkExecutor.execute(() -> {
+            try {
+                Activity activity = getActivity();
+                if (activity == null) return;
+
+                ConfigManager.refreshConfig(context);
+                TerminalConfigModel config = ConfigManager.getConfig(context);
+
+                String ip = config.getTransip();
+                String port = config.getTransport();
+
+                if (ip == null || ip.isEmpty() || port == null || port.isEmpty()) {
+                    throw new IllegalArgumentException("Invalid terminal configuration");
+                }
+
+                String baseUrl = "https://" + ip + ":" + port + "/";
+
+                NetworkService.initialize(activity, baseUrl);
+                NetworkService networkService = NetworkService.getInstance();
+
+                String response = networkService.postPayLoadSync(purchaseRequest.generatePayload());
+
+
+
+                mainHandler.post(() -> handleNetworkResponse(response, emvModel));
+
+            } catch (Exception e) {
+                Log.e(TAG, "Network error: " + e.getMessage());
+                mainHandler.post(() -> {
+                    classEmvCallBacks.onStopLoading();
+                    classEmvCallBacks.onError("Network error: " + e.getMessage());
+                });
+            }
+        });
+    }
+
     private void processNetworkRequest(KsmgRequest pinchangeRequest, EmvModel emvModel) {
         ExecutorService networkExecutor = NetworkExecutor.getExecutor();
 
@@ -1034,13 +1134,23 @@ public class FeitianEmvService implements IEmvProcessor {
                 Activity activity = getActivity();
                 if (activity == null) return;
 
-                String baseUrl = "https://" + TerminalConfig.loadTerminalDataFromJson(activity, "__transip") + ":"
-                        + TerminalConfig.loadTerminalDataFromJson(activity, "__transport") + "/";
+                ConfigManager.refreshConfig(context);
+                TerminalConfigModel config = ConfigManager.getConfig(context);
+
+                String ip = config.getTransip();
+                String port = config.getTransport();
+
+                if (ip == null || ip.isEmpty() || port == null || port.isEmpty()) {
+                    throw new IllegalArgumentException("Invalid terminal configuration");
+                }
+
+                String baseUrl = "https://" + ip + ":" + port + "/";
 
                 NetworkService.initialize(activity, baseUrl);
                 NetworkService networkService = NetworkService.getInstance();
 
                 String response = networkService.postPayLoadSync(pinchangeRequest.generatePayload());
+
 
 
                 mainHandler.post(() -> handleNetworkResponse(response, emvModel));
@@ -1059,10 +1169,26 @@ public class FeitianEmvService implements IEmvProcessor {
         try {
             classEmvCallBacks.onStopLoading();
 
-            String respMessage = XMLUtils.getTransactionResult(response);   //isErrorResponse(response);
+            String respMessage = XMLUtils.getTransactionResult(response);//isErrorResponse(response);
+            Log.i(TAG, "Response: ---- " + respMessage);
+            if(respMessage ==null){
+                respMessage = XMLUtils.getTransactionResult(response,null);
+            }
+            Log.i(TAG, "Response: ---- " + respMessage);
+            Logger.i("Response:----- " + respMessage);
 
+            if(respMessage.equals("Transaction Approved")){
+                Document document = parseXmlResponse(response);
+                configureApprovedTransaction(document);
+                showPrinterPreviewDialog(respMessage, emvModel);
+            }
+            else {
+                Logger.i("Response:----->> " + respMessage);
 
-            showPrinterPreviewDialog(respMessage, emvModel);
+                classEmvCallBacks.onError(respMessage +"\n Please remove card.");
+
+            }
+
 
         } catch (Exception e) {
             Log.e(TAG, "Error handling network response: " + e.getMessage());
@@ -1103,13 +1229,16 @@ public class FeitianEmvService implements IEmvProcessor {
         Activity activity = getActivity();
         Receipt receipt = new Receipt();
 
+        ConfigManager.refreshConfig(context);
+        TerminalConfigModel config = ConfigManager.getConfig(context);
 
-        receipt.setBank(TerminalConfig.loadTerminalDataFromJson(getActivity(), "__bank"));
-        receipt.setMerchant(TerminalConfig.loadTerminalDataFromJson(getActivity(), "__merchantloc"));
-        receipt.setTerminalId(TerminalConfig.loadTerminalDataFromJson(getActivity(), "__tid"));
+
+        receipt.setBank(config.getBank());
+        receipt.setMerchant(config.getMerchantloc());
+        receipt.setTerminalId(config.getTid());
         receipt.setTransactionType(classTransactionData.getTransactionType());
         if (classTransactionData.getPaymentApp().equals("selectpin")){
-            receipt.setAmount("0.00");
+            receipt.setAmount("");
         }else {
             receipt.setAmount(classTransactionData.getAmount());
         }
@@ -1232,7 +1361,9 @@ public class FeitianEmvService implements IEmvProcessor {
         printer.printStr("Terminal ID: " + tlvs.getTerminalId() + "\n");
         printer.printStr("------------------------\n");
         printer.printStr("Card Number: " + tlvs.getCardNumber() + "\n");
-        printer.printStr("Amount: " + tlvs.getAmount() + " " + tlvs.getCurrency() + "\n");
+        if(!tlvs.getAmount().isEmpty()){
+            printer.printStr("Amount: " + tlvs.getAmount() + " " + tlvs.getCurrency() + "\n");
+        }
         printer.printStr("------------------------\n");
         printer.printStr("Entry Mode: " + tlvs.getEntryMode() + "\n");
         printer.printStr("AID: " + tlvs.getAid() + "\n");
@@ -1378,11 +1509,13 @@ public class FeitianEmvService implements IEmvProcessor {
 
         @Override
         public void onPinEntry(int cvm) {
+            Log.i(TAG, "onPinEntry: " + cvm);
             Logger.d("onPinEntry: " + cvm);
             if ((cvm & (Emv.EMV_CVMFLAG_PLOFFLINE_PIN_SIGN | Emv.EMV_CVMFLAG_OLPIN_SIGN | Emv.EMV_CVMFLAG_ENOFFLINE_PIN_SIGN)) == 0) {
                 iemv.respondEvent(null);
                 prePINPhase = false;
             } else {
+                Logger.i("Amount _"+ amount.getmAmount());
                 doInputPin(cvm, transRequest.getmTransType(), amount.getmAmount());
             }
         }
@@ -1403,7 +1536,8 @@ public class FeitianEmvService implements IEmvProcessor {
             iemv.getTlvList("9C9A9F215A579F025F2A9F34959F339F409F669F1E");
             Logger.i("Simulated online interaction");
 
-            iemv.setIssuerOnlineResponseData(0, null, "00", null, null, null);
+            // Issuer script processing
+           // iemv.setIssuerOnlineResponseData(0, null, "00", null, null, null);
             iemv.respondEvent(null);
 
         }
@@ -1592,7 +1726,7 @@ public class FeitianEmvService implements IEmvProcessor {
     /**
      * Feitian-specific PIN Pad Dialog
      */
-    public static class FeitianPinPadDialog extends Dialog {
+    public class FeitianPinPadDialog extends Dialog {
         private FeitianPinPadView pinPadView;
         private Context context;
         private boolean isPinCompleted = false;
@@ -1601,8 +1735,9 @@ public class FeitianEmvService implements IEmvProcessor {
                                    FeitianPinPadView.OnPayClickListener listener) {
             super(context, R.style.FullScreenDialog);
             this.context = context;
+            //classEmvCallBacks
 
-            pinPadView = new FeitianPinPadView(context, emv, keyManager, pan);
+            pinPadView = new FeitianPinPadView(context, emv, keyManager, pan,classEmvCallBacks);
             // Enable debugging to see actual PIN values
             pinPadView.setEnableDebugLogging(true);
             pinPadView.setPayClickListener(new FeitianPinPadView.OnPayClickListener() {
@@ -1706,4 +1841,80 @@ public class FeitianEmvService implements IEmvProcessor {
             return super.onKeyDown(keyCode, event);
         }
     }
+
+    // Issuer script processing
+    private String configureApprovedTransaction( Document document) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            String script = getValue(document, "script");
+            String st2 = getValue(document, "st2");
+            String iad = getValue(document, "iad");
+            String rc = getValue(document, "rc");
+            String cardAuthRc = getValue(document, "cardauthrc");
+
+            String st1 = buildScriptData("71", script);
+            st2 = buildScriptData("72", st2);
+
+            sb.append(EMVScriptProcessor.buildScriptData("89", PaddingUtils.padCardAuthRc(cardAuthRc)));
+            sb.append(EMVScriptProcessor.buildScriptData("8A", rc));
+            sb.append(EMVScriptProcessor.buildScriptData("91", iad));
+            sb.append(EMVScriptProcessor.buildScriptData("71", st1));
+            sb.append(EMVScriptProcessor.buildScriptData("72", st2));
+            Log.d(TAG,"TLV: "+sb);
+
+            //iemv.setIssuerOnlineResponseData(0, null, "00", null, null, null);
+            iemv.setIssuerOnlineResponseData(0,null,rc,
+                    iad,null,st2);
+            iemv.respondEvent(null);
+
+            Log.d(TAG, "Approved transaction configured successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error configuring approved transaction", e);
+            return null;
+        }
+        return sb.toString();
+
+    }
+
+    private static String getValue(Document doc, String tagName) {
+        try {
+            NodeList nodeList = doc.getElementsByTagName(tagName);
+            if (nodeList.getLength() > 0) {
+                Node node = nodeList.item(0);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    return node.getTextContent().trim();
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting value for tag: " + tagName, e);
+        }
+        return null;
+    }
+
+    private String buildScriptData(String prefix, String data) {
+        if (data == null || data.isEmpty()) {
+            return "";
+        }
+        String length = padStart(Integer.toHexString(data.length() / 2), 2, '0');
+        return prefix + length + data;
+    }
+
+    private static String padStart(String input, int minLength, char padChar) {
+        if (input == null) {
+            input = "";
+        }
+        StringBuilder sb = new StringBuilder(input);
+        while (sb.length() < minLength) {
+            sb.insert(0, padChar);
+        }
+        return sb.toString();
+    }
+
+    private Document parseXmlResponse(String xml) throws Exception {
+        return DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+    }
+
+
 }

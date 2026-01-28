@@ -1,16 +1,18 @@
 package com.isw.payapp.paymentsRequests;
 
-
+import com.isw.payapp.helpers.ConfigManager;
+import com.isw.payapp.model.TerminalConfigModel;
 import com.isw.payapp.terminal.config.TerminalConfig;
 import com.isw.payapp.model.CardModel;
 import com.isw.payapp.model.EmvModel;
 import com.isw.payapp.model.TransactionData;
 import com.isw.payapp.utils.CommonUtil;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
+import org.xmlpull.v1.XmlSerializer;
 
+import android.util.Xml;
+
+import java.io.IOException;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,7 +22,6 @@ import java.util.concurrent.Future;
 
 public class KxmlRequest {
     private static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private static final String XML_VERSION = "1.0";
     private static final String ENCODING = "UTF-8";
 
     private final EmvModel emvModel;
@@ -28,7 +29,6 @@ public class KxmlRequest {
     private final CardModel cardModel;
     private final String timeStamp;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private TerminalConfig terminalConfig;
 
     public KxmlRequest(EmvModel emvModel, TransactionData payData, CardModel cardModel) {
         this.emvModel = emvModel;
@@ -46,129 +46,169 @@ public class KxmlRequest {
         }
     }
 
-    private String generatePayload() throws XMLStreamException {
+    public String generatePayload() throws IOException {
         StringWriter stringWriter = new StringWriter();
-        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
-        XMLStreamWriter xmlWriter = xmlOutputFactory.createXMLStreamWriter(stringWriter);
+        XmlSerializer serializer = Xml.newSerializer();
 
-        try {
-            writeXmlDocument(xmlWriter);
-            return stringWriter.toString()
-                    .replace("<?xml version='" + XML_VERSION + "' encoding='" + ENCODING + "'?>", "");
-        } finally {
-            xmlWriter.close();
+        serializer.setOutput(stringWriter);
+        serializer.startDocument(ENCODING, true);
+
+        writeXmlDocument(serializer);
+
+        serializer.endDocument();
+        return stringWriter.toString();
+    }
+
+    private void writeXmlDocument(XmlSerializer serializer) throws IOException {
+        serializer.startTag(null, payData.getPaymentApp());
+        if(payData.getPaymentApp().equals("purchaseRequest")){
+            serializer.startTag(null,"app");
+            serializer.text("PurchaseRequest");
+            serializer.endTag(null,"app");
         }
+        else {
+
+            serializer.startTag(null,"app");
+            serializer.text("ReversalRequestWithoutOriginalDate");
+            serializer.endTag(null,"app");
+        }
+
+        writeTerminalInformation(serializer);
+        writeCardData(serializer);
+        writeTransactionDetails(serializer);
+        writePinData(serializer);
+
+        serializer.endTag(null, payData.getPaymentApp());
     }
 
-    private void writeXmlDocument(XMLStreamWriter xmlWriter) throws XMLStreamException {
-        xmlWriter.writeStartDocument(XML_VERSION, ENCODING);
-        xmlWriter.writeStartElement(payData.getPaymentApp());
+    private void writeTerminalInformation(XmlSerializer serializer) throws IOException {
+        serializer.startTag(null, "terminalInformation");
 
-        writeTerminalInformation(xmlWriter);
-        writeCardData(xmlWriter);
-        writeTransactionDetails(xmlWriter);
-        writePinData(xmlWriter);
+        writeElement(serializer, "batteryInformation", "100");
+        writeElement(serializer, "cellStationId", "");
+        writeElement(serializer, "currencyCode", "404");
+        writeElement(serializer, "languageInfo", "EN");
+        writeElement(serializer, "merchantId", payData.getMid());
+        writeElement(serializer, "merchantLocation", payData.getMloc());
+        writeElement(serializer, "posConditionCode", "00");
+        writeElement(serializer, "posDataCode", payData.getPosdatacode());
+        writeElement(serializer, "merchantType", "4722");
+        writeElement(serializer, "posEntryMode", payData.getPosEntryMode());
+        writeElement(serializer, "posGeoCode", payData.getPosgeocode());
+        writeElement(serializer, "printerStatus", "1");
+        writeElement(serializer, "terminalId", payData.getTid());
+        writeElement(serializer, "terminalType", "TELPO");
+        writeElement(serializer, "transmissionDate", timeStamp.replace(" ", "T"));
+        writeElement(serializer, "uniqueId", "5F095339");
 
-        xmlWriter.writeEndElement(); // </purchaseRequest>
-        xmlWriter.writeEndDocument();
+        serializer.endTag(null, "terminalInformation");
     }
 
-    private void writeTerminalInformation(XMLStreamWriter xmlWriter) throws XMLStreamException {
-        xmlWriter.writeStartElement("terminalInformation");
-        writeElement(xmlWriter, "batteryInformation", "100");
-        writeElement(xmlWriter, "cellStationId", "");
-        writeElement(xmlWriter, "currencyCode", "404");
-        writeElement(xmlWriter, "languageInfo", "EN");
-        writeElement(xmlWriter, "merchantId", payData.getMid());
-        writeElement(xmlWriter, "merchantLocation", payData.getMloc());
-        writeElement(xmlWriter, "posConditionCode", "00");
-        writeElement(xmlWriter, "posDataCode", payData.getPosdatacode());
-        writeElement(xmlWriter, "merchantType", "4722");
-        writeElement(xmlWriter, "posEntryMode", payData.getPosEntryMode());
-        writeElement(xmlWriter, "posGeoCode", payData.getPosgeocode());
-        writeElement(xmlWriter, "printerStatus", "1");
-        writeElement(xmlWriter, "terminalId", payData.getTid());
-        writeElement(xmlWriter, "terminalType", "TELPO");
-        writeElement(xmlWriter, "transmissionDate", timeStamp.replace(" ", "T"));
-        writeElement(xmlWriter, "uniqueId", "5F095339");
-        xmlWriter.writeEndElement(); // </terminalInformation>
+    private void writeCardData(XmlSerializer serializer) throws IOException {
+        serializer.startTag(null, "cardData");
+
+        writeElement(serializer, "cardSequenceNumber", emvModel.getCarSeqNo());
+        writeEmvData(serializer);
+        writeTrack2Data(serializer);
+        writeElement(serializer, "wasFallback", "false");
+
+        serializer.endTag(null, "cardData");
     }
 
-    private void writeCardData(XMLStreamWriter xmlWriter) throws XMLStreamException {
-        xmlWriter.writeStartElement("cardData");
-        writeElement(xmlWriter, "cardSequenceNumber", emvModel.getCarSeqNo());
+    private void writeEmvData(XmlSerializer serializer) throws IOException {
+        serializer.startTag(null, "emvData");
 
-        writeEmvData(xmlWriter);
-        writeTrack2Data(xmlWriter);
+        writeElement(serializer, "AmountAuthorized", emvModel.getAmountAuthorized());
+        writeElement(serializer, "AmountOther", emvModel.getAmountOther());
+        writeElement(serializer, "ApplicationInterchangeProfile", emvModel.getApplicationInterchangeProfile());
+        writeElement(serializer, "atc", emvModel.getAtc());
+        writeElement(serializer, "Cryptogram", emvModel.getCryptogram());
+        writeElement(serializer, "CryptogramInformationData", emvModel.getCryptogramInformationData());
+        writeElement(serializer, "CvmResults", emvModel.getCvmResults());
+        writeElement(serializer, "iad", emvModel.getIssuerApplicationData());
+        writeElement(serializer, "TransactionCurrencyCode",
+                safeSubstring(emvModel.getTransactionCurrencyCode(), 1));
+        writeElement(serializer, "TerminalVerificationResult", emvModel.getTerminalVerificationResult());
+        writeElement(serializer, "TerminalCountryCode",
+                safeSubstring(emvModel.getTerminalCountryCode(), 1));
+        writeElement(serializer, "TerminalType", emvModel.getTerminalType());
+        writeElement(serializer, "TerminalCapabilities", emvModel.getTerminalCapabilities());
+        writeElement(serializer, "TransactionDate", emvModel.getTransactionDate());
+        writeElement(serializer, "TransactionType", emvModel.getTransactionType());
+        writeElement(serializer, "UnpredictableNumber", emvModel.getUnpredictableNumber());
+        writeElement(serializer, "DedicatedFileName", emvModel.getDedicatedFileName());
 
-        writeElement(xmlWriter, "wasFallback", "");
-        xmlWriter.writeEndElement(); // </cardData>
+        serializer.endTag(null, "emvData");
     }
 
-    private void writeEmvData(XMLStreamWriter xmlWriter) throws XMLStreamException {
-        xmlWriter.writeStartElement("emvData");
-        writeElement(xmlWriter, "AmountAuthorized", emvModel.getAmountAuthorized());
-        writeElement(xmlWriter, "AmountOther", emvModel.getAmountOther());
-        writeElement(xmlWriter, "ApplicationInterchangeProfile", emvModel.getApplicationInterchangeProfile());
-        writeElement(xmlWriter, "atc", emvModel.getAtc());
-        writeElement(xmlWriter, "Cryptogram", emvModel.getCryptogram());
-        writeElement(xmlWriter, "CryptogramInformationData", emvModel.getCryptogramInformationData());
-        writeElement(xmlWriter, "CvmResults", emvModel.getCvmResults());
-        writeElement(xmlWriter, "iad", emvModel.getIssuerApplicationData());
-        writeElement(xmlWriter, "TransactionCurrencyCode", emvModel.getTransactionCurrencyCode().substring(1));
-        writeElement(xmlWriter, "TerminalVerificationResult", emvModel.getTerminalVerificationResult());
-        writeElement(xmlWriter, "TerminalCountryCode", emvModel.getTerminalCountryCode().substring(1));
-        writeElement(xmlWriter, "TerminalType", emvModel.getTerminalType());
-        writeElement(xmlWriter, "TerminalCapabilities", emvModel.getTerminalCapabilities());
-        writeElement(xmlWriter, "TransactionDate", emvModel.getTransactionDate());
-        writeElement(xmlWriter, "TransactionType", emvModel.getTransactionType());
-        writeElement(xmlWriter, "UnpredictableNumber", emvModel.getUnpredictableNumber());
-        writeElement(xmlWriter, "DedicatedFileName", emvModel.getDedicatedFileName());
-        xmlWriter.writeEndElement(); // </emvData>
+    private void writeTrack2Data(XmlSerializer serializer) throws IOException {
+        serializer.startTag(null, "track2");
+
+        writeElement(serializer, "pan", cardModel.getPan());
+        writeElement(serializer, "expiryMonth", emvModel.getExMonth());
+        writeElement(serializer, "expiryYear", emvModel.getExpYear());
+        writeElement(serializer, "track2", emvModel.getTrack2data());
+        writeElement(serializer, "serviceRestrictionCode", emvModel.getServiceCode());
+
+        serializer.endTag(null, "track2");
     }
 
-    private void writeTrack2Data(XMLStreamWriter xmlWriter) throws XMLStreamException {
-        xmlWriter.writeStartElement("track2");
-        writeElement(xmlWriter, "pan", emvModel.getPan());
-        writeElement(xmlWriter, "expiryMonth", emvModel.getExMonth());
-        writeElement(xmlWriter, "expiryYear", emvModel.getExpYear());
-        writeElement(xmlWriter, "track2", emvModel.getTrack2data());
-        writeElement(xmlWriter, "serviceRestrictionCode", emvModel.getServiceCode());
-        xmlWriter.writeEndElement(); // </track2>
+    private void writeTransactionDetails(XmlSerializer serializer) throws IOException {
+        int amount = 0;
+        try {
+            amount = (int) (Double.parseDouble(payData.getAmount()) * 100);
+        } catch (NumberFormatException e) {
+            amount = 0;
+        }
+
+        writeElement(serializer, "fromAccount", "default");
+        writeElement(serializer, "stan", new CommonUtil().goRundom(6));
+        writeElement(serializer, "minorAmount", String.valueOf(amount));
+        writeElement(serializer, "track1Data", emvModel.getTrack1data());
+        writeElement(serializer, "rate", "");
+        writeElement(serializer, "settlementFee", "");
+        writeElement(serializer, "settlementCurrencyCode", "");
+        writeElement(serializer, "amountSettlement", "");
+        writeElement(serializer, "surcharge", "");
+        writeElement(serializer, "tmsConfiguredTerminalLocation", "");
+//        writeElement(serializer, "acquiringInstitutionId", "420400");
+//        writeElement(serializer, "terminalOwner", "420400");
+        if(payData.getAuthCode() != null){
+            writeElement(serializer, "originalTransmissionDateTime", timeStamp.replace(" ", "T"));
+            writeElement(serializer, "notDisposable", "false");
+            writeElement(serializer, "originalAuthId", payData.getAuthCode());
+            writeElement(serializer, "authId", payData.getAuthCode());
+            writeElement(serializer, "reversalType", "Reservation");
+        }
+        if(payData.getTransCnt() !=null)
+            writeElement(serializer, "originalStan", payData.getTransCnt());
+
     }
 
-    private void writeTransactionDetails(XMLStreamWriter xmlWriter) throws XMLStreamException {
-        int amount = (int) (Double.parseDouble(payData.getAmount()) * 100);
+    private void writePinData(XmlSerializer serializer) throws IOException {
 
-        writeElement(xmlWriter, "fromAccount", "default");
-        writeElement(xmlWriter, "stan", new CommonUtil().goRundom(6));
-        writeElement(xmlWriter, "minorAmount", String.valueOf(amount));
-        writeElement(xmlWriter, "track1Data", emvModel.getTrack1data());
-        writeElement(xmlWriter, "rate", "");
-        writeElement(xmlWriter, "settlementFee", "");
-        writeElement(xmlWriter, "settlementCurrencyCode", "");
-        writeElement(xmlWriter, "amountSettlement", "");
-        writeElement(xmlWriter, "surcharge", "");
-        writeElement(xmlWriter, "tmsConfiguredTerminalLocation", "");
-        writeElement(xmlWriter, "acquiringInstitutionId", "420400");
-        writeElement(xmlWriter, "terminalOwner", "420400");
+        serializer.startTag(null, "pinData");
+
+        writeElement(serializer, "ksn", cardModel.getKsn().substring(4));
+        writeElement(serializer, "ksnd", cardModel.getKsnd());
+        writeElement(serializer, "pinBlock", cardModel.getPinBlock());
+        writeElement(serializer, "pinType", cardModel.getPinType());
+
+        serializer.endTag(null, "pinData");
+        writeElement(serializer, "keyLabel", cardModel.getKSNTag());
     }
 
-    private void writePinData(XMLStreamWriter xmlWriter) throws XMLStreamException {
-        xmlWriter.writeStartElement("pinData");
-        writeElement(xmlWriter, "ksn", cardModel.getKsn());
-        writeElement(xmlWriter, "ksnd", cardModel.getKsnd());
-        writeElement(xmlWriter, "pinBlock", cardModel.getPinBlock());
-        writeElement(xmlWriter, "pinType", cardModel.getPinType());
-        xmlWriter.writeEndElement(); // </pinData>
-
-        writeElement(xmlWriter, "keyLabel", cardModel.getKSNTag());
-    }
-
-    private void writeElement(XMLStreamWriter xmlWriter, String name, String value) throws XMLStreamException {
+    private void writeElement(XmlSerializer serializer, String name, String value) throws IOException {
         if (value == null) value = "";
-        xmlWriter.writeStartElement(name);
-        xmlWriter.writeCharacters(value);
-        xmlWriter.writeEndElement();
+        serializer.startTag(null, name);
+        serializer.text(value);
+        serializer.endTag(null, name);
+    }
+
+    private String safeSubstring(String value, int beginIndex) {
+        if (value == null || value.length() <= beginIndex) {
+            return "";
+        }
+        return value.substring(beginIndex);
     }
 }

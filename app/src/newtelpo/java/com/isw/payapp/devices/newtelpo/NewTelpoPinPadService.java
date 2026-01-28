@@ -54,23 +54,26 @@ public class NewTelpoPinPadService implements IPinPadProcessor {
 
         byte[] ipekBytes = DUKPK2009_CBC.GenerateIPEK(
                 ThreeDES.hexStringToByteArray(iKsn),
-                ThreeDES.hexStringToByteArray(key)
+                ThreeDES.hexStringToByteArray(bdk)
         );
         String ipek = ThreeDES.byteArrayToHexString(ipekBytes).toUpperCase();
         Log.i("IPEK: " , ipek+"===="+iKsn);
 
         iRet = pinpadService.Pinpad_Check_Key(PinpadEnum.ENUM_KEY_TYPE.KEY_TYPE_DEA_DUKPT_KEY,
-                0);
+                1);
         Log.d(TAG, "Pinpad_Check_Key: " + iRet);
 
         if(iRet !=0){
-            iRet = pinpadService.Pinpad_Write_DEA_DUKPT_IPEK(0,ipekBytes,ksn_bytes);
+            iRet = pinpadService.Pinpad_Write_DEA_DUKPT_IPEK(1,ipekBytes,ksn_bytes);
             Log.d(TAG, "Pinpad_Write_DEA_DUKPT_IPEK: " + iRet);
             pinpadService.Pinpad_Close();
+            if (iRet!=0)
+                return 1;
+            return 0;
         }
 
        // int ret = pinpadService.Pinpad_Write_DEA_DUKPT_BDK();
-        return 0;
+        return 1;
     }
 
     @Override

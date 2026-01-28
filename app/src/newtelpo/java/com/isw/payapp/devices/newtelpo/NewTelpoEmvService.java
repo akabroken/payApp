@@ -103,6 +103,7 @@ public class NewTelpoEmvService implements IEmvProcessor {
     @Override
     public void startEmvService() throws Exception {
 
+        Log.i(TAG, "Teller names:"+ transData.getTellerdetail());
         emvHandler = new EMVHandler(context,transData, emvService, pinpadService, classEmvCallBacks);
         emvHandler.startCardDetection();
 

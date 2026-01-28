@@ -546,7 +546,7 @@
 		<TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
 		<TerminalActionCodeOnline>0000000000</TerminalActionCodeOnline>
 		<TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
-		<TerminalCapabilities>E0F0C8</TerminalCapabilities>
+		<TerminalCapabilities>E040C8</TerminalCapabilities>
 		<AdditionalTerminalCapabilities>0000000000</AdditionalTerminalCapabilities>
 		<AcquirerID>012345678910</AcquirerID>
 		<MerchantCategoryCode>1234</MerchantCategoryCode>

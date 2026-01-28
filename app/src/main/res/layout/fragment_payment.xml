@@ -1,110 +1,235 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@android:color/white"
     tools:context=".fragments.Purchase">
 
+    <!-- Top spacing for status bar -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="?attr/colorPrimary" />
 
+    <!-- Header Section -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:background="?attr/colorPrimary">
 
+        <!-- Back Button -->
+<!--        <ImageView-->
+<!--            android:id="@+id/imageViewBack"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:padding="12dp"-->
+<!--            android:contentDescription="@string/back_button"-->
+<!--            android:src="@drawable/icon_bac"-->
+<!--            app:tint="@android:color/white" />-->
 
-<!--    <TextView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="@string/menu_sale"-->
-<!--        android:textSize="30dp"-->
-<!--        android:background="#15479c"-->
-<!--        android:textColor="#a1a1a1"-->
-<!--        android:textStyle="bold"-->
-<!--        android:gravity="center" />-->
+<!--        &lt;!&ndash; Title in center &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:text="@string/purchase_goods"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:textSize="20sp"-->
+<!--            android:textStyle="bold" />-->
 
+<!--        &lt;!&ndash; Cancel Button &ndash;&gt;-->
+<!--        <ImageView-->
+<!--            android:id="@+id/imageViewCancel"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:padding="12dp"-->
+<!--            android:contentDescription="@string/cancel_button"-->
+<!--            android:src="@drawable/icon_can"-->
+<!--            app:tint="@android:color/white" />-->
+
+        <!-- Hidden EMV Views (for programmatic use) -->
+        <EditText
+            android:id="@+id/purchaseEditText"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <!-- Logo Section (below header) -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="50dp"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/imageViewBack"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_weight="1"
-
-            android:src="@drawable/icon_bac" />
-
-
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="24dp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:textColor ="#1F2937"
-            android:text="Purchase Goods" />
-
-        <ImageView
-            android:id="@+id/imageViewCancel"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_weight="1"
-            android:src="@drawable/icon_can" />
-
-
-
-    </LinearLayout>
-
-
-    <LinearLayout
-
-        android:id="@+id/TableLayout03"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="center_horizontal">
+        android:gravity="center"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp">
 
-        <TextView
-            android:layout_marginStart="35dp"
-            android:layout_marginEnd="35dp"
+        <include
+            layout="@layout/logo_head"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sale_inputAmount"
-            android:textSize="20sp"
-            android:layout_marginTop="100dp" />
-
-        <EditText
-            android:id="@+id/inputAmt"
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical|end"
-            android:textSize="20sp"
-            android:inputType="number"
-            android:maxLength="13"
-            android:textColor="#000000"
-            android:text="0.00"
-            style="?android:listSeparatorTextViewStyle"/>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_saleStart"
+    <!-- Content Section -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_gravity="center_horizontal"
-        android:textAllCaps="false"
-        android:text="@string/sale_click_useCard"
-        android:textSize="20dp"
-        android:background="@drawable/button_number_violet_shape"
-        android:layout_marginTop="50dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="16dp">
 
-    <include layout="@layout/titlebar" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+            <!-- Hidden transaction views -->
+            <View
+                android:id="@+id/scvPayText"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvReceipt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnSendReceipt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/send_receipt"
+                android:visibility="gone" />
+
+            <!-- Amount Input Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:text="@string/enter_amount"
+                android:textColor="#4B5563"
+                android:textSize="18sp"
+                android:textStyle="normal" />
+
+            <!-- Amount Input Field -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#E5E7EB"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/currency_symbol"
+                        android:textColor="#000000"
+                        android:textSize="32sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/inputAmt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0.00"
+                        android:maxLines="1"
+                        android:imeOptions="actionDone"
+                        android:inputType="numberDecimal"
+                        android:textColor="#000000"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        android:background="@android:color/transparent"
+                        android:gravity="end|center_vertical"
+                        android:maxLength="13"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Instruction Text -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="@string/enter_amountt"
+                android:textColor="#6B7280"
+                android:textSize="14sp"
+                android:gravity="center" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Action Button Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="24dp"
+        android:background="@android:color/white"
+        android:elevation="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_saleStart"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/tap_card_to_pay"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:enabled="false"
+            app:cornerRadius="28dp"
+            app:icon="@drawable/ic_credit_card"
+            app:iconPadding="8dp" />
+
+        <!-- Progress indicator for transaction -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <!-- Footer - Only show if needed, otherwise remove or make optional -->
+    <!--
+    <include
+        layout="@layout/titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    -->
 
 </LinearLayout>

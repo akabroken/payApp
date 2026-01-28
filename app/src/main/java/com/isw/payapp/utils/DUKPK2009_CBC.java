@@ -463,9 +463,9 @@ public class DUKPK2009_CBC {
             String twelveDigits;
 
             if (cleanPan.length() == 19) {
-                twelveDigits = cleanPan.substring(7, 19);
+                twelveDigits = cleanPan.substring(6, 18);
             } else if (cleanPan.length() == 16) {
-                twelveDigits = cleanPan.substring(4, 16);
+                twelveDigits = cleanPan.substring(3, 15);
             } else {
                 twelveDigits = cleanPan.substring(cleanPan.length() - 13, cleanPan.length() - 1);
             }

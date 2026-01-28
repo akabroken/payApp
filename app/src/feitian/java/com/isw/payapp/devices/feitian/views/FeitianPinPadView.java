@@ -20,10 +20,13 @@ import com.ftpos.library.smartpos.pin.PinSeting;
 import com.ftpos.library.smartpos.keymanager.KeyManager;
 import com.ftpos.library.smartpos.util.BytesUtils;
 import com.isw.payapp.R;
+import com.isw.payapp.devices.callbacks.EmvServiceCallback;
 
 public class FeitianPinPadView extends LinearLayout {
 
     private static final String TAG = "FeitianPinPadView";
+
+    private EmvServiceCallback classEmvCallBacks;
     private Button[] mTvDigits;
     private Button mBtnCancel;
     private View mLlDelete;
@@ -55,11 +58,12 @@ public class FeitianPinPadView extends LinearLayout {
         void onDismiss();
     }
 
-    public FeitianPinPadView(Context context, Emv emv, KeyManager keyManager, String pan) {
+    public FeitianPinPadView(Context context, Emv emv, KeyManager keyManager, String pan, EmvServiceCallback classEmvCallBacks) {
         super(context);
         this.emv = emv;
         this.keyManager = keyManager;
         this.pan = pan;
+        this.classEmvCallBacks = classEmvCallBacks;
 
         initView((Activity) context);
     }
@@ -70,6 +74,7 @@ public class FeitianPinPadView extends LinearLayout {
     }
 
     private void initView(Activity context) {
+        classEmvCallBacks.onLoading("Initializing PIN pad");
         LayoutInflater.from(context).inflate(R.layout.layout_pin_fetian, this, true);
 
         // Initialize buttons

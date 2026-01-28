@@ -85,7 +85,7 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
     private static final String LOGIN_URL = "https://smarttrans.interswitch-ke.com:81/";
     private AlertDialog loginDialog;
 
-    private String tellerNames ="";
+    private String tellerNames;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -338,8 +338,10 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
 
             if ("00".equals(responseCode)) {
                 tellerNames = getValue(doc, "names");
+                Log.i(TAG,"getValue(doc, \"names\")"+tellerNames);
 
                 payData.setTellerdetail(getValue(doc, "names"));
+
                 // Store teller session information
 
                 showToast("Login successful!");
@@ -377,11 +379,6 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
 
     public static String generateTerminalUsersRequest(UserModel userModel) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
-        // Security: disable external entities to prevent XXE attacks
-//        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-//        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-//        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.newDocument();
@@ -504,10 +501,6 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
                 return;
             }
 
-//            if (!"TELLER".equals(sessionManager.getKeyRoleType())) {
-//                showUserNotAllowedDialog();
-//                return;
-//            }
 
             if (emvProcessor == null) {
                 handleError(new RuntimeException("EMV processor not initialized"));
@@ -888,6 +881,7 @@ public class PinSelect extends Fragment implements EmvServiceCallback {
         payData.setPosEntryMode("051");
         payData.setCurrency("KES");
         payData.setTransactionType("Pin Select");
+        Log.i(TAG, "tellerNames :"+ tellerNames);
         //payData.setTellerdetail(sessionManager.getKeyFullname());
 
 

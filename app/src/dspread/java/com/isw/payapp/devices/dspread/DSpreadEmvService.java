@@ -350,10 +350,10 @@ public class DSpreadEmvService implements IEmvProcessor {
 
         Log.i(TAG, "Executing transaction");
         classEmvCallBacks.onLoading("Processing transaction");
-
+        String lAmt = Integer.toString((int)(Double.parseDouble(classTransactionData.getAmount())*100));
         try {
             POSManager.getInstance().startTransaction(
-                    classTransactionData.getAmount(),
+                    lAmt,
                     paymentServiceCallback
             );
         } catch (Exception e) {
@@ -878,6 +878,15 @@ public class DSpreadEmvService implements IEmvProcessor {
                     cardModel.setKsn(emvtlvParser.extractTag(tlv, EmvTLVTags.ProprietaryC1));
                     cardModel.setPinBlock("T"+pinBlock);
 
+                    Log.i(TAG, "Raw Variables::\n"
+                            +"Input PIN:: 5628\n"
+                            + "pinBlock::" + pinBlock +"\n"
+                            +"pan::" + cardModel.getPan() +"\n" +
+                            "PEK::" + DUKPK2009_CBC.getClearIpek() +"\n");
+
+                    String cPin = DUKPK2009_CBC.getPINFromPINBlock(pinBlock,cardModel.getPan(),DUKPK2009_CBC.getClearIpek());
+
+                    Log.i(TAG, "OutPut PIN::" + cPin);
                     EmvModel emvModel = new EmvModel();
                     emvModel.setTrack2data(decodedMap.get(EmvTLVTags.Track2EquivalentData));
                     emvModel.setCarSeqNo(decodedMap.get(EmvTLVTags.PANSequenceNumber));
