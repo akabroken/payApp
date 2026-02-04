@@ -39,7 +39,7 @@ public class DeviceFactory {
                     printerClass = Class.forName("com.isw.payapp.devices.dspread.DSpreadPrinterService");
                     break;
                 case "FEITIAN":
-                    printerClass = Class.forName("com.isw.payapp.devices.feitian.FeitianPrinter");
+                    printerClass = Class.forName("com.isw.payapp.devices.feitian.FeitianPrinterService");
                     break;
                 default:
                     throw new UnsupportedOperationException("Device not supported: " + posBrand);

@@ -25,35 +25,35 @@
         android:background="?attr/colorPrimary">
 
         <!-- Back Button -->
-<!--        <ImageView-->
-<!--            android:id="@+id/imageViewBack"-->
-<!--            android:layout_width="48dp"-->
-<!--            android:layout_height="48dp"-->
-<!--            android:padding="12dp"-->
-<!--            android:contentDescription="@string/backk"-->
-<!--            android:src="@drawable/icon_bac"-->
-<!--            app:tint="@android:color/white" />-->
+        <!--        <ImageView-->
+        <!--            android:id="@+id/imageViewBack"-->
+        <!--            android:layout_width="48dp"-->
+        <!--            android:layout_height="48dp"-->
+        <!--            android:padding="12dp"-->
+        <!--            android:contentDescription="@string/backk"-->
+        <!--            android:src="@drawable/icon_bac"-->
+        <!--            app:tint="@android:color/white" />-->
 
-<!--        &lt;!&ndash; Title &ndash;&gt;-->
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_centerInParent="true"-->
-<!--            android:text="@string/transaction_reversal"-->
-<!--            android:textColor="@android:color/white"-->
-<!--            android:textSize="20sp"-->
-<!--            android:textStyle="bold" />-->
+        <!--        &lt;!&ndash; Title &ndash;&gt;-->
+        <!--        <TextView-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_centerInParent="true"-->
+        <!--            android:text="@string/transaction_reversal"-->
+        <!--            android:textColor="@android:color/white"-->
+        <!--            android:textSize="20sp"-->
+        <!--            android:textStyle="bold" />-->
 
-<!--        &lt;!&ndash; Cancel/Close Button &ndash;&gt;-->
-<!--        <ImageView-->
-<!--            android:id="@+id/imageViewCancel"-->
-<!--            android:layout_width="48dp"-->
-<!--            android:layout_height="48dp"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:padding="12dp"-->
-<!--            android:contentDescription="@string/cancell"-->
-<!--            android:src="@drawable/icon_can"-->
-<!--            app:tint="@android:color/white" />-->
+        <!--        &lt;!&ndash; Cancel/Close Button &ndash;&gt;-->
+        <!--        <ImageView-->
+        <!--            android:id="@+id/imageViewCancel"-->
+        <!--            android:layout_width="48dp"-->
+        <!--            android:layout_height="48dp"-->
+        <!--            android:layout_alignParentEnd="true"-->
+        <!--            android:padding="12dp"-->
+        <!--            android:contentDescription="@string/cancell"-->
+        <!--            android:src="@drawable/icon_can"-->
+        <!--            app:tint="@android:color/white" />-->
 
         <EditText
             android:id="@+id/purchaseEditText"

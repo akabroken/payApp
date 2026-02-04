@@ -30,6 +30,7 @@
         <action android:id="@+id/index_to_report" app:destination="@+id/Reports"/>
         <action android:id="@+id/index_to_pinselect" app:destination="@+id/PinSelect"/>
         <action android:id="@+id/index_to_fuelpay" app:destination="@id/FuelPay"/>
+        <action android:id="@+id/index_to_purchase" app:destination="@+id/PaymentFragment"/>
     </fragment>
 
     <fragment android:id="@+id/transactions" android:label="Transaction"
@@ -82,6 +83,7 @@
             android:id="@+id/payment_to_complete"
             app:destination="@id/completeRequestFragment" />
         <action android:id="@+id/payment_to_transaction" app:destination="@id/transactions"/>
+        <action android:id="@+id/payment_to_index" app:destination="@id/indexpage"/>
 
     </fragment>
     <fragment
@@ -158,7 +160,7 @@
         <action android:id="@+id/network_to_settings" app:destination="@id/settings"/>
     </fragment>
 
-    <fragment android:id="@+id/Reports" android:label="Reports" tools:layout="@layout/fragment_reports" android:name="com.isw.payapp.fragments.Reports">
+    <fragment android:id="@+id/Reports" android:label="Reports" tools:layout="@layout/fragment_report" android:name="com.isw.payapp.fragments.ReportFragment">
         <action android:id="@+id/reports_to_index" app:destination="@id/indexpage"/>
     </fragment>
 

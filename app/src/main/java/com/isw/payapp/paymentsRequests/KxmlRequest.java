@@ -189,10 +189,18 @@ public class KxmlRequest {
 
         serializer.startTag(null, "pinData");
 
-        writeElement(serializer, "ksn", cardModel.getKsn().substring(4));
-        writeElement(serializer, "ksnd", cardModel.getKsnd());
-        writeElement(serializer, "pinBlock", cardModel.getPinBlock());
-        writeElement(serializer, "pinType", cardModel.getPinType());
+
+        if( cardModel.getKsn()!=null && cardModel.getPinBlock()!=null){
+            writeElement(serializer, "ksn", cardModel.getKsn().substring(4));
+            writeElement(serializer, "ksnd", cardModel.getKsnd());
+            if (payData.getPaymentApp().equals("reversalRequestWithoutOriginalDate")){
+                writeElement(serializer, "pinBlock", cardModel.getPinBlock().replace("T",""));
+            }else {
+                writeElement(serializer, "pinBlock", cardModel.getPinBlock());
+            }
+           // writeElement(serializer, "pinBlock", cardModel.getPinBlock());
+            writeElement(serializer, "pinType", cardModel.getPinType());
+        }
 
         serializer.endTag(null, "pinData");
         writeElement(serializer, "keyLabel", cardModel.getKSNTag());

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import com.isw.payapp.database.TransactionDatabaseHelper;
 import com.isw.payapp.devices.callbacks.EmvServiceCallback;
 import com.isw.payapp.devices.services.NetworkService;
 import com.isw.payapp.devices.telpo.TelpoEmvService;
@@ -530,6 +531,15 @@ public class IccCardReaderCallBack extends EmvServiceListener {
         }
     }
 
+    private void saveReceiptToDatabase(Receipt receipt) {
+        try {
+            TransactionDatabaseHelper dbHelper = new TransactionDatabaseHelper(context);
+            long savedId = dbHelper.saveTransaction(receipt);
+            Log.d(TAG, "Receipt saved to database with ID: " + savedId);
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving receipt to database", e);
+        }
+    }
     private void showPrinterPreviewDialog(String gatewayResponse, EmvModel emvModel, String message) {
         Activity activity = getActivity();
         if (activity == null || activity.isFinishing()) {
@@ -606,6 +616,7 @@ public class IccCardReaderCallBack extends EmvServiceListener {
         receipt.setCardNumber(pan != null ? maskPan(pan) : "N/A");
         receipt.setTeller(transactionData.getTellerdetail());
 
+        saveReceiptToDatabase(receipt);
         return receipt;
     }
 

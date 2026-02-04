@@ -97,11 +97,121 @@ public class Reversal extends Fragment implements EmvServiceCallback {
         initializeComponents(view);
         setupViews();
         setupListeners();
-        showSoftKeyboardWithDelay();
         initializeReversalComponents();
+
+        checkForIncomingData();
+        showSoftKeyboardWithDelay();
+
+    }
+
+    private void checkForIncomingData() {
+        Bundle args = getArguments();
+        if (args != null) {
+            Log.d(TAG, "Received arguments: " + args.keySet());
+
+            String amount = args.getString("amount");
+            String stan = args.getString("stan");
+            String authId = args.getString("authId");
+            String referenceNumber = args.getString("referenceNumber");
+
+            Log.d(TAG, "Amount from args: " + amount);
+            Log.d(TAG, "STAN from args: " + stan);
+            Log.d(TAG, "Auth ID from args: " + authId);
+            Log.d(TAG, "Reference Number from args: " + referenceNumber);
+
+            // Set values if they exist
+            if (amount != null && inputAmt != null) {
+                Log.d(TAG, "Setting amount to: " + amount);
+                inputAmt.setText(amount);
+                // Trigger text change listener to format the amount
+                if (amount.length() > 0) {
+                    inputAmt.setSelection(amount.length());
+                }
+            } else {
+                Log.d(TAG, "Amount is null or inputAmt is null");
+            }
+
+            if (stan != null && inputStan != null) {
+                Log.d(TAG, "Setting STAN to: " + stan);
+                inputStan.setText(stan);
+            } else {
+                Log.d(TAG, "STAN is null or inputStan is null");
+            }
+
+            if (authId != null && inputAuth != null) {
+                Log.d(TAG, "Setting Auth ID to: " + authId);
+                inputAuth.setText(authId);
+            } else {
+                Log.d(TAG, "Auth ID is null or inputAuth is null");
+            }
+
+            // Update button state
+            updateButtonState();
+
+            // Also update the class variables
+            if (amount != null) Amount = amount;
+            if (stan != null) this.stan = stan;
+            if (authId != null) auth = authId;
+
+        } else {
+            Log.d(TAG, "No arguments received");
+        }
     }
 
     private void initializeComponents(View view) {
+        // Initialize media players
+        if (getActivity() != null) {
+            OKplayer = MediaPlayer.create(getActivity(), R.raw.success1);
+            FAILplayer = MediaPlayer.create(getActivity(), R.raw.fail1);
+            stopPlayer = MediaPlayer.create(getActivity(), R.raw.trans_stop1);
+            rejectPlayer = MediaPlayer.create(getActivity(), R.raw.trans_reject1);
+        }
+
+        // Initialize write pad dialog
+        if (getActivity() != null) {
+            writePadDialog = new WritePadDialog(getActivity(), new DialogListener() {
+                @Override
+                public void refreshActivity(Object object) {
+                    if (object instanceof Bitmap) {
+                        bitmap = (Bitmap) object;
+                        bitmap = ThumbnailUtils.extractThumbnail(bitmap, 360, 256);
+                        waitsign = false;
+                    }
+                }
+            });
+        }
+
+        // Initialize views - USING BINDING
+        if (binding != null) {
+            inputAmt = binding.inputAmt;
+            inputStan = binding.ostan;
+            inputAuth = binding.oauth;
+//            imageViewBack = binding.imageViewBack;
+//            imageViewExit = binding.imageViewCancel;
+            sale = binding.btnSaleStart;
+            progressBar = binding.progressBar;
+        }
+        // Fallback to findViewById if binding fails
+        else {
+            inputAmt = view.findViewById(R.id.inputAmt);
+            inputStan = view.findViewById(R.id.ostan);
+            inputAuth = view.findViewById(R.id.oauth);
+            imageViewBack = view.findViewById(R.id.imageViewBack);
+            imageViewExit = view.findViewById(R.id.imageViewCancel);
+            sale = view.findViewById(R.id.btn_saleStart);
+            progressBar = view.findViewById(R.id.progressBar);
+        }
+
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
+
+        // Debug log to check view initialization
+        Log.d(TAG, "Views initialized - inputAmt: " + inputAmt +
+                ", inputStan: " + inputStan +
+                ", inputAuth: " + inputAuth);
+    }
+    private void initializeComponents(View view, Object o) {
         // Initialize media players
         if (getActivity() != null) {
             OKplayer = MediaPlayer.create(getActivity(), R.raw.success1);
@@ -447,6 +557,7 @@ public class Reversal extends Fragment implements EmvServiceCallback {
         transactionData.setTransCnt(stan);
         transactionData.setPaymentApp(ConstValues.PAY_APP_REVERSAL);
         transactionData.setPaymentReqTag(ConstValues.POST_PAY_REVERSAL);
+        transactionData.setTransactionType("Reversal");
 
         // Update emvProcessor with new transaction data if needed
         try {

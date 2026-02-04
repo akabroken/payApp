@@ -117,7 +117,10 @@ public class PrinterPreviewDialog extends Dialog {
                 emvModel.getDedicatedFileName() : "N/A") + "\n" +
                 "ATC: " + (emvModel.getAtc() != null ? emvModel.getAtc() : "N/A") + "\n" +
                 "TVR: " + (emvModel.getTerminalVerificationResult() != null ?
-                emvModel.getTerminalVerificationResult() : "N/A");
+                emvModel.getTerminalVerificationResult() : "N/A")+"\n"
+                +"RRN: "+(emvModel.getRefereceNumber() != null ? emvModel.getRefereceNumber() : "N/A")+ "\n"
+                +"Stan:"+(emvModel.getStan() != null ? emvModel.getStan() : "N/A") + "\n"
+                +"AuthCode:"+(emvModel.getAuthorizationCode() != null ? emvModel.getAuthorizationCode() : "N/A");
         tvEmvData.setText(emvData);
 
         // Response Message

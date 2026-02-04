@@ -62,4 +62,8 @@ public class EmvModel {
     private String kimonoData;
     private HashMap structuredData;
 
+    private String authorizationCode;
+    private String refereceNumber;
+    private String stan;
+
 }

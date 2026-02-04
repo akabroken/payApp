@@ -13,6 +13,20 @@ import static com.ftpos.library.smartpos.util.EncodeConversionUtil.EncodeConvers
 import static com.isw.payapp.devices.feitian.utils.FEMVTag.EMV_TAG95_MAP;
 import static com.isw.payapp.devices.feitian.utils.FEMVTag.EMV_TAG_MAP;
 
+//NFC
+import com.ftpos.library.smartpos.nfcreader.DesFireAuthenticateMode;
+import com.ftpos.library.smartpos.nfcreader.DesFireCommMode;
+import com.ftpos.library.smartpos.nfcreader.DesFireFileType;
+import com.ftpos.library.smartpos.nfcreader.DesFireGetInfoFlag;
+import com.ftpos.library.smartpos.nfcreader.DesFireResponse;
+import com.ftpos.library.smartpos.nfcreader.DesFireValueFileOperationFlag;
+import com.ftpos.library.smartpos.nfcreader.ISO14443_PollingInfo;
+import com.ftpos.library.smartpos.nfcreader.MifareKey;
+import com.ftpos.library.smartpos.nfcreader.NfcCardType;
+import com.ftpos.library.smartpos.nfcreader.NfcReader;
+import com.ftpos.library.smartpos.nfcreader.OnNfcPollingCallback;
+import com.ftpos.library.smartpos.nfcreader.OnNfcReaderCallback;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -20,6 +34,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -71,7 +87,9 @@ import com.ftpos.library.smartpos.printer.PrintStatus;
 import com.ftpos.library.smartpos.printer.Printer;
 import com.ftpos.library.smartpos.util.BytesUtils;
 import com.google.android.material.snackbar.Snackbar;
+import com.isw.payapp.BuildConfig;
 import com.isw.payapp.R;
+import com.isw.payapp.database.TransactionDatabaseHelper;
 import com.isw.payapp.devices.callbacks.EmvServiceCallback;
 import com.isw.payapp.devices.feitian.configBean.CAPublicKeyBean;
 import com.isw.payapp.devices.feitian.configBean.CRLBean;
@@ -226,6 +244,7 @@ public class FeitianEmvService implements IEmvProcessor {
 
 
 
+
     public FeitianEmvService(Activity classActivity, TransactionData classTransactionData,
                              EmvServiceCallback classEmvCallBacks) {
         this.classActivityRef = new WeakReference<>(classActivity);
@@ -356,7 +375,30 @@ public class FeitianEmvService implements IEmvProcessor {
         Log.d(TAG, "Starting transaction: ");
 
         String amt = classTransactionData.getAmount();
-        int cardSupport = ICardType.TYPE_CARD_CONTACT; // Default to contact card
+
+        // SUPPORT ALL THREE CARD TYPES SIMULTANEOUSLY
+        int cardSupport = ICardType.TYPE_CARD_CONTACT_LESS |
+                ICardType.TYPE_CARD_CONTACT |
+                ICardType.TYPE_CARD_MAGNETIC;
+
+//        if(cardSupport== ICardType.TYPE_CARD_CONTACT ){
+//            classTransactionData.setPosEntryMode("051");
+//        }
+//        switch (cardSupport) {
+//            case ICardType.TYPE_CARD_CONTACT:
+//                classTransactionData.setCardType("Contact");
+//                classTransactionData.setPosEntryMode("051");
+//                break;
+//            case ICardType.TYPE_CARD_CONTACT_LESS:
+//                classTransactionData.setCardType("Contactless");
+//                classTransactionData.setPosEntryMode("071");
+//                break;
+//            default:
+//                // Consider setting these to appropriate defaults or null values
+//                classTransactionData.setCardType("Unknown");
+//                classTransactionData.setPosEntryMode("021");
+//                break;
+//        }
 
         Logger.v("Creating trade request");
         Amount amount = createAmount(amt);
@@ -632,6 +674,43 @@ public class FeitianEmvService implements IEmvProcessor {
             default:
                 return -1;
         }
+    }
+
+    /**
+     * Check the card reader
+     *
+     * @param code Supported card types
+     * @return true：success；false：fail；
+     */
+    protected boolean checkReader(int code) {
+        Log.i(TAG,"Check the card reader: 0x" + BytesUtil.byte2Hex((byte) code));
+        if ((code & ICardType.TYPE_CARD_MAGNETIC) == ICardType.TYPE_CARD_MAGNETIC) {
+            Log.v(TAG,"Check the magnetic card reader...");
+
+            classTransactionData.setPosEntryMode("021");
+            if (magReader == null || magReader.checkMagCardreader() != 0) {
+                Log.e(TAG,"The magnetic reader is not working");
+                return false;
+            }
+        }
+        if ((code & ICardType.TYPE_CARD_CONTACT) == ICardType.TYPE_CARD_CONTACT) {
+            Log.v(TAG,"Check the IC card reader...");
+            classTransactionData.setPosEntryMode("051");
+            if (icReader == null || icReader.checkICReader() != 0) {
+                Log.e(TAG,"The IC reader is not working");
+                return false;
+            }
+        }
+        if ((code & ICardType.TYPE_CARD_CONTACT_LESS) == ICardType.TYPE_CARD_CONTACT_LESS) {
+            Log.v(TAG,"Check the NFC card reader...");
+            classTransactionData.setPosEntryMode("071");
+            if (nfcReader == null || nfcReader.checkNFCCardreader() != 0) {
+                Log.e(TAG,"The NFC reader is not working");
+                return false;
+            }
+        }
+        return true;
+
     }
     //endregion
 
@@ -965,29 +1044,30 @@ public class FeitianEmvService implements IEmvProcessor {
 
             if (isTransactionCompleted(code)) {
 
-                Log.d(TAG,"pinBlockValue-->> : "+ pinBlockValue);
+                Log.d(TAG, "pinBlockValue-->> : " + pinBlockValue);
                 FTLVList list = FTLV.fromData(iemv.getTlvList("1F531F609C9A9F215A579F025F2A9F34959F339F409F669F1E"));
                 Logger.tlv(list.toString(), EMV_TAG_MAP);
 
                 FTLVList emvlist = FTLV.fromData(iemv.getTlvList("575A5F34829F369F269F279F349F105F2A959F1A9F359A9C9F37849F339F029F03"));
-                Log.d(TAG, "EMV DATA\n"+emvlist.toString());
+                Log.d(TAG, "EMV DATA\n" + emvlist.toString());
                 parser.printAllTags(emvlist.toString());
-                Map<String , String> tagMap = parser.extractAllTags(emvlist.toString());
-                Log.d(TAG,"EMV tag 9A : "+ tagMap.get("9A"));
+                Map<String, String> tagMap = parser.extractAllTags(emvlist.toString());
+                Log.d(TAG, "EMV tag 9A : " + tagMap.get("9A"));
                 //tagMap.get("57");
                 Logger.tlv(emvlist.toString(), EMV_TAG_MAP);
-                Log.i(TAG, "ksnValue : "+ ksnValue );
+
+                Log.i(TAG, "ksnValue : " + ksnValue);
                 cardModel.setKsn(ksnValue);
-                cardModel.setPinBlock("T"+pinBlockValue);
+                cardModel.setPinBlock("T" + pinBlockValue);
                 cardModel.setPinType("Dukpt");
                 cardModel.setKsnd("605");
 
                 emvModel.setAmountAuthorized(tagMap.get("9F02"));
-                Logger.i("amount authorized - "+ emvModel.getAmountAuthorized());
+                Logger.i("amount authorized - " + emvModel.getAmountAuthorized());
                 emvModel.setAmountOther(tagMap.get("9F03"));
-                Logger.i("Amount other - "+ emvModel.getAmountOther());
+                Logger.i("Amount other - " + emvModel.getAmountOther());
 
-                String[]t  = CommonUtil.extractExpiryFromTrack2(tagMap.get("57"));
+                String[] t = CommonUtil.extractExpiryFromTrack2(tagMap.get("57"));
 
                 emvModel.setExpYear(t[1]);
                 emvModel.setExMonth(t[0]);
@@ -1008,6 +1088,7 @@ public class FeitianEmvService implements IEmvProcessor {
                 // EMV tag 9F27 (Cryptogram Information Data)
                 emvModel.setCryptogramInformationData(tagMap.get("9F27"));
                 // EMV tag 9F34 (Cardholder Verification Method (CVM))
+                //3F0000
                 emvModel.setCvmResults(tagMap.get("9F34"));
                 // EMV tag 9F10 (Issuer Application Data)
                 emvModel.setIssuerApplicationData(tagMap.get("9F10"));
@@ -1046,7 +1127,7 @@ public class FeitianEmvService implements IEmvProcessor {
                     classTransactionData.setPoscondcode("00");
                     classTransactionData.setPosgeocode("00254000000000404");
                     classTransactionData.setTid(config.getTid());
-                    classTransactionData.setPosEntryMode("051");
+                   // classTransactionData.setPosEntryMode("051");
                     Log.i(TAG,"amount authorized - "+ emvModel.getAmountAuthorized());
                     KxmlRequest purchaseRequest = new KxmlRequest(emvModel, classTransactionData, cardModel);
                     Log.d(TAG, "Payload \n"+ purchaseRequest.generatePayload());
@@ -1070,7 +1151,9 @@ public class FeitianEmvService implements IEmvProcessor {
             Logger.i("Transaction Finished");
             updateDockLCD("WELCOME", " ", " ");
         }catch (Exception e){
+
             e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
 
 
@@ -1177,9 +1260,22 @@ public class FeitianEmvService implements IEmvProcessor {
             Log.i(TAG, "Response: ---- " + respMessage);
             Logger.i("Response:----- " + respMessage);
 
+
+
             if(respMessage.equals("Transaction Approved")){
                 Document document = parseXmlResponse(response);
                 configureApprovedTransaction(document);
+
+                String authId = getValue(document, "authId");
+                emvModel.setAuthorizationCode(authId);
+                Log.i(TAG,"AuthId:"+authId);
+                String referenceNumber = getValue(document, "referenceNumber");
+                emvModel.setRefereceNumber(referenceNumber);
+                Log.i(TAG,"referenceNumber:"+referenceNumber);
+                String stan = getValue(document, "stan");
+                emvModel.setStan(stan);
+                Log.i(TAG,"Stan:"+stan);
+
                 showPrinterPreviewDialog(respMessage, emvModel);
             }
             else {
@@ -1197,9 +1293,22 @@ public class FeitianEmvService implements IEmvProcessor {
         }
     }
 
+    private void saveReceiptToDatabase(Receipt receipt) {
+        try {
+            TransactionDatabaseHelper dbHelper = new TransactionDatabaseHelper(context);
+            long savedId = dbHelper.saveTransaction(receipt);
+            Log.d(TAG, "Receipt saved to database with ID: " + savedId);
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving receipt to database", e);
+        }
+    }
+
     private void showPrinterPreviewDialog(String respMessage, EmvModel emvModel) {
         Activity activity = getActivity();
         if (activity == null || activity.isFinishing()) return;
+
+        Receipt receipt = createReceipt(respMessage, emvModel);
+        saveReceiptToDatabase(receipt);
 
         PrinterPreviewDialog previewDialog = new PrinterPreviewDialog(
                 activity,
@@ -1210,7 +1319,8 @@ public class FeitianEmvService implements IEmvProcessor {
                 new PrinterPreviewDialog.OnPrintClickListener() {
                     @Override
                     public void onPrintClick(String previewContent) {
-                        printReceipt(createReceipt(respMessage, emvModel));
+//                        printReceipt(createReceipt(respMessage, emvModel));
+                        printReceipt(receipt);
                         classEmvCallBacks.onTransactionSuccess(respMessage);
                     }
 
@@ -1255,6 +1365,11 @@ public class FeitianEmvService implements IEmvProcessor {
         receipt.setAtc(emvModel.getAtc());
         receipt.setTvr(emvModel.getTerminalVerificationResult());
         receipt.setResponse(respMessage);
+        receipt.setStan(emvModel.getStan());
+        receipt.setAuthId(emvModel.getAuthorizationCode());
+        receipt.setReferenceNumber(emvModel.getRefereceNumber());
+        receipt.setTransactionType(classTransactionData.getTransactionType());
+
 
         return receipt;
     }
@@ -1349,8 +1464,12 @@ public class FeitianEmvService implements IEmvProcessor {
     }
 
     private void printReceiptContent(Receipt tlvs) {
+
+        Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), BuildConfig.APP_LOGO);
+        printer.printBmp(bmp);
         printer.setAlignStyle(PRINT_STYLE_CENTER);
-        printer.printStr("Receipt\n");
+        printer.printStr(tlvs.getTransactionType());
+        printer.printStr(" Receipt\n");
 
         printer.setAlignStyle(PRINT_STYLE_LEFT);
         printer.printStr("Please retain this receipt for your exchange.\n");
@@ -1369,6 +1488,9 @@ public class FeitianEmvService implements IEmvProcessor {
         printer.printStr("AID: " + tlvs.getAid() + "\n");
         printer.printStr("ATC: " + tlvs.getAtc() + "\n");
         printer.printStr("TVR: " + tlvs.getTvr() + "\n");
+        printer.printStr("Stan: " + tlvs.getStan() + "\n");
+        printer.printStr("AuthId: " + tlvs.getAuthId() + "\n");
+        printer.printStr("RRN: " + tlvs.getReferenceNumber() + "\n");
         printer.printStr("------------------------\n");
         printer.printStr("Date/Time: " + tlvs.getDateTime() + "\n");
         printer.printStr("Transaction Type: " + tlvs.getTransactionType() + "\n");
@@ -1376,6 +1498,7 @@ public class FeitianEmvService implements IEmvProcessor {
         printer.printStr("Response: " + tlvs.getResponse() + "\n");
         printer.printStr("------------------------\n");
         printer.feed(1);
+        printer.setAlignStyle(PRINT_STYLE_CENTER);
         printer.printStr("Thank you!\n");
         printer.feed(1);
 
@@ -1406,6 +1529,7 @@ public class FeitianEmvService implements IEmvProcessor {
     private final OnSearchCardCallback callback = new OnSearchCardCallback() {
         @Override
         public void onSuccess(int type, TrackData trackData) {
+            checkReader(type);
             led.ledCardIndicator(0x01, 0, 200, 200);
             if (mRFLogoDialog != null) {
                 mRFLogoDialog.dismiss();
@@ -1851,6 +1975,7 @@ public class FeitianEmvService implements IEmvProcessor {
             String iad = getValue(document, "iad");
             String rc = getValue(document, "rc");
             String cardAuthRc = getValue(document, "cardauthrc");
+
 
             String st1 = buildScriptData("71", script);
             st2 = buildScriptData("72", st2);

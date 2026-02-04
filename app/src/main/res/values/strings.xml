@@ -8,6 +8,7 @@
     <string name="processing_transaction">Please wait..</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="report">Report</string>
 
     <string name="back_button">Back</string>
     <string name="cancel_button">Cancel</string>

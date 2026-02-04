@@ -251,6 +251,8 @@ public class Purchase extends Fragment implements EmvServiceCallback {
                         transactionData.setAmount(Amount);
                         transactionData.setPaymentApp(ConstValues.PAY_APP_PURCHASE);
                         transactionData.setPaymentReqTag(ConstValues.POST_PAY_PURCHASE);
+                        transactionData.setTransactionType("Purchase");
+
 
                         sale.setEnabled(false);
                         showProgressBar(true);

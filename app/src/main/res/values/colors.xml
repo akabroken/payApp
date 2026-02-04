@@ -68,4 +68,10 @@
     <color name="colorCancelPressBg">#711F04</color>
 
     <color name="lcd_blue">#FF0000FF</color>
+
+    <color name="green">#4CAF50</color>
+    <color name="red">#F44336</color>
+    <color name="blue">#2196F3</color>
+    <color name="gray">#757575</color>
+    <color name="whitee">#FFFFFF</color>
 </resources>
