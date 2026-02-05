@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat;
 import com.dspread.print.util.TRACE;
 import com.dspread.xpos.QPOSService;
 import com.isw.payapp.R;
+import com.isw.payapp.database.TransactionDatabaseHelper;
 import com.isw.payapp.devices.callbacks.EmvServiceCallback;
 import com.isw.payapp.devices.dspread.callbacks.IConnectionServiceCallback;
 import com.isw.payapp.devices.dspread.callbacks.IPaymentServiceCallback;
@@ -1025,6 +1026,18 @@ public class DSpreadEmvService implements IEmvProcessor {
             previewDialog.show();
         }
 
+        private void saveReceiptToDatabase(Receipt receipt) {
+            Activity activity = getActivity();
+            if (activity == null) return;
+            try {
+                TransactionDatabaseHelper dbHelper = new TransactionDatabaseHelper(activity);
+                long savedId = dbHelper.saveTransaction(receipt);
+                Log.d(TAG, "Receipt saved to database with ID: " + savedId);
+            } catch (Exception e) {
+                Log.e(TAG, "Error saving receipt to database", e);
+            }
+        }
+
         private Receipt createReceipt(String respMessage, EmvModel emvModel) {
             Activity activity = getActivity();
             Receipt receipt = new Receipt();
@@ -1050,6 +1063,7 @@ public class DSpreadEmvService implements IEmvProcessor {
             receipt.setTvr(emvModel.getTerminalVerificationResult());
             receipt.setResponse(respMessage);
 
+            saveReceiptToDatabase(receipt);
             return receipt;
         }
 

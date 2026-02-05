@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b7b3c5ef68cf2320b9b19e7dc89d9ad4deed718f
 # These are some examples of commonly ignored file patterns.
 # You should customize this list as applicable to your project.
 # Learn more about .gitignore:
@@ -49,6 +52,7 @@ Thumbs.db
 *.mov
 *.wmv
 
+<<<<<<< HEAD
 =======
 *.iml
 .gradle
@@ -66,3 +70,5 @@ Thumbs.db
 .cxx
 local.properties
 >>>>>>> 5d1160a (Telpo TPS initial payment APP commit 20-08-2024)
+=======
+>>>>>>> b7b3c5ef68cf2320b9b19e7dc89d9ad4deed718f

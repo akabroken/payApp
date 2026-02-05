@@ -542,7 +542,8 @@ public class ReportFragment extends Fragment implements EmvServiceCallback {
         // Check if transaction is from today for reversal option
         boolean isToday = isTransactionToday(receipt.getDateTime());
 
-        if (isToday) {
+
+        if (isToday && !receipt.getTransactionType().equals("Pin Select")) {
             builder.setNegativeButton("Reversal", (dialog, which) -> {
                 // Pass data to Reversal fragment
                 navigateToReversalWithData(receipt);

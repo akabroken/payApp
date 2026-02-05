@@ -17,7 +17,7 @@ android {
     namespace = "com.isw.payapp"
     defaultConfig {
         applicationId "com.isw.payapp"
-        minSdk 21
+        minSdk 26
         targetSdk 35
         versionCode 1
         versionName "1.0"
@@ -187,7 +187,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.telpo
+            signingConfig signingConfigs.dspread
         }
         debug {
             // Signing config is handled by individual flavors
