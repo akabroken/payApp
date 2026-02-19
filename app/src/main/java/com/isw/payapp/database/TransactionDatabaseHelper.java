@@ -64,8 +64,8 @@ public class TransactionDatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_AUTH_ID + " TEXT," +
                     COLUMN_REFERENCE_NUMBER + " TEXT," +
                     COLUMN_CARDHOLDER_NAME + " TEXT DEFAULT 'Card Holder'," +
-                    COLUMN_FULL_DATA + " TEXT" +
-                    COLUMN_TELLER +"TEXT"+
+                    COLUMN_FULL_DATA + " TEXT," +
+                    COLUMN_TELLER +" TEXT"+
                     ");";
 
     // Index for faster queries by date
