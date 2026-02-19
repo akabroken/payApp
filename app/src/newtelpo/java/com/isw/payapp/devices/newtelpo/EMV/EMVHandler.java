@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.common.sdk.emv.PinpadBytesOut;
 import com.common.sdk.emv.PinpadEnum;
 import com.common.sdk.emv.PinpadService;
+import com.isw.payapp.database.TransactionDatabaseHelper;
 import com.isw.payapp.databinding.DetectDialogBinding;
 import com.isw.payapp.devices.callbacks.EmvServiceCallback;
 import com.isw.payapp.devices.newtelpo.NewTelpoPrinterService;
@@ -775,7 +776,7 @@ public class EMVHandler {
 
             String responseCode = extractResponseCode(document);
             String responseMessage = extractResponseMessage(document);
-            classEmvCallBacks.onTransactionFailed(responseMessage);
+          //  classEmvCallBacks.onTransactionFailed(responseMessage);
 
             if (SUCCESS_RESPONSE_CODE.equals(responseCode)) {
                 appendDisplay("Transaction approved: " + responseMessage);
@@ -1224,6 +1225,15 @@ public class EMVHandler {
     }
 
 
+    private void saveReceiptToDatabase(Receipt receipt) {
+        try {
+            TransactionDatabaseHelper dbHelper = new TransactionDatabaseHelper(context);
+            long savedId = dbHelper.saveTransaction(receipt);
+            Log.d(TAG, "Receipt saved to database with ID: " + savedId);
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving receipt to database", e);
+        }
+    }
     private Receipt createReceipt(String gatewayResponse, EmvModel emvModel, String theMessage) {
         Activity activity = getActivity();
         Receipt receipt = new Receipt();
@@ -1245,7 +1255,7 @@ public class EMVHandler {
         receipt.setResponse(theMessage);
         receipt.setTeller(transactionData.getTellerdetail());
         receipt.setCardNumber(cardNum != null ? maskPan(cardNum) : "N/A");
-
+        saveReceiptToDatabase(receipt);
         return receipt;
     }
 

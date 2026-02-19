@@ -33,10 +33,10 @@ public class DeviceFactory {
                     printerClass = Class.forName("com.isw.payapp.devices.telpo.TelpoPrinter");
                     break;
                 case "NEW_TELPO":
-                    printerClass = Class.forName("com.isw.payapp.devices.telpo.TelpoPrinter");
+                    printerClass = Class.forName("com.isw.payapp.devices.newtelpo.NewTelpoPrinterAdapter");
                     break;
                 case "DSPREAD":
-                    printerClass = Class.forName("com.isw.payapp.devices.dspread.DSpreadPrinterService");
+                    printerClass = Class.forName("com.isw.payapp.devices.dspread.DSpreadPrinterAdapter");
                     break;
                 case "FEITIAN":
                     printerClass = Class.forName("com.isw.payapp.devices.feitian.FeitianPrinterService");

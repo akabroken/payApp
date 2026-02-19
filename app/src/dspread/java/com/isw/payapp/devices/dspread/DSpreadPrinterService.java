@@ -17,9 +17,10 @@ import com.dspread.print.widget.PrintLine;
 import com.isw.payapp.R;
 import com.isw.payapp.devices.dspread.utils.DeviceUtils;
 import com.isw.payapp.devices.dspread.utils.QRCodeUtil;
+import com.isw.payapp.devices.interfaces.IPrinterProcessor;
 import com.isw.payapp.model.Receipt;
 
-public class DSpreadPrinterService {
+public class DSpreadPrinterService  {
 
     private static DSpreadPrinterService instance;
     private Context context;
@@ -39,7 +40,10 @@ public class DSpreadPrinterService {
         return instance;
     }
 
+
+
     public void initializePrinter() {
+
         try {
             mPrinter = PrinterManager.getInstance().getPrinter();
             if (mPrinter == null) {
@@ -195,6 +199,7 @@ public class DSpreadPrinterService {
         return bitmap;
     }
 
+
     public void printReceipt(Receipt receipt) throws RemoteException {
         ensurePrinterInitialized();
         mPrinter.addPrintLintStyle(new PrintLineStyle(PrintStyle.FontStyle.BOLD, PrintLine.CENTER, 16));
@@ -230,7 +235,7 @@ public class DSpreadPrinterService {
         mPrinter.addPrintLintStyle(new PrintLineStyle(PrintStyle.FontStyle.NORMAL, PrintLine.CENTER, 14));
         mPrinter.addText("- - - - - - - - - - - - - -");
         mPrinter.addText("- - - - - - - - - - - - - -");
-        mPrinter.setFooter(50);
+        mPrinter.setFooter(20);
 
         mPrinter.print(context);
     }

@@ -26,10 +26,12 @@ import com.dspread.print.util.TRACE;
 import com.dspread.xpos.QPOSService;
 import com.isw.payapp.R;
 import com.isw.payapp.database.TransactionDatabaseHelper;
+import com.isw.payapp.devices.DeviceFactory;
 import com.isw.payapp.devices.callbacks.EmvServiceCallback;
 import com.isw.payapp.devices.dspread.callbacks.IConnectionServiceCallback;
 import com.isw.payapp.devices.dspread.callbacks.IPaymentServiceCallback;
 import com.isw.payapp.devices.dspread.callbacks.PaymentResult;
+import com.isw.payapp.devices.interfaces.IPrinterProcessor;
 import com.isw.payapp.helpers.ConfigManager;
 import com.isw.payapp.model.TerminalConfigModel;
 import com.isw.payapp.utils.DUKPK2009_CBC;
@@ -391,7 +393,7 @@ public class DSpreadEmvService implements IEmvProcessor {
             } catch (Exception e) {
                 Log.e(TAG, "Error in cancel transaction: " + e.getMessage());
             }
-            classEmvCallBacks.onTransactionCancelled();
+           // classEmvCallBacks.onTransactionCancelled();
         });
     }
 
@@ -412,7 +414,7 @@ public class DSpreadEmvService implements IEmvProcessor {
                 View scvText = getScvText();
 
                 if (pinpadEditText != null) {
-                    Log.i(TAG,"pinpadEditText");
+                    Log.i(TAG,"Pinpad-Edit-Text");
                     pinpadEditText.setText("");
                     pinpadEditText.setVisibility(View.VISIBLE);
                     pinpadEditText.requestFocus();
@@ -1012,13 +1014,13 @@ public class DSpreadEmvService implements IEmvProcessor {
                         @Override
                         public void onPrintClick(String previewContent) {
                             printReceipt(createReceipt(respMessage, emvModel));
-                            classEmvCallBacks.onTransactionSuccess(respMessage);
+                          //  classEmvCallBacks.onTransactionSuccess(respMessage);
                         }
 
                         @Override
                         public void onCancelClick() {
                             TRACE.d("Printing cancelled by user");
-                            classEmvCallBacks.onTransactionSuccess(respMessage);
+                           // classEmvCallBacks.onTransactionSuccess(respMessage);
                         }
                     }
             );
@@ -1042,10 +1044,13 @@ public class DSpreadEmvService implements IEmvProcessor {
             Activity activity = getActivity();
             Receipt receipt = new Receipt();
 
+            ConfigManager.refreshConfig(getActivity());
+            TerminalConfigModel config = ConfigManager.getConfig(getActivity());
+
             if (activity != null) {
-                receipt.setBank(TerminalConfig.loadTerminalDataFromJson(activity, "bank"));
-                receipt.setMerchant(TerminalConfig.loadTerminalDataFromJson(activity, "merchantloc"));
-                receipt.setTerminalId(TerminalConfig.loadTerminalDataFromJson(activity, "tid"));
+                receipt.setBank(config.getBank());
+                receipt.setMerchant(config.getMerchantloc());
+                receipt.setTerminalId(config.getTid());
             }
 
             receipt.setAmount(classTransactionData.getAmount());
@@ -1073,9 +1078,11 @@ public class DSpreadEmvService implements IEmvProcessor {
 
             try {
                 DSpreadPrinterService printerService = DSpreadPrinterService.getInstance(activity);
+               // IPrinterProcessor printerService = DeviceFactory.createPrinter(activity);
 
                 try {
                     if (printerService.isInitialized()) {
+                        printerService.initializePrinter();
                         printerService.printReceipt(receipt);
                         POSManager.getInstance().cancelTransaction();
                         POSManager.getInstance().close();

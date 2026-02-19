@@ -40,7 +40,8 @@ public class TransactionDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_AUTH_ID = "auth_id";
     public static final String COLUMN_REFERENCE_NUMBER = "reference_number";
     public static final String COLUMN_CARDHOLDER_NAME = "cardholder_name";
-    public static final String COLUMN_FULL_DATA = "full_data"; // JSON of full receipt
+    public static final String COLUMN_FULL_DATA = "full_data";
+    public static final String COLUMN_TELLER = "teller_name"; // JSON of full receipt
 
     // Create table SQL statement
     private static final String CREATE_TABLE_TRANSACTIONS =
@@ -64,6 +65,7 @@ public class TransactionDatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_REFERENCE_NUMBER + " TEXT," +
                     COLUMN_CARDHOLDER_NAME + " TEXT DEFAULT 'Card Holder'," +
                     COLUMN_FULL_DATA + " TEXT" +
+                    COLUMN_TELLER +"TEXT"+
                     ");";
 
     // Index for faster queries by date
@@ -114,6 +116,7 @@ public class TransactionDatabaseHelper extends SQLiteOpenHelper {
         // For cardholder name, you might need to get this from elsewhere
         // Defaulting to "Card Holder" for now
         values.put(COLUMN_CARDHOLDER_NAME, "Card Holder");
+        values.put(COLUMN_TELLER, receipt.getTeller());
 
         // Store full receipt data as JSON (optional)
         // values.put(COLUMN_FULL_DATA, receipt.toJson());
@@ -157,7 +160,7 @@ public class TransactionDatabaseHelper extends SQLiteOpenHelper {
                 receipt.setStan(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STAN)));
                 receipt.setAuthId(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_AUTH_ID)));
                 receipt.setReferenceNumber(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REFERENCE_NUMBER)));
-
+                receipt.setTeller(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TELLER)));
                 transactions.add(receipt);
             } while (cursor.moveToNext());
         }
@@ -198,6 +201,7 @@ public class TransactionDatabaseHelper extends SQLiteOpenHelper {
             receipt.setStan(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STAN)));
             receipt.setAuthId(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_AUTH_ID)));
             receipt.setReferenceNumber(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REFERENCE_NUMBER)));
+            receipt.setTeller(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TELLER)));
         }
 
         cursor.close();
