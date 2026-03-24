@@ -256,8 +256,8 @@ public class IndexPage extends Fragment {
         binding.recyclerView.setAdapter(adapter);
 
         List<GridMenuItem> menuItems = Arrays.asList(
-               /// new GridMenuItem(R.drawable.pos, getString(R.string.transaction_index), R.id.index_to_purchase),
-                new GridMenuItem(R.drawable.security_warning, getString(R.string.pin_select), R.id.index_to_pinselect),
+                new GridMenuItem(R.drawable.pos, getString(R.string.transaction_index), R.id.index_to_purchase),
+               // new GridMenuItem(R.drawable.security_warning, getString(R.string.pin_select), R.id.index_to_pinselect),
                 new GridMenuItem(R.drawable.gearsix, getString(R.string.settings), R.id.index_to_settings),
                 new GridMenuItem(R.drawable.report, getString(R.string.report), R.id.index_to_report),
                 new GridMenuItem(R.drawable.exit, getString(R.string.logout), R.id.index_to_login)

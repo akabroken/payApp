@@ -8,6 +8,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+
+import java.io.UnsupportedEncodingException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
 import java.util.HexFormat;
@@ -248,12 +250,14 @@ public class ThreeDES {
         // Extract KCV based on method
         switch (method) {
             case ANSI:
+                return encrypted;
             case VISA:
                 return encrypted.substring(0, 6); // First 3 bytes
             case MASTERCARD:
                 return encrypted.substring(0, 8); // First 4 bytes
             default:
                 return encrypted.substring(0, 6);
+            //return encrypted.substring(0, 6);
         }
     }
 
@@ -435,5 +439,61 @@ public class ThreeDES {
         }
 
         throw new IllegalArgumentException("Invalid key length: " + length + " hex characters");
+    }
+
+    /**
+     * Convert hex string to ASCII string
+     * @param hex Hex string (e.g., "4D617374657263617264")
+     * @return ASCII readable string
+     */
+    public static String hexToAscii(String hex) {
+        if (hex == null || hex.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder output = new StringBuilder();
+
+        for (int i = 0; i < hex.length(); i += 2) {
+            String str = hex.substring(i, i + 2);
+            try {
+                int decimal = Integer.parseInt(str, 16);
+                output.append((char) decimal);
+            } catch (NumberFormatException e) {
+                // Handle invalid hex characters
+                output.append('?');
+            }
+        }
+
+        return output.toString();
+    }
+
+    /**
+     * Convert with specific charset support
+     * @param hex Hex string
+     * @param charset Character set (e.g., "ISO-8859-1", "UTF-8")
+     * @return Converted string
+     */
+    public static String hexToAscii(String hex, String charset) throws UnsupportedEncodingException {
+        if (hex == null || hex.isEmpty()) {
+            return "";
+        }
+
+        byte[] bytes = hexStringToByteArray(hex,"");
+        return new String(bytes, charset);
+    }
+
+    /**
+     * Convert hex string to byte array
+     */
+    private static byte[] hexStringToByteArray(String hex,String t) {
+        int len = hex.length();
+        byte[] data = new byte[len / 2];
+
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+                    + Character.digit(hex.charAt(i + 1), 16));
+        }
+
+        return data;
     }
 }

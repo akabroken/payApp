@@ -106,7 +106,7 @@ public class PrinterPreviewDialog extends Dialog {
         tvTransactionDetails.setText(transactionDetails);
 
         // Card Details
-        String cardDetails = "Card: " + (cardModel.getPan() != null ?
+        String cardDetails = "Card Name:"+emvModel.getCustomerName()+"\n Card: " + (cardModel.getPan() != null ?
                 cardModel.getPan().substring(0, 6) + "******" +
                         cardModel.getPan().substring(cardModel.getPan().length() - 4) : "N/A") + "\n" +
                 "Entry Mode: Chip";
@@ -128,15 +128,20 @@ public class PrinterPreviewDialog extends Dialog {
     }
 
     private String generatePrintContent() {
+
+        // Merchant Info
+        ConfigManager.refreshConfig(context);
+        TerminalConfigModel config = ConfigManager.getConfig(context);
+
         StringBuilder content = new StringBuilder();
 
         content.append("================================\n");
         content.append("        TRANSACTION RECEIPT\n");
         content.append("================================\n\n");
 
-        content.append("Bank: ").append(TerminalConfig.loadTerminalDataFromJson(context,"bank")).append("\n");
-        content.append("Branch: ").append(TerminalConfig.loadTerminalDataFromJson(context,"merchantloc")).append("\n");
-        content.append("Terminal ID: ").append(TerminalConfig.loadTerminalDataFromJson(context,"tid")).append("\n");
+        content.append("Bank: ").append(config.getBank()).append("\n");
+        content.append("Branch: ").append(config.getMerchantloc()).append("\n");
+        content.append("Terminal ID: ").append(config.getTid()).append("\n");
         content.append("Date: ").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())).append("\n");
         content.append("--------------------------------\n");
 
@@ -157,6 +162,8 @@ public class PrinterPreviewDialog extends Dialog {
         content.append("Response: ").append(responseMessage).append("\n");
         content.append("================================\n");
         content.append("     THANK YOU FOR YOUR BUSINESS\n");
+        content.append("Our contacts: ").append(config.getAddress1()).append("\n");
+        content.append("Email: ").append(config.getAddress2()).append("\n");
         content.append("================================\n");
 
         return content.toString();

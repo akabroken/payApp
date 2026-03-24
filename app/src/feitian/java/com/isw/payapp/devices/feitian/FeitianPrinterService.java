@@ -16,7 +16,9 @@ import com.isw.payapp.BuildConfig;
 import com.isw.payapp.devices.feitian.helpers.SvrHelper;
 import com.isw.payapp.devices.interfaces.IEmvProcessor;
 import com.isw.payapp.devices.interfaces.IPrinterProcessor;
+import com.isw.payapp.helpers.ConfigManager;
 import com.isw.payapp.model.Receipt;
+import com.isw.payapp.model.TerminalConfigModel;
 import com.jirui.logger.Logger;
 
 public class FeitianPrinterService implements IPrinterProcessor {
@@ -84,20 +86,22 @@ public class FeitianPrinterService implements IPrinterProcessor {
 
     private void printReceiptContent(Receipt tlvs) {
 
+        ConfigManager.refreshConfig(context);
+        TerminalConfigModel config = ConfigManager.getConfig(context);
         Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), BuildConfig.APP_LOGO);
         printer.printBmp(bmp);
         printer.setAlignStyle(PRINT_STYLE_CENTER);
-       // printer.printStr(classTransactionData.getPaymentApp());
-        printer.printStr("Receipt\n");
+        printer.printStr(tlvs.getTransactionType());
+        printer.printStr(" Receipt\n");
 
         printer.setAlignStyle(PRINT_STYLE_LEFT);
-        printer.printStr("Please retain this receipt for your exchange.\n");
+        printer.printStr("Please retain this receipt.\n");
         printer.printStr("------------------------\n");
-
         printer.printStr("Bank: " + tlvs.getBank() + "\n");
         printer.printStr("Merchant: " + tlvs.getMerchant() + "\n");
         printer.printStr("Terminal ID: " + tlvs.getTerminalId() + "\n");
         printer.printStr("------------------------\n");
+        printer.printStr("Card Name: " + tlvs.getCardHolderName() + "\n");
         printer.printStr("Card Number: " + tlvs.getCardNumber() + "\n");
         if(!tlvs.getAmount().isEmpty()){
             printer.printStr("Amount: " + tlvs.getAmount() + " " + tlvs.getCurrency() + "\n");
@@ -119,6 +123,9 @@ public class FeitianPrinterService implements IPrinterProcessor {
         printer.feed(1);
         printer.setAlignStyle(PRINT_STYLE_CENTER);
         printer.printStr("Thank you!\n");
+        printer.setAlignStyle(PRINT_STYLE_LEFT);
+        printer.printStr("Our contacts:"+config.getAddress1()+"\n");
+        printer.printStr("Email:"+config.getAddress2() +"\n");
         printer.feed(1);
 
 

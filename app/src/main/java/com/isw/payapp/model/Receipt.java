@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Receipt{
+
     private long id;
     private TransactionData transactionData;
     private String bank;
@@ -16,6 +17,7 @@ public class Receipt{
     private String dateTime;
     private String transactionType;
     private String cardNumber;
+    private String cardHolderName;
     private String entryMode;
     private String aid;
     private String atc;
@@ -25,5 +27,7 @@ public class Receipt{
     private String stan;
     private String authId;
     private String referenceNumber;
+    private String contacts;
+    private String email;
 
 }

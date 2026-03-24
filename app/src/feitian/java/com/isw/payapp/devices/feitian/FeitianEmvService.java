@@ -129,6 +129,7 @@ import com.isw.payapp.utils.EMVScriptProcessor;
 import com.isw.payapp.utils.EmvTlvParser;
 import com.isw.payapp.utils.NetworkExecutor;
 import com.isw.payapp.utils.PaddingUtils;
+import com.isw.payapp.utils.ThreeDES;
 import com.isw.payapp.utils.XMLUtils;
 import com.isw.payapp.utils.tlvs.EMVTag;
 import com.isw.payapp.views.pinkeyboard.BasePinPadView;
@@ -1048,7 +1049,7 @@ public class FeitianEmvService implements IEmvProcessor {
                 FTLVList list = FTLV.fromData(iemv.getTlvList("1F531F609C9A9F215A579F025F2A9F34959F339F409F669F1E"));
                 Logger.tlv(list.toString(), EMV_TAG_MAP);
 
-                FTLVList emvlist = FTLV.fromData(iemv.getTlvList("575A5F34829F369F269F279F349F105F2A959F1A9F359A9C9F37849F339F029F03"));
+                FTLVList emvlist = FTLV.fromData(iemv.getTlvList("5F20575A5F34829F369F269F279F349F105F2A959F1A9F359A9C9F37849F339F029F03"));
                 Log.d(TAG, "EMV DATA\n" + emvlist.toString());
                 parser.printAllTags(emvlist.toString());
                 Map<String, String> tagMap = parser.extractAllTags(emvlist.toString());
@@ -1110,6 +1111,11 @@ public class FeitianEmvService implements IEmvProcessor {
                 emvModel.setDedicatedFileName(tagMap.get("84"));
                 // EMV tag 9F33 (Terminal Capabilities)
                 emvModel.setTerminalCapabilities(tagMap.get("9F33"));
+                // EMV tag 5F20 (Cardholder Name)
+                String cardName = ThreeDES.hexToAscii(tagMap.get("5F20").replaceAll("FF$", ""));
+                emvModel.setCustomerName(cardName);
+
+
 
                 String paymentApp = classTransactionData.getPaymentApp();
                 Log.d(TAG, "Preparing payload for payment app: " + paymentApp);
@@ -1368,9 +1374,10 @@ public class FeitianEmvService implements IEmvProcessor {
         receipt.setStan(emvModel.getStan());
         receipt.setAuthId(emvModel.getAuthorizationCode());
         receipt.setReferenceNumber(emvModel.getRefereceNumber());
+        receipt.setCardHolderName(emvModel.getCustomerName());
         receipt.setTransactionType(classTransactionData.getTransactionType());
-
-
+        receipt.setContacts(config.getAddress1());
+        receipt.setEmail(config.getAddress2());
         return receipt;
     }
 
@@ -1472,13 +1479,13 @@ public class FeitianEmvService implements IEmvProcessor {
         printer.printStr(" Receipt\n");
 
         printer.setAlignStyle(PRINT_STYLE_LEFT);
-        printer.printStr("Please retain this receipt for your exchange.\n");
+        printer.printStr("Please retain this receipt.\n");
         printer.printStr("------------------------\n");
-
         printer.printStr("Bank: " + tlvs.getBank() + "\n");
         printer.printStr("Merchant: " + tlvs.getMerchant() + "\n");
         printer.printStr("Terminal ID: " + tlvs.getTerminalId() + "\n");
         printer.printStr("------------------------\n");
+        printer.printStr("Card Name: " + tlvs.getCardHolderName() + "\n");
         printer.printStr("Card Number: " + tlvs.getCardNumber() + "\n");
         if(!tlvs.getAmount().isEmpty()){
             printer.printStr("Amount: " + tlvs.getAmount() + " " + tlvs.getCurrency() + "\n");
@@ -1500,6 +1507,10 @@ public class FeitianEmvService implements IEmvProcessor {
         printer.feed(1);
         printer.setAlignStyle(PRINT_STYLE_CENTER);
         printer.printStr("Thank you!\n");
+        printer.setAlignStyle(PRINT_STYLE_LEFT);
+       // printer.printStr("Have a nice day!\n");
+        printer.printStr("Our contacts:"+tlvs.getContacts()+"\n");
+        printer.printStr("Email:"+tlvs.getEmail() +"\n");
         printer.feed(1);
 
 

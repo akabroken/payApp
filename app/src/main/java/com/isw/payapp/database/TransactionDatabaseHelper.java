@@ -115,7 +115,7 @@ public class TransactionDatabaseHelper extends SQLiteOpenHelper {
 
         // For cardholder name, you might need to get this from elsewhere
         // Defaulting to "Card Holder" for now
-        values.put(COLUMN_CARDHOLDER_NAME, "Card Holder");
+        values.put(COLUMN_CARDHOLDER_NAME, receipt.getCardHolderName());
         values.put(COLUMN_TELLER, receipt.getTeller());
 
         // Store full receipt data as JSON (optional)
@@ -161,6 +161,7 @@ public class TransactionDatabaseHelper extends SQLiteOpenHelper {
                 receipt.setAuthId(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_AUTH_ID)));
                 receipt.setReferenceNumber(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REFERENCE_NUMBER)));
                 receipt.setTeller(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TELLER)));
+                receipt.setCardHolderName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CARDHOLDER_NAME)));
                 transactions.add(receipt);
             } while (cursor.moveToNext());
         }
@@ -202,6 +203,7 @@ public class TransactionDatabaseHelper extends SQLiteOpenHelper {
             receipt.setAuthId(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_AUTH_ID)));
             receipt.setReferenceNumber(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REFERENCE_NUMBER)));
             receipt.setTeller(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TELLER)));
+            receipt.setCardHolderName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CARDHOLDER_NAME)));
         }
 
         cursor.close();

@@ -1,10 +1,16 @@
 <resources>
     <string name="app_name">ISW Pay App</string>
+    <string name="app_name_caritas">Caritas MFB</string>
+    <string name="app_name_sidian">Sidian Bank</string>
+    <string name="app_name_consolidated">Consolidated Bank</string>
+    <string name="app_name_baroda">Bank of Baroda</string>
+    <string name="app_name_family_bank">Family Bank</string>
+
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="home_fragment_label">Home</string>
     <string name="payment_fragment_label">Purchase</string>
-    <string name="transaction_index">Buy Goods</string>
+    <string name="transaction_index">POS Purchase</string>
     <string name="processing_transaction">Please wait..</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>

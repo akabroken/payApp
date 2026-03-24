@@ -104,6 +104,9 @@ public class DeviceFactory {
                 case"DSPREAD":
                     pinpadClass = Class.forName("com.isw.payapp.devices.dspread.DSpreadPinPadService");
                     break;
+                case "CASTLES":
+                    pinpadClass = Class.forName("com.isw.payapp.devices.castles.CastlesApplication.CastlesPinPadService");
+                    break;
                 case "FEITIAN":
                     pinpadClass = Class.forName("com.isw.payapp.devices.feitian.FeitianPinpadService");
 

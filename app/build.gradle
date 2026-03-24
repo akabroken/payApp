@@ -17,7 +17,7 @@ android {
     namespace = "com.isw.payapp"
     defaultConfig {
         applicationId "com.isw.payapp"
-        minSdk 26
+        minSdk 24
         targetSdk 35
         versionCode 1
         versionName "1.0"
@@ -135,7 +135,10 @@ android {
             dimension "pos"
             buildConfigField "String", "POS_BRAND", "\"TELPO\""
             buildConfigField "String", "SDK_VERSION", "\"1.0.0\""
-            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.telpo.TelpoApplication"]
+            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.telpo.TelpoApplication",
+                                    instLogo: "@drawable/bank_of_baroda",  // Changed from R.drawable to @drawable
+                                    instName: "@string/app_name_consolidated"
+            ]
             // No signing config - will use debug/release default
             buildConfigField "int", "APP_LOGO", "R.drawable.bank_of_baroda"
 //            buildConfigField "int", "APP_LOGO", "R.drawable.sidian_bank_logo"
@@ -145,7 +148,10 @@ android {
             dimension "pos"
             buildConfigField "String", "POS_BRAND", "\"NEW_TELPO\""
             buildConfigField "String", "SDK_VERSION", "\"1.0.0\""
-            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.newtelpo.NewTelpoApplication"]
+            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.newtelpo.NewTelpoApplication",
+                                    instLogo: "@drawable/consolidated_bank_logo",  // Changed from R.drawable to @drawable
+                                    instName: "@string/app_name_consolidated"
+            ]
             // No signing config - will use debug/release default
             buildConfigField "int", "APP_LOGO", "R.drawable.consolidated_bank_logo"
 //            buildConfigField "String", "APP_VERSION", "\"${versionName}\""
@@ -163,14 +169,23 @@ android {
             dimension "pos"
             buildConfigField "String", "POS_BRAND", "\"DSPREAD\""
             buildConfigField "String", "SDK_VERSION", "\"7.4.8\""
-            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.dspread.Activity.DeviceApplication"]
+            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.dspread.Activity.DeviceApplication",
+                                    instLogo: "@drawable/sidian_bank_logo",  // Changed from R.drawable to @drawable
+                                    instName: "@string/app_name_sidian"
+            ]
             signingConfig = signingConfigs.dspread  // Explicitly set signing config
             buildConfigField "int", "APP_LOGO", "R.drawable.sidian_bank_logo"
         }
         feitian {
             dimension "pos"
             buildConfigField "String", "POS_BRAND", "\"FEITIAN\""
-            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.feitian.FeitianApplication"]
+//            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.feitian.FeitianApplication"]
+            manifestPlaceholders = [
+                    applicationClass: "com.isw.payapp.devices.feitian.FeitianApplication",
+                    instLogo: "@drawable/caritas_logo_1",  // Changed from R.drawable to @drawable
+                    instName: "@string/app_name_caritas"
+            ]
+
             signingConfig = signingConfigs.feitian  // Explicitly set signing config
             buildConfigField "int", "APP_LOGO", "R.drawable.caritas_logo_1"
         }
@@ -178,8 +193,12 @@ android {
             dimension "pos"
             buildConfigField "String", "POS_BRAND", "\"CASTLES\""
             buildConfigField "String", "SDK_VERSION", "\"1.0.1\""
-            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.castles.CastlesApplication"]
+            manifestPlaceholders = [applicationClass: "com.isw.payapp.devices.castles.CastlesApplication.CastlesApplication",
+                                    instLogo: "@drawable/family_bank_logo_600px",  // Changed from R.drawable to @drawable
+                                    instName: "@string/app_name_family_bank"
+            ]
             // No signing config - will use debug/release default
+            buildConfigField "int", "APP_LOGO", "R.drawable.family_bank_logo_600px"
         }
     }
 
@@ -247,6 +266,34 @@ dependencies {
     feitianImplementation files('libs/feitian/FTSDK_api_V1.0.1.15_20250306.jar')
     feitianImplementation files('libs/feitian/FTMDB_api_V1.0.0_20241017.jar')
     feitianImplementation files('libs/feitian/Logger_V1.00.03_20210811.jar')
+
+    castlesImplementation files('libs/castles/CTOS.CtLoader_0.0.13.jar')
+    castlesImplementation files('libs/castles/CTOS.CtNetworkStats_0.0.1.jar')
+    castlesImplementation files('libs/castles/CTOS.CtpModem_0.0.1.jar')
+    castlesImplementation files('libs/castles/CTOS.CtPrint_0.0.23.jar')
+    castlesImplementation files('libs/castles/CTOS.CtReader_0.0.33.jar')
+    castlesImplementation files('libs/castles/CTOS.CtRemotekeyinjection_1.0.6.jar')
+    castlesImplementation files('libs/castles/CTOS.CtSettings_0.0.32.jar')
+    castlesImplementation files('libs/castles/CTOS.CtSTLS_0.0.3.jar')
+    castlesImplementation files('libs/castles/CTOS.CtSystem_0.0.78.jar')
+    castlesImplementation files('libs/castles/CTOS.CtTelephony_0.0.13.jar')
+    castlesImplementation files('libs/castles/CTOS.CtTR34_0.3.0.jar')
+    castlesImplementation files('libs/castles/CTOS.CtUart_0.0.4.jar')
+    castlesImplementation files('libs/castles/CTOS.CtWifiManager_0.0.3.jar')
+    castlesImplementation files('libs/castles/CTOS.CtWifiManagerExt_0.0.1.jar')
+    castlesImplementation files('libs/castles/CTOS.CtCertificate_0.0.4.jar')
+    castlesImplementation files('libs/castles/CTOS.CtCradle_0.0.7.jar')
+    castlesImplementation files('libs/castles/CTOS.CtCrypto_0.0.5.jar')
+    castlesImplementation files('libs/castles/CTOS.CtDEXConfig_0.0.1.jar')
+    castlesImplementation files('libs/castles/CTOS.CtDiagnostic_0.0.2.jar')
+    castlesImplementation files('libs/castles/CTOS.CtEMV_2.0.78.jar')
+    castlesImplementation files('libs/castles/CTOS.CtEMVCL_2.0.48.jar')
+    castlesImplementation files('libs/castles/CTOS.CtEMVCusPINPadbyImg_2.0.13.jar')
+    castlesImplementation files('libs/castles/CTOS.CtEMVEDL_2.0.8.jar')
+    castlesImplementation files('libs/castles/CTOS.CtGrant_0.0.5.jar')
+    castlesImplementation files('libs/castles/CTOS.CtInput_0.0.2.jar')
+    castlesImplementation files('libs/castles/CTOS.CtKMS2_3.8.0.jar')
+
 
     // Common dependencies
     implementation files('libs/json-simple-1.1.1.jar')

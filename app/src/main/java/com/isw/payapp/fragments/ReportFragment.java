@@ -457,7 +457,7 @@ public class ReportFragment extends Fragment implements EmvServiceCallback {
         tvDateTime.setText(formattedDateTime);
 
         // Cardholder name (you might want to get this from elsewhere)
-        tvCardholder.setText("Card Holder");
+        tvCardholder.setText(receipt.getCardHolderName());
 
         // Set up details button click listener
         btnDetails.setOnClickListener(v -> showTransactionDetails(receipt));
@@ -504,6 +504,7 @@ public class ReportFragment extends Fragment implements EmvServiceCallback {
 
         // Set all details
         TextView tvCardNumber = detailsView.findViewById(R.id.detail_card_number);
+        TextView tvCardholder = detailsView.findViewById(R.id.detail_card_name);
         TextView tvAmount = detailsView.findViewById(R.id.detail_amount);
         TextView tvDateTime = detailsView.findViewById(R.id.detail_date_time);
         TextView tvMerchant = detailsView.findViewById(R.id.detail_merchant);
@@ -520,6 +521,7 @@ public class ReportFragment extends Fragment implements EmvServiceCallback {
 
         // Set values
         tvCardNumber.setText(receipt.getCardNumber());
+        tvCardholder.setText(receipt.getCardHolderName());
         tvAmount.setText(String.format("%s %s", receipt.getAmount(), receipt.getCurrency()));
         tvDateTime.setText(receipt.getDateTime());
         tvMerchant.setText(receipt.getMerchant());

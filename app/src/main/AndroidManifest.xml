@@ -33,11 +33,12 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/interswitch01"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/interswitch01"
+        android:icon="${instLogo}"
+        android:label="${instName}"
+        android:roundIcon="${instLogo}"
         android:supportsRtl="true"
         tools:node="merge"
+        tools:replace="android:icon, android:roundIcon, android:label, android:name"
         tools:targetApi="31">
 
         <!-- Splash Activity as launcher -->
