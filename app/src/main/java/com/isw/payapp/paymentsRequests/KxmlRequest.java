@@ -86,7 +86,7 @@ public class KxmlRequest {
 
         writeElement(serializer, "batteryInformation", "100");
         writeElement(serializer, "cellStationId", "");
-        writeElement(serializer, "currencyCode", "404");
+        writeElement(serializer, "currencyCode", "566");
         writeElement(serializer, "languageInfo", "EN");
         writeElement(serializer, "merchantId", payData.getMid());
         writeElement(serializer, "merchantLocation", payData.getMloc());
@@ -97,7 +97,7 @@ public class KxmlRequest {
         writeElement(serializer, "posGeoCode", payData.getPosgeocode());
         writeElement(serializer, "printerStatus", "1");
         writeElement(serializer, "terminalId", payData.getTid());
-        writeElement(serializer, "terminalType", "TELPO");
+        writeElement(serializer, "terminalType", "FEITIAN");
         writeElement(serializer, "transmissionDate", timeStamp.replace(" ", "T"));
         writeElement(serializer, "uniqueId", "5F095339");
 

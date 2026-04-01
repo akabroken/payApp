@@ -8,8 +8,8 @@
         <CVMRequiredLimit>000000001500</CVMRequiredLimit>
         <TerminalFloorLimit>00002710</TerminalFloorLimit>
         <TerminalCLReceiptRequiredLimit>000000005000</TerminalCLReceiptRequiredLimit>
-        <TerminalCountryCode>0404</TerminalCountryCode>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <AppVersionNumber>0002</AppVersionNumber>
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>0000000000</TerminalActionCodeOnline>
@@ -29,13 +29,13 @@
         <MerchantCategoryCode>9999</MerchantCategoryCode>
         <AcquirerID></AcquirerID>
         <MerchantID></MerchantID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E060C8</TerminalCapabilities>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000010000</CVMRequiredLimit>
@@ -70,13 +70,13 @@
         <MerchantCategoryCode>9999</MerchantCategoryCode>
         <AcquirerID></AcquirerID>
         <MerchantID></MerchantID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E040C8</TerminalCapabilities>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent></TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000010000</CVMRequiredLimit>
@@ -116,8 +116,8 @@
         <TerminalActionCodeDenial>FFFFFFFFFF</TerminalActionCodeDenial><!--0010000000 -->
         <TerminalActionCodeOnline>FE50BCF800</TerminalActionCodeOnline> <!--DC4004F800 -->
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <CVMRequiredLimit>000000010000</CVMRequiredLimit>
         <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
@@ -149,8 +149,8 @@
         <TerminalActionCodeDenial>0000800000</TerminalActionCodeDenial><!--0010000000 -->
         <TerminalActionCodeOnline>F45004800C</TerminalActionCodeOnline> <!--DC4004F800 -->
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <CVMRequiredLimit>000000010000</CVMRequiredLimit>
         <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
@@ -182,8 +182,8 @@
         <TerminalActionCodeDenial>FFFFFFFFFF</TerminalActionCodeDenial><!--0010000000 -->
         <TerminalActionCodeOnline>FE50BCF800</TerminalActionCodeOnline> <!--DC4004F800 -->
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <CVMRequiredLimit>000000010000</CVMRequiredLimit>
         <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit> <!-- 000001000000 -->
@@ -206,14 +206,14 @@
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000050000</CVMRequiredLimit>
@@ -233,14 +233,14 @@
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000050000</CVMRequiredLimit>
@@ -260,14 +260,14 @@
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000050000</CVMRequiredLimit>
@@ -287,14 +287,14 @@
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000050000</CVMRequiredLimit>
@@ -314,14 +314,14 @@
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000050000</CVMRequiredLimit>
@@ -341,14 +341,14 @@
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000050000</CVMRequiredLimit>
@@ -369,14 +369,14 @@
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>DC4004F800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000030000</CVMRequiredLimit>
@@ -396,14 +396,14 @@
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>DC4004F800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000030000</CVMRequiredLimit>
@@ -423,14 +423,14 @@
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>DC4004F800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000030000</CVMRequiredLimit>
@@ -450,14 +450,14 @@
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>DC4004F800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000030000</CVMRequiredLimit>
@@ -479,14 +479,14 @@
         <TerminalActionCodeOnline>DE00FC9800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
         <DefaultDDOL>9F3704</DefaultDDOL>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E028C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent></TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000001000</CVMRequiredLimit>
@@ -505,14 +505,14 @@
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities></AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F8C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent></TransCurrencyExponent>
         <AppVersionNumber>0001</AppVersionNumber>
         <TerminalTransactionQualifier>B600C000</TerminalTransactionQualifier>
@@ -533,14 +533,14 @@
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>584000A800</TerminalActionCodeOnline>
         <AcquirerID></AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities></AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E0F8C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent></TransCurrencyExponent>
         <AppVersionNumber>0001</AppVersionNumber>
         <TerminalTransactionQualifier>B600C000</TerminalTransactionQualifier>
@@ -560,14 +560,14 @@
         <TerminalActionCodeDenial>0410000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>9040008000</TerminalActionCodeOnline>
         <AcquirerID>000000000010</AcquirerID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <MerchantID></MerchantID>
         <MerchantNameLocation>5858204D45524348414E54205959204C4F434154494F4E</MerchantNameLocation>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000010000</CVMRequiredLimit>
@@ -599,14 +599,14 @@
         <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>2060C48800</TerminalActionCodeOnline>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TermTransTimeForRRCommand>0012</TermTransTimeForRRCommand>
         <TermTransTimeForRRResponse>0018</TermTransTimeForRRResponse>
         <MinTimeRRTolerance>0014</MinTimeRRTolerance>
         <MaxTimeRRTolerance>0032</MaxTimeRRTolerance>
         <RRMinTimeDiffLimit>012C</RRMinTimeDiffLimit>
         <RRTransTimeMismatchLimit>32</RRTransTimeMismatchLimit>
-        <TransCurrencyCode>0978</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
     </Parameters>
 
@@ -619,13 +619,13 @@
         <MerchantCategoryCode>9999</MerchantCategoryCode>
         <AcquirerID></AcquirerID>
         <MerchantID></MerchantID>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <MerchantNameLocation></MerchantNameLocation>
         <TerminalCapabilities>E040C8</TerminalCapabilities>
         <AdditionalTerminalCapabilities>F000F0A001</AdditionalTerminalCapabilities>
         <TerminalID></TerminalID>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TransCurrencyExponent></TransCurrencyExponent>
         <AppVersionNumber>0002</AppVersionNumber>
         <CVMRequiredLimit>000000010000</CVMRequiredLimit>
@@ -667,7 +667,7 @@
         <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>2060C48800</TerminalActionCodeOnline>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TermTransTimeForRRCommand>0012</TermTransTimeForRRCommand>
         <TermTransTimeForRRResponse>0018</TermTransTimeForRRResponse>
         <MinTimeRRTolerance>0014</MinTimeRRTolerance>
@@ -697,7 +697,7 @@
         <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>2060C48800</TerminalActionCodeOnline>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TermTransTimeForRRCommand>0012</TermTransTimeForRRCommand>
         <TermTransTimeForRRResponse>0018</TermTransTimeForRRResponse>
         <MinTimeRRTolerance>0014</MinTimeRRTolerance>
@@ -727,7 +727,7 @@
         <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>2060C48800</TerminalActionCodeOnline>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TermTransTimeForRRCommand>0012</TermTransTimeForRRCommand>
         <TermTransTimeForRRResponse>0018</TermTransTimeForRRResponse>
         <MinTimeRRTolerance>0014</MinTimeRRTolerance>
@@ -756,7 +756,7 @@
         <TerminalActionCodeDefault>0000000000</TerminalActionCodeDefault>
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>2060C48800</TerminalActionCodeOnline>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TermTransTimeForRRCommand>0012</TermTransTimeForRRCommand>
         <TermTransTimeForRRResponse>0018</TermTransTimeForRRResponse>
         <MinTimeRRTolerance>0014</MinTimeRRTolerance>
@@ -774,8 +774,8 @@
         <ASI>01</ASI>
         <AppVersionNumber>0100</AppVersionNumber>
         <TerminalType>22</TerminalType>
-        <TerminalCountryCode>0404</TerminalCountryCode>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TerminalCapabilities>E04808</TerminalCapabilities>
         <AdditionalTerminalCapabilities>FF80F0F3FF</AdditionalTerminalCapabilities>
         <TerminalTransactionQualifier>00004000</TerminalTransactionQualifier>
@@ -794,8 +794,8 @@
         <ASI>01</ASI>
         <AppVersionNumber>0100</AppVersionNumber>
         <TerminalType>22</TerminalType>
-        <TerminalCountryCode>0404</TerminalCountryCode>
-        <TransCurrencyCode>0404</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
         <TerminalCapabilities>E04808</TerminalCapabilities>
         <AdditionalTerminalCapabilities>FF80F0F3FF</AdditionalTerminalCapabilities>
         <TerminalTransactionQualifier>00004000</TerminalTransactionQualifier>
@@ -829,8 +829,8 @@
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>BC40BC8000</TerminalActionCodeOnline>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <ReaderContactlessFloorLimit>000000000000</ReaderContactlessFloorLimit>
         <NoOndeviceCVMTransactionLimit>000000010000</NoOndeviceCVMTransactionLimit>
@@ -854,8 +854,8 @@
         <TerminalTransactionQualifier>35E04000</TerminalTransactionQualifier>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
-        <TransCurrencyCode>0404</TransCurrencyCode>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <TerminalActionCodeDefault>BC40BC8000</TerminalActionCodeDefault>
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
@@ -881,8 +881,8 @@
         <TerminalTransactionQualifier>35E04000</TerminalTransactionQualifier>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
-        <TransCurrencyCode>0404</TransCurrencyCode>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <TerminalActionCodeDefault>BC40BC8000</TerminalActionCodeDefault>
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
@@ -905,8 +905,8 @@
         <TerminalActionCodeDenial>0000000000</TerminalActionCodeDenial>
         <TerminalActionCodeOnline>FFFFFFFFFF</TerminalActionCodeOnline>
         <TerminalType>22</TerminalType>
-        <TransCurrencyCode>0404</TransCurrencyCode>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TransCurrencyExponent></TransCurrencyExponent>
         <AppVersionNumber>0101</AppVersionNumber>
         <CVMRequiredLimit>000000100000</CVMRequiredLimit>
@@ -930,8 +930,8 @@
         <TerminalTransactionQualifier>35E04000</TerminalTransactionQualifier>
         <TerminalCapabilities>E0F0C8</TerminalCapabilities>
         <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
-        <TransCurrencyCode>0404</TransCurrencyCode>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <TerminalActionCodeDefault>BC40BC8000</TerminalActionCodeDefault>
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>
@@ -962,8 +962,8 @@
         <TerminalTransactionQualifier>35E04000</TerminalTransactionQualifier>
         <TerminalCapabilities>E040C8</TerminalCapabilities>
         <AdditionalTerminalCapabilities>7000F0A001</AdditionalTerminalCapabilities>
-        <TransCurrencyCode>0404</TransCurrencyCode>
-        <TerminalCountryCode>0404</TerminalCountryCode>
+        <TransCurrencyCode>0566</TransCurrencyCode>
+        <TerminalCountryCode>0566</TerminalCountryCode>
         <TransCurrencyExponent>02</TransCurrencyExponent>
         <TerminalActionCodeDefault>BC40BC8000</TerminalActionCodeDefault>
         <TerminalActionCodeDenial>0010000000</TerminalActionCodeDenial>

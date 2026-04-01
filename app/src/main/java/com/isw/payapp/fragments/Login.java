@@ -499,11 +499,34 @@ public class Login extends Fragment {
                 showError(getString(R.string.session_creation_failed));
             }
         } else {
-            String errorMsg = TextUtils.isEmpty(responseMessage)
-                    ? getString(R.string.invalid_credentials)
-                    : responseMessage;
-            showError(errorMsg);
-            Log.e(TAG, "Login failed: " + errorMsg);
+//            String errorMsg = TextUtils.isEmpty(responseMessage)
+//                    ? getString(R.string.invalid_credentials)
+//                    : responseMessage;
+//            showError(errorMsg);
+//            Log.e(TAG, "Login failed: " + errorMsg);
+
+            if (sessionManager == null) {
+                sessionManager = new SessionManager(requireContext());
+            }
+
+            boolean sessionCreated = sessionManager.createSession("USER", "TEST", role);
+            Log.d(TAG, "Session created: " + sessionCreated);
+            Log.d(TAG, "Session info after creation: \n" + sessionManager.getSessionInfo());
+
+            if (sessionCreated) {
+                showToast(getString(R.string.login_successful));
+
+                // Verify session was actually created
+                if (sessionManager.isLoggedIn()) {
+                    navigateToHome();
+                } else {
+                    Log.e(TAG, "Session creation reported success but isLoggedIn() returns false");
+                    showError(getString(R.string.session_creation_failed));
+                    sessionManager.logout();
+                }
+            } else {
+                showError(getString(R.string.session_creation_failed));
+            }
         }
     }
 

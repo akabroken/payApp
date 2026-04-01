@@ -382,25 +382,6 @@ public class FeitianEmvService implements IEmvProcessor {
                 ICardType.TYPE_CARD_CONTACT |
                 ICardType.TYPE_CARD_MAGNETIC;
 
-//        if(cardSupport== ICardType.TYPE_CARD_CONTACT ){
-//            classTransactionData.setPosEntryMode("051");
-//        }
-//        switch (cardSupport) {
-//            case ICardType.TYPE_CARD_CONTACT:
-//                classTransactionData.setCardType("Contact");
-//                classTransactionData.setPosEntryMode("051");
-//                break;
-//            case ICardType.TYPE_CARD_CONTACT_LESS:
-//                classTransactionData.setCardType("Contactless");
-//                classTransactionData.setPosEntryMode("071");
-//                break;
-//            default:
-//                // Consider setting these to appropriate defaults or null values
-//                classTransactionData.setCardType("Unknown");
-//                classTransactionData.setPosEntryMode("021");
-//                break;
-//        }
-
         Logger.v("Creating trade request");
         Amount amount = createAmount(amt);
         if (amount == null) return;
@@ -445,7 +426,7 @@ public class FeitianEmvService implements IEmvProcessor {
 
     private TransRequest createTransRequest(int cardSupport) {
         return new TransRequest(transType)
-                .setmCurrencyCode("0404")
+                .setmCurrencyCode("0566")
                 .setCardType(cardSupport)
                 .setVerifyPinSkip(false)
                 .setMagTransQuickPass(false)
@@ -472,7 +453,7 @@ public class FeitianEmvService implements IEmvProcessor {
         this.amount = amount;
         this.transRequest = transRequest;
 
-        transRequest.setmCurrencyCode("0404");
+        transRequest.setmCurrencyCode("0566");
 
         try {
             Logger.i("Starting EMV process");
@@ -1112,8 +1093,8 @@ public class FeitianEmvService implements IEmvProcessor {
                 // EMV tag 9F33 (Terminal Capabilities)
                 emvModel.setTerminalCapabilities(tagMap.get("9F33"));
                 // EMV tag 5F20 (Cardholder Name)
-                String cardName = ThreeDES.hexToAscii(tagMap.get("5F20").replaceAll("FF$", ""));
-                emvModel.setCustomerName(cardName);
+               // String cardName =  ThreeDES.hexToAscii(tagMap.get("5F20").replaceAll("FF$", ""));
+                emvModel.setCustomerName("TEST CARD");
 
 
 
@@ -1131,7 +1112,7 @@ public class FeitianEmvService implements IEmvProcessor {
                     classTransactionData.setMloc(config.getMerchantloc());
                     classTransactionData.setPosdatacode("510101511344101");
                     classTransactionData.setPoscondcode("00");
-                    classTransactionData.setPosgeocode("00254000000000404");
+                    classTransactionData.setPosgeocode("00566000000000566");
                     classTransactionData.setTid(config.getTid());
                    // classTransactionData.setPosEntryMode("051");
                     Log.i(TAG,"amount authorized - "+ emvModel.getAmountAuthorized());
